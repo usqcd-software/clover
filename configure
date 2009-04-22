@@ -13,6 +13,7 @@ show_help() {
      --libdir=DIR             use DIR instead of PREFIX/lib for libraries
      --incdir=DIR             use DIR instead of PREFIX/include for headers
      --docdir=DIR             use DIR instead of PREFIX/share/doc/mdwf for docs
+     --with-qdp=DIR           use DIR/bin/qdp-config to query QDP configuration
      --with-qmp=DIR           use DIR/bin/qmp-config to query QMP configuration
      --target=TARGET          build target architecture, see below
 
@@ -55,7 +56,7 @@ default_prefix=/usr/local
 bindir_loc=bin
 libdir_loc=lib
 incdir_loc=include
-docdir_loc=share/doc/mdwf
+docdir_loc=share/doc/clover
 default_cc=gcc
 default_cflags="-Wall"
 default_ld=gcc
@@ -73,6 +74,7 @@ process_args() {
       --libdir=*)       libdir=`echo "$1" | sed -e 's/--libdir=//'`   ;;
       --incdir=*)       incdir=`echo "$1" | sed -e 's/--incdir=//'`   ;;
       --docdir=*)       docdir=`echo "$1" | sed -e 's/--docdir=//'`   ;;
+      --with-qdp=*)     qdp=`echo "$1" | sed -e 's/--with-qdp=//'`    ;;
       --with-qmp=*)     qmp=`echo "$1" | sed -e 's/--with-qmp=//'`    ;;
       --target=*)       target=`echo "$1" | sed -e 's/--target=//'`   ;;
       *) show_error "Unknown argument $1" ;;
@@ -85,7 +87,7 @@ process_args() {
 speciate_target() {
   case "$target" in
     cee-32)
-       limpdir=cee
+       limpdir=cee-32
        default_cc="gcc -m32"
        default_cflags="-Wall -O3"
        default_ld="gcc"
@@ -95,7 +97,7 @@ speciate_target() {
        default_ranlib="ranlib"
        ;;
     c99-32)
-       limpdir=c99
+       limpdir=c99-32
        default_cc="gcc -m32"
        default_cflags="-Wall -O3"
        default_ld="gcc"
@@ -159,7 +161,11 @@ normalize() {
   ar="${AR:-$default_ar}"
   ranlib="${RANLIB:-$default_ranlib}"
   [ -z "$target" ] && show_error "No target specified"
-  [ -z "$qmp" ] && show_error "QMP must be explicitly specified"
+  [ -z "$qdp" ] && show_error "QDP must be explicitly specified"
+  [ -x $qdp/bin/qdp-config ] || show_error "No qdp-config found in $qdp"
+  qdp_cflags=`$qdp/bin/qdp-config --cflags`
+  qdp_ldflags=`$qdp/bin/qdp-config --ldflags`
+  qdp_libs=`$qdp/bin/qdp-config --libs`
   [ -x $qmp/bin/qmp-config ] || show_error "No qmp-config found in $qmp"
   qmp_cflags=`$qmp/bin/qmp-config --cflags`
   qmp_ldflags=`$qmp/bin/qmp-config --ldflags`
@@ -183,6 +189,7 @@ show_config() {
    echo "Extra libraries         $libs"
    echo "Archiver                $ar"
    echo "Ranlib                  $ranlib"
+   echo "QDP location            $qdp"
    echo "QMP location            $qmp"
    echo "Build target            $target"
    echo "====================================="
@@ -202,6 +209,10 @@ build() {
       -e "s|@libs@|$libs|g" \
       -e "s|@ar@|$ar|g" \
       -e "s|@ranlib@|$ranlib|g" \
+      -e "s|@qdp@|$qdp|g" \
+      -e "s|@qdp_cflags@|$qdp_cflags|g" \
+      -e "s|@qdp_ldflags@|$qdp_ldflags|g" \
+      -e "s|@qdp_libs@|$qdp_libs|g" \
       -e "s|@qmp@|$qmp|g" \
       -e "s|@qmp_cflags@|$qmp_cflags|g" \
       -e "s|@qmp_ldflags@|$qmp_ldflags|g" \
@@ -220,10 +231,10 @@ fi
 
 process_args $*
 normalize
-build mdwf-config.in mdwf-config
-chmod +x mdwf-config
+build clover-config.in clover-config
+chmod +x clover-config
 build Makefile.in Makefile
 build target.in target
-build samples/Makefile.in samples/Makefile
+#build samples/Makefile.in samples/Makefile
 show_config
 show_config > config.log

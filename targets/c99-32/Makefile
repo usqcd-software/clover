@@ -1,4 +1,4 @@
 CONFIG     = macosx
-LIMP       = c99
+LIMP       = c99-32
 
-include ../qa0/common.make
+include ../../qa0/common.make

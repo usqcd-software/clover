@@ -1,4 +1,4 @@
-#!/bin/sh -f
+# XXX this file needs editing.#!/bin/sh -f
 
 version='version 1.0.0 $Id$'
 
@@ -7,13 +7,14 @@ cflags="-I@incdir@ @qmp_cflags@ @cflags@"
 ld="@ld@"
 ldflags="-L@libdir@ @qmp_ldflags@ @ldflags@"
 libs="-lqop-mdwf3 @qmp_libs@ @libs@"
+qdp="@qdp@"
 qmp="@qmp@"
 target="@target@"
 
 # usage status
 usage() {
   cat << EOF
-    usage: mdwf-config option
+    usage: clover-config option
     options:
        --version
        --cc
@@ -21,6 +22,7 @@ usage() {
        --ld
        --ldflags
        --libs
+       --qdp
        --qmp
        --target
 EOF
@@ -34,6 +36,7 @@ case "$1" in
    --ld)       echo "$ld" ;;
    --ldflags)  echo "$ldflags" ;;
    --libs)     echo "$libs" ;;
+   --qdp)      echo "$qdp" ;;
    --qmp)      echo "$qmp" ;;
    --target)   echo "$target" ;;
    *) usage 1 1>&2 ;;

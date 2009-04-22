@@ -1,4 +1,4 @@
 CONFIG     = macosx
 LIMP       = dry
 
-include ../qa0/common.make
+include ../../qa0/common.make

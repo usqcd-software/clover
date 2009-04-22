@@ -1,4 +1,4 @@
 CONFIG     = bluelight
 LIMP       = bgl-xlc
 
-include ../qa0/common.make
+include ../../qa0/common.make

@@ -1,4 +1,4 @@
 CONFIG     = macosx
-LIMP       = cee
+LIMP       = cee-32
 
-include ../qa0/common.make
+include ../../qa0/common.make

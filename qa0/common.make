@@ -1,3 +1,4 @@
+# XXX This file still needs editing.
 # common makefile for standard targets
 TOP        = ..
 V          = 0
@@ -16,7 +17,7 @@ else
    C=
 endif
 
-headers = ../port/mdwf.h
+headers = ../../port/mdwf.h
 
 i.sources = put-ab.c \
             put-abi.c \

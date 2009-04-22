@@ -1,5 +1,6 @@
 # make configuration for build template
 #
+QDP_TOP    = @qdp@
 QMP_TOP    = @qmp@
 CC         = @cc@
 CFLAGS     = @cflags@ $(QMP_CFLAGS)
