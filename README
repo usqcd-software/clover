@@ -1,4 +1,4 @@
-This is a SciDAC L3 Moebius domain wall fermion implementation. It targets
+This is a SciDAC L3 clover fermion implementation. It targets
 the following backends:
 
 c99       -- any conforming C99 compiler on a 32-bit platform
