@@ -29,8 +29,10 @@ endif
 programs = get-gauge
 
 utils = m-vector.c \
+        fermion.c \
         read-gauge.c \
-        plaquette.c
+        plaquette.c \
+        clover.c
 
 headers = clover-test.h
 

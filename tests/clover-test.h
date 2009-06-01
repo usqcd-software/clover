@@ -14,4 +14,8 @@ extern void create_Mvector(QDP_ColorMatrix *U[], int size);
 extern void destroy_Mvector(QDP_ColorMatrix *U[], int size);
 
 extern QLA_Real plaquette(QDP_ColorMatrix *U[]);
+extern void clover(QDP_ColorMatrix *Cl[], QDP_ColorMatrix *U[]);
 extern int read_gauge(QDP_ColorMatrix *U[], const char *name);
+
+extern void point_fermion(QDP_DiracFermion *f, int p[], int c, int d, int ri);
+extern void dump_fermion(char *name, QDP_DiracFermion *f);
