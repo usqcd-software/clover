@@ -24,9 +24,9 @@ std_clover_op(QDP_DiracFermion *psi,
     };
 
     int mu;
-    QLA_Real mk = - kappa;
+    QLA_Real mk;
     QLA_Complex sw;
-    QDP_DiracFermion *t[???];
+    QDP_DiracFermion *t[7];
 
     create_Dvector(t, NELEMS(t));
 
@@ -56,11 +56,12 @@ std_clover_op(QDP_DiracFermion *psi,
         QDP_D_peq_D(t[0], t[6], QDP_all);
     }
     /* psi = phi - kappa * t[0] */
-    QDP_D_copy_D(psi, phi, QDP_all);
-    QDP_D_meq_r_times_D(psi, &kappa, t[0], QDP_all);
+    QDP_D_eq_D(psi, phi, QDP_all);
+    mk = kappa;
+    QDP_D_meq_r_times_D(psi, &mk, t[0], QDP_all);
 
     /* t[1] = 0 */
-    QDP_D_zero(t[1], QDP_all);
+    QDP_D_eq_zero(t[1], QDP_all);
     for (mu = 0; mu < ((NDIM - 1) * NDIM) / 2; mu++) {
         /* t[2] = Cl[mu] phi */
         QDP_D_eq_M_times_D(t[2], Cl[mu], phi, QDP_all);

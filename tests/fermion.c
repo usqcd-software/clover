@@ -4,6 +4,28 @@
 #include <stdlib.h>
 #include <stdio.h> /* for sprintf only */
 
+
+void
+create_Dvector(QDP_DiracFermion *f[], int size)
+{
+    int i;
+
+    for (i = 0; i < size; i++)
+        f[i] = QDP_create_D();
+}
+
+void
+destroy_Dvector(QDP_DiracFermion *f[], int size)
+{
+    int i;
+    
+    for (i = 0; i < size; i++) {
+        QDP_destroy_D(f[i]); 
+        f[i] = 0;
+    }
+}
+
+
 void
 point_fermion(QDP_DiracFermion *f, int p[], int c, int d, int ri)
 {
