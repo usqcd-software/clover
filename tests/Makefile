@@ -22,11 +22,12 @@ ifeq ("$V", "0")
    E=@echo "  "
    C=@
 else
-   E=@echo > /dev/null
+   E=@echo > /dev/null " "
    C=
 endif
 
-programs = get-gauge
+programs = get-gauge \
+           check-gamma
 
 utils = m-vector.c \
         fermion.c \

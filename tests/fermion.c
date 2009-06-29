@@ -1,4 +1,5 @@
 #include "clover-test.h"
+#include <math.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h> /* for sprintf only */
@@ -65,10 +66,12 @@ dump_fermion(char *name, QDP_DiracFermion *src)
                 QLA_r_eq_Re_c(zr, z);
                 QLA_r_eq_Im_c(zi, z);
 
-                fprintf(f, "F[");
-                for (j = 0; j < NDIM; j++)
-                    fprintf(f, " %2d", p[j]);
-                fprintf(f, " ; %d %d] = %20.8e %20.8e\n", c, d, zr, zi);
+                if (fabs(zr) + fabs(zi) > 1e-7) {
+                    fprintf(f, "F[");
+                    for (j = 0; j < NDIM; j++)
+                        fprintf(f, " %2d", p[j]);
+                    fprintf(f, " ; %d %d] = %20.8e %20.8e\n", c, d, zr, zi);
+                }
             }
         }
     }
