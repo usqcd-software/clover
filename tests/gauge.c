@@ -25,6 +25,55 @@ destroy_Mvector(QDP_ColorMatrix *U[], int size)
     }
 }
 
+void
+dump_gauge(char *name, QDP_ColorMatrix *U[], int d)
+{
+    int i, a, b, mu, sites, j;
+    int p[NDIM];
+    int len = strlen(name);
+    char *fn = malloc(len + 12);
+    FILE *f;
+    QLA_ColorMatrix *m;
+    QLA_Complex z;
+
+    sprintf(fn, "%s.%d", name, QDP_this_node);
+    f = fopen(fn, "wt");
+    if (f == 0) {
+        printf("NODE(%d): error opening %s\n", QDP_this_node, fn);
+        goto end;
+    }
+
+    sites = QDP_numsites(QDP_this_node);
+    for (mu = 0; mu < d; mu++) {
+        m = QDP_expose_M(U[d]);
+        for (i = 0; i < sites; i++) {
+            QDP_get_coords(p, QDP_this_node, i);
+            for (a = 0; a < QDP_Nc; a++) {
+                for (b = 0; b < QDP_Nc; b++) {
+                    QLA_Real zr, zi;
+
+                    QLA_c_eq_c(z, QLA_elem_M(m[i], a, b));
+                    QLA_r_eq_Re_c(zr, z);
+                    QLA_r_eq_Im_c(zi, z);
+
+                    if (fabs(zr) + fabs(zi) > 1e-7) {
+                        fprintf(f, "U[%d]", mu);
+                        for (j = 0; j < NDIM; j++)
+                            fprintf(f, " %2d", p[j]);
+                        fprintf(f, " ; %d %d] = %20.8e %20.8e\n",
+                                a, b, zr, zi);
+                    }
+                }
+            }
+        }
+        QDP_reset_M(U[d]);
+    }
+
+    fclose(f);
+end:
+    free(fn);
+}
+
 int
 read_gauge(QDP_ColorMatrix *link[], const char *name)
 {
@@ -166,83 +215,24 @@ plaquette(QDP_ColorMatrix *link[])
 {
   int mu, nu;
   QLA_Real plaq, total;
-  QDP_ColorMatrix *tmp1;
-  QDP_ColorMatrix *tmp2;
-  QDP_ColorMatrix *tmp3;
-  QDP_ColorMatrix *tmp4;
+  QDP_ColorMatrix *t[4];
 
   total = 0;
 
-  tmp1 = QDP_create_M();
-  tmp2 = QDP_create_M();
-  tmp3 = QDP_create_M();
-  tmp4 = QDP_create_M();
+  create_Mvector(t, NELEMS(t));
 
   for (mu = 0; mu < NDIM; mu++) {
     for (nu = mu + 1; nu < NDIM; nu++) {
-      QDP_M_eq_sM(tmp1, link[nu], QDP_neighbor[mu], QDP_forward, QDP_all);
-      QDP_M_eq_sM(tmp2, link[mu], QDP_neighbor[nu], QDP_forward, QDP_all);
-      QDP_M_eq_Ma_times_M(tmp3, link[nu], link[mu], QDP_all);
-      QDP_M_eq_M_times_M(tmp4, tmp3, tmp1, QDP_all);
-      QDP_r_eq_re_M_dot_M(&plaq, tmp2, tmp4, QDP_all);
+      QDP_M_eq_sM(t[0], link[nu], QDP_neighbor[mu], QDP_forward, QDP_all);
+      QDP_M_eq_sM(t[1], link[mu], QDP_neighbor[nu], QDP_forward, QDP_all);
+      QDP_M_eq_Ma_times_M(t[2], link[nu], link[mu], QDP_all);
+      QDP_M_eq_M_times_M(t[3], t[2], t[0], QDP_all);
+      QDP_r_eq_re_M_dot_M(&plaq, t[1], t[3], QDP_all);
       total += plaq;
     }
   }
 
-  QDP_destroy_M(tmp1);
-  QDP_destroy_M(tmp2);
-  QDP_destroy_M(tmp3);
-  QDP_destroy_M(tmp4);
+  destroy_Mvector(t, NELEMS(t));
 
   return total;
-}
-
-
-void
-dump_gauge(char *name, QDP_ColorMatrix *U[], int d)
-{
-    int i, a, b, mu, sites, j;
-    int p[NDIM];
-    int len = strlen(name);
-    char *fn = malloc(len + 12);
-    FILE *f;
-    QLA_ColorMatrix *m;
-    QLA_Complex z;
-
-    sprintf(fn, "%s.%d", name, QDP_this_node);
-    f = fopen(fn, "wt");
-    if (f == 0) {
-        printf("NODE(%d): error opening %s\n", QDP_this_node, fn);
-        goto end;
-    }
-
-    sites = QDP_numsites(QDP_this_node);
-    for (mu = 0; mu < d; mu++) {
-        m = QDP_expose_M(U[d]);
-        for (i = 0; i < sites; i++) {
-            QDP_get_coords(p, QDP_this_node, i);
-            for (a = 0; a < QDP_Nc; a++) {
-                for (b = 0; b < QDP_Nc; b++) {
-                    QLA_Real zr, zi;
-
-                    QLA_c_eq_c(z, QLA_elem_M(m[i], a, b));
-                    QLA_r_eq_Re_c(zr, z);
-                    QLA_r_eq_Im_c(zi, z);
-
-                    if (fabs(zr) + fabs(zi) > 1e-7) {
-                        fprintf(f, "U[%d]", mu);
-                        for (j = 0; j < NDIM; j++)
-                            fprintf(f, " %2d", p[j]);
-                        fprintf(f, " ; %d %d] = %20.8e %20.8e\n",
-                                a, b, zr, zi);
-                    }
-                }
-            }
-        }
-        QDP_reset_M(U[d]);
-    }
-
-    fclose(f);
-end:
-    free(fn);
 }

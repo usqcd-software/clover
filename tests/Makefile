@@ -30,7 +30,8 @@ programs = get-gauge \
            check-gamma
 
 utils = gauge.c \
-        fermion.c
+        fermion.c \
+        clover.c
 
 headers = clover-test.h
 

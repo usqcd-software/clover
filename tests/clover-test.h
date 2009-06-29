@@ -10,6 +10,7 @@ extern int lattice[NDIM];
 
 #define printf0 if (QDP_this_node == 0) printf
 
+/* gauge */
 extern void create_Mvector(QDP_ColorMatrix *U[], int size);
 extern void destroy_Mvector(QDP_ColorMatrix *U[], int size);
 
@@ -20,5 +21,19 @@ extern void unit_gauge(QDP_ColorMatrix *U[]);
 extern void coord_gauge(QDP_ColorMatrix *U[]);
 extern void dump_gauge(char *name, QDP_ColorMatrix *U[], int d);
 
+/* fermion */
+extern void create_Dvector(QDP_DiracFermion *U[], int size);
+extern void destroy_Dvector(QDP_DiracFermion *U[], int size);
+
 extern void point_fermion(QDP_DiracFermion *f, int p[], int c, int d, int ri);
 extern void dump_fermion(char *name, QDP_DiracFermion *f);
+
+/* clover */
+void
+std_clover_op(QDP_DiracFermion *psi,
+              QDP_ColorMatrix *U[],
+              QDP_ColorMatrix *Cl[],
+              double kappa,
+              double c_sw,
+              QDP_DiracFermion *phi);
+
