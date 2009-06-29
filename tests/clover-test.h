@@ -18,6 +18,7 @@ extern void clover(QDP_ColorMatrix *Cl[], QDP_ColorMatrix *U[]);
 extern int read_gauge(QDP_ColorMatrix *U[], const char *name);
 extern void unit_gauge(QDP_ColorMatrix *U[]);
 extern void coord_gauge(QDP_ColorMatrix *U[]);
+extern void dump_gauge(char *name, QDP_ColorMatrix *U[], int d);
 
 extern void point_fermion(QDP_DiracFermion *f, int p[], int c, int d, int ri);
 extern void dump_fermion(char *name, QDP_DiracFermion *f);
