@@ -18,14 +18,17 @@ extern QLA_Real plaquette(QDP_ColorMatrix *U[]);
 extern void clover(QDP_ColorMatrix *Cl[], QDP_ColorMatrix *U[]);
 extern int read_gauge(QDP_ColorMatrix *U[], const char *name);
 extern void unit_gauge(QDP_ColorMatrix *U[]);
+extern void point_gauge(QDP_ColorMatrix *U[],
+                        const int p[], int d, int a, int b, int ri);
 extern void coord_gauge(QDP_ColorMatrix *U[]);
-extern void dump_gauge(char *name, QDP_ColorMatrix *U[], int d);
+extern void dump_gauge(char *name, QDP_ColorMatrix *U[], int d, int u_p);
 
 /* fermion */
 extern void create_Dvector(QDP_DiracFermion *U[], int size);
 extern void destroy_Dvector(QDP_DiracFermion *U[], int size);
 
-extern void point_fermion(QDP_DiracFermion *f, int p[], int c, int d, int ri);
+extern void point_fermion(QDP_DiracFermion *f,
+                          const int p[], int c, int d, int ri);
 extern void dump_fermion(char *name, QDP_DiracFermion *f);
 
 /* clover */

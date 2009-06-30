@@ -26,7 +26,7 @@ destroy_Mvector(QDP_ColorMatrix *U[], int size)
 }
 
 void
-dump_gauge(char *name, QDP_ColorMatrix *U[], int d)
+dump_gauge(char *name, QDP_ColorMatrix *U[], int d, int u_p)
 {
     int i, a, b, mu, sites, j;
     int p[NDIM];
@@ -45,18 +45,34 @@ dump_gauge(char *name, QDP_ColorMatrix *U[], int d)
 
     sites = QDP_numsites(QDP_this_node);
     for (mu = 0; mu < d; mu++) {
-        m = QDP_expose_M(U[d]);
+        m = QDP_expose_M(U[mu]);
         for (i = 0; i < sites; i++) {
             QDP_get_coords(p, QDP_this_node, i);
             for (a = 0; a < QDP_Nc; a++) {
                 for (b = 0; b < QDP_Nc; b++) {
                     QLA_Real zr, zi;
+                    int sh;
 
                     QLA_c_eq_c(z, QLA_elem_M(m[i], a, b));
                     QLA_r_eq_Re_c(zr, z);
                     QLA_r_eq_Im_c(zi, z);
 
-                    if (fabs(zr) + fabs(zi) > 1e-7) {
+                    sh = 0;
+                    if (u_p) {
+                        if (a == b) {
+                            if (fabs(zr - 1.0) > 1e-7)
+                                sh = 1;
+                            else if (fabs(zi) > 1e-7)
+                                sh = 1;
+                        } else if (fabs(zr) + fabs(zi) > 1e-7) {
+                            sh = 1;
+                        }
+                    } else {
+                        if (fabs(zr) + fabs(zi) > 1e-7) {
+                            sh = 1;
+                        }
+                    }
+                    if (sh == 1) {
                         fprintf(f, "U[%d]", mu);
                         for (j = 0; j < NDIM; j++)
                             fprintf(f, " %2d", p[j]);
@@ -66,7 +82,7 @@ dump_gauge(char *name, QDP_ColorMatrix *U[], int d)
                 }
             }
         }
-        QDP_reset_M(U[d]);
+        QDP_reset_M(U[mu]);
     }
 
     fclose(f);
@@ -142,6 +158,35 @@ unit_gauge(QDP_ColorMatrix *U[])
     }
 }
 
+void
+point_gauge(QDP_ColorMatrix *U[],
+            const int p[], int mu, int a, int b, int ri)
+{
+    int d, n, i;
+    QLA_Complex w;
+    QLA_ColorMatrix *qu;
+
+    QLA_c_eq_r(w, 1.0);
+    for (d = 0; d < NDIM; d++) {
+        QDP_M_eq_c(U[d], &w, QDP_all);
+    }
+    qu = QDP_expose_M(U[mu]);
+    n = QDP_node_number(p);
+    i = QDP_index(p);
+    if (n == QDP_this_node) {
+        QLA_Complex z;
+        if (ri) {
+            QLA_Complex v;
+            QLA_c_eq_r(v, 1.0);
+            QLA_c_eq_ic(z, v);
+        } else {
+            QLA_c_eq_r(z, 1.0);
+        }
+        QLA_c_eq_c(QLA_elem_M(qu[i], a, b), z);
+    }
+    QDP_reset_M(U[mu]);
+}
+
 /****
  **       t[1]
  **  ^-----------X
@@ -202,7 +247,7 @@ clover(QDP_ColorMatrix *cl[], QDP_ColorMatrix *U[])
             QDP_M_peq_M(t[4], t[2], QDP_all);
             
             QDP_M_eq_M(cl[i], t[4], QDP_all);
-            QDP_M_meq_conj_M(cl[i], t[4], QDP_all);
+            QDP_M_meq_Ma(cl[i], t[4], QDP_all);
         }
     }
 

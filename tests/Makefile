@@ -27,7 +27,8 @@ else
 endif
 
 programs = get-gauge \
-           check-gamma
+           check-gamma \
+           check-clover
 
 utils = gauge.c \
         fermion.c \

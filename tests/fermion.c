@@ -27,7 +27,8 @@ destroy_Dvector(QDP_DiracFermion *f[], int size)
 
 
 void
-point_fermion(QDP_DiracFermion *f, int p[], int c, int d, int ri)
+point_fermion(QDP_DiracFermion *f,
+              const int p[], int c, int d, int ri)
 {
     int n, i;
     QLA_DiracFermion *qladf;
