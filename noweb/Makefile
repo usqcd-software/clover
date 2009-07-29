@@ -9,10 +9,10 @@ LATEX    = latex
 DVIPDFM  = dvipdfm
 #TFLAGS   = -L'\#line %L "%F"%N'
 
-noweb = mdwf.nw \
+noweb = clover.nw \
         qcd-defs.nw
 
-sources = ../port/qop-mdwf3.h
+sources = ../port/qop-clover.h
 
 f.tex = $(noweb:%.nw=%.tex)
 f.dvi = $(noweb:%.nw=%.dvi)
@@ -48,5 +48,5 @@ $(f.dvi): %.dvi: %.tex
 $(f.tex): %.tex: %.nw
 	$(NOWEAVE) $< > $@
 
-$(sources): mdwf.nw
+$(sources): clover.nw
 	$(NOTANGLE) $(TFLAGS) -R'File [[$@]]' -c $< | $(CPIF) $@

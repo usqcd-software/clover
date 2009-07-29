@@ -1,0 +1,1094 @@
+\documentclass[twoside,openright]{report}
+\usepackage{noweb}
+\noweboptions{externalindex,longchunks,longxref}
+\usepackage[boxed]{algorithm2e}
+%\usepackage{epsfig}
+\usepackage{color}
+\definecolor{darkblue}{cmyk}{1,1,0,0.7}
+\usepackage[dvipdfm,colorlinks=true,linkcolor=darkblue]{hyperref}
+\newcommand{\note}[1]{$[\![$NB: #1$]\!]$}
+\setlength{\parindent}{0pt}
+\setlength{\topmargin}{-40pt}
+\setlength{\oddsidemargin}{-16pt}
+\setlength{\evensidemargin}{-16pt}
+\setlength{\textwidth}{522pt}
+\setlength{\textheight}{700pt}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\newcommand{\Cee}{\texttt{C}}
+
+\title{Clover Fermions Implementation}
+\author{Andrew Pochinsky}
+\catcode`\$=11
+\date{$Id$\\
+Release x.x.x}
+\catcode`\$=3
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}\hbox{}
+\vfill
+\copyright 2007 Massachusetts Institute of Technology
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+\pagebreak
+
+\tableofcontents
+\pagebreak
+
+\chapter{PHYSICS}
+
+The Domain Wall Fermion Dirac operator is defined by
+\begin{equation}
+\left\langle\bar\psi|D_{CL}|\psi\right\rangle =
+  \sum_{x,x'}\bar\psi(x)D_{CL}(x,x')\psi(x'),
+\end{equation}
+where
+\begin{eqnarray}
+D_{CL}(x,x')  &= & \delta_{x,x'} - \kappa D_W(x,x') - \kappa c_{SW} T_{SW}(x,x')
+\label{D_CL}\\
+D_W(x,x') &=& \sum_{\mu=0}^3\left[(1-\gamma_\mu) U_\mu(x)\delta_{x,x'-\hat\mu}
+         +(1+\gamma_\mu) U_\mu^\dagger(x-\hat\mu)\delta_{x,x'+\hat\mu}\right]
+\\
+T_{SW}(x,x') &=& \delta_{x,x'} \sum_{\mu=0}^2\sum_{\nu=\mu+1}^3 \sigma_{\mu\nu}F_{\mu\nu}(x)
+\label{Tsw}\\
+F_{\mu\nu}(x) &=& U_\mu(x)U_\nu(x+\hat\mu)
+                       U_\mu^\dagger(x+\hat\nu)U_\nu^\dagger(x)\nonumber\\
+            && + U_\nu^\dagger(x-\hat\nu)U_\mu(x-\hat\nu)
+                       U_\nu(x-\hat\nu+\hat\mu)U_\mu^\dagger(x)\nonumber\\
+            && + U_\mu^\dagger(x-\hat\mu)U_\nu^\dagger(x-\hat\nu-\hat\mu)
+                       U_\mu(x-\hat\nu-\hat\mu)U_\nu(x-\hat\nu)\nonumber\\
+            && + U_\nu(x)U_\mu^\dagger(x+\hat\nu)
+                       U_\nu^\dagger(x-\hat\mu)U_\nu(x-\hat\mu)
+\end{eqnarray}
+
+\section{Gamma Matrices}
+We use the same $\gamma$-matrix basis as Chroma to simplify conversion between
+two codes. The Clover code expects $\gamma_5$ and $\sigma_{\mu\nu}$ to have values
+specified below.
+
+\begin{displaymath}
+\gamma_5 = \gamma_0 \gamma_1 \gamma_2 \gamma_3 = \sigma_3 \otimes 1 =
+           \left(\begin{array}{cc}
+             1 & 0 \\
+             0 & -1
+           \end{array}\right) =
+           \left(\begin{array}{cccc}
+             1 & 0 & 0 & 0\\
+             0 & 1 & 0 & 0\\
+             0 & 0 &-1 & 0\\
+             0 & 0 & 0 &-1
+           \end{array}\right)
+\end{displaymath}
+\begin{displaymath}
+\begin{array}{cc}
+  \sigma_{01} = \frac{i}{2}\left[\gamma_0, \gamma_1\right]
+   = 1 \otimes \sigma_3 
+   = \left(\begin{array}{cccc}
+        1 & 0 & 0 & 0 \\
+        0 & -1 & 0 & 0 \\
+        0 & 0 & 1 & 0 \\
+        0 & 0 & 0 & -1
+     \end{array}\right), &
+  \sigma_{02} = \frac{i}{2}\left[\gamma_0, \gamma_2\right]
+   = 1 \otimes \sigma_2
+   = \left(\begin{array}{cccc}
+        0 & -i & 0 & 0 \\
+        i & 0 & 0 & 0 \\
+        0 & 0 & 0 & -i \\
+        0 & 0 & i & 0
+     \end{array}\right), \\
+  \sigma_{03} = \frac{i}{2}\left[\gamma_0, \gamma_3\right]
+   = -\sigma_3 \otimes \sigma_1
+   = \left(\begin{array}{cccc}
+        0 & -1 & 0 & 0 \\
+        -1 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 1 \\
+        0 & 0 & 1 & 0
+     \end{array}\right), &
+  \sigma_{12} = \frac{i}{2}\left[\gamma_1, \gamma_2\right]
+   = 1 \otimes \sigma_1
+   = \left(\begin{array}{cccc}
+        0 & 1 & 0 & 0 \\
+        1 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 1 \\
+        0 & 0 & 1 & 0
+     \end{array}\right), \\
+  \sigma_{13} = \frac{i}{2}\left[\gamma_1, \gamma_3\right]
+   = \sigma_3 \otimes \sigma_2
+   = \left(\begin{array}{cccc}
+        0 & -i & 0 & 0 \\
+        i & 0 & 0 & 0 \\
+        0 & 0 & 0 & i \\
+        0 & 0 & -i & 0
+     \end{array}\right), &
+  \sigma_{23} = \frac{i}{2}\left[\gamma_2, \gamma_3\right]
+   = \sigma_3 \otimes \sigma_3
+   = \left(\begin{array}{cccc}
+        1 & 0 & 0 & 0 \\
+        0 & -1 & 0 & 0 \\
+        0 & 0 & -1 & 0 \\
+        0 & 0 & 0 & 1
+     \end{array}\right).
+\end{array}
+\end{displaymath}
+
+Fragments for $\gamma_\mu$ below are not the most fool-proof, but they should do
+for now.
+
+\pagebreak
+\begin{equation}
+\gamma_0 = -\sigma_2 \otimes \sigma_1  =
+           \left(\begin{array}{cc}
+                0&i\sigma_1\\
+                -i\sigma_1&0
+             \end{array}\right) = 
+           \left(\begin{array}{cccc}
+                                 0&0&0&i\\
+                                 0&0&i&0\\
+                                 0&-i&0&0\\
+                                 -i&0&0&0
+                           \end{array}\right)\\
+\end{equation}
+<<Project $(1+\gamma_0)$>>=
+((project 0 plus) . ((plus-one 0 plus-i 3)
+                     (plus-one 1 plus-i 2)))
+@
+<<Unproject $(1+\gamma_0)$>>=
+((unproject 0 plus) . ((plus-one 0)
+                       (plus-one 1)
+                       (minus-i 1)
+                       (minus-i 0)))
+@
+<<Project $(1-\gamma_0)$>>=
+((project 0 minus) . ((plus-one 0 minus-i 3)
+                      (plus-one 1 minus-i 2)))
+@
+<<Unproject $(1-\gamma_0)$>>=
+((unproject 0 minus) . ((plus-one 0)
+                        (plus-one 1)
+                        (plus-i 1)
+                        (plus-i 0)))
+@
+
+\pagebreak
+\begin{equation}
+\gamma_1 = \sigma_2 \otimes \sigma_2  = 
+           \left(\begin{array}{cc}
+                  0 & -i\sigma_2\\
+                  i\sigma_2 & 0
+                 \end{array}\right) = 
+           \left(\begin{array}{cccc}
+                                 0&0&0&-1\\
+                                 0&0&1&0\\
+                                 0&1&0&0\\
+                                 -1&0&0&0
+                           \end{array}\right)\\
+\end{equation}
+<<Project $(1+\gamma_1)$>>=
+((project 1 plus) . ((plus-one 0 minus-one 3)
+                     (plus-one 1 plus-one 2)))
+@
+<<Unproject $(1+\gamma_1)$>>=
+((unproject 1 plus) . ((plus-one 0)
+                       (plus-one 1)
+                       (plus-one 1)
+                       (minus-one 0)))
+@
+<<Project $(1-\gamma_1)$>>=
+((project 1 minus) . ((plus-one 0 plus-one 3)
+                      (plus-one 1 minus-one 2)))
+@
+<<Unproject $(1-\gamma_1)$>>=
+((unproject 1 minus) . ((plus-one 0)
+                        (plus-one 1)
+                        (minus-one 1)
+                        (plus-one 0)))
+@
+
+\pagebreak
+\begin{equation}
+\gamma_2 = -\sigma_2 \otimes \sigma_3  = 
+           \left(\begin{array}{cc}
+                   0 & i\sigma_3\\
+                 -i\sigma_3&0
+                 \end{array}\right) = 
+           \left(\begin{array}{cccc}
+                                 0&0&i&0\\
+                                 0&0&0&-i\\
+                                 -i&0&0&0\\
+                                 0&i&0&0
+                           \end{array}\right)\\
+\end{equation}
+<<Project $(1+\gamma_2)$>>=
+((project 2 plus) . ((plus-one 0 plus-i 2)
+                     (plus-one 1 minus-i 3)))
+@
+<<Unproject $(1+\gamma_2)$>>=
+((unproject 2 plus) . ((plus-one 0)
+                       (plus-one 1)
+                       (minus-i 0)
+                       (plus-i 1)))
+@
+<<Project $(1-\gamma_2)$>>=
+((project 2 minus) . ((plus-one 0 minus-i 2)
+                      (plus-one 1 plus-i 3)))
+@
+<<Unproject $(1-\gamma_2)$>>=
+((unproject 2 minus) . ((plus-one 0)
+                        (plus-one 1)
+                        (plus-i 0)
+                        (minus-i 1)))
+@
+
+\pagebreak
+\begin{equation}
+\gamma_3 = \sigma_1 \otimes 1 =
+           \left(\begin{array}{cc}
+                  0 & 1\\
+                  1 & 0
+                 \end{array}\right) = 
+           \left(\begin{array}{cccc}
+                                 0&0&1&0\\
+                                 0&0&0&1\\
+                                 1&0&0&0\\
+                                 0&1&0&0
+                           \end{array}\right)\\
+\end{equation}
+<<Project $(1+\gamma_3)$>>=
+((project 3 plus) . ((plus-one 0 plus-one 2)
+                     (plus-one 1 plus-one 3)))
+@
+<<Unproject $(1+\gamma_3)$>>=
+((unproject 3 plus) . ((plus-one 0)
+                       (plus-one 1)
+                       (plus-one 0)
+                       (plus-one 1)))
+@
+This is our starting point in sums over directions
+<<Start $\mu$ sum>>=
+(define mdwf-start-sum-dimension 3)
+(define mdwf-start-sum-direction 'plus)
+@
+
+<<Project $(1-\gamma_3)$>>=
+((project 3 minus) . ((plus-one 0 minus-one 2)
+                      (plus-one 1 minus-one 3)))
+@
+<<Unproject $(1-\gamma_3)$>>=
+((unproject 3 minus) . ((plus-one 0)
+                        (plus-one 1)
+                        (minus-one 0)
+                        (minus-one 1)))
+@
+
+Now let us collect the $\gamma$-matrix projections and reconstructions. We
+put them all together into [[mdwf-basis]] as an a list of pairs with keys
+of the form [[(<op> <dir> <sign>)]].
+<<Scheme definitions>>=
+(define mdwf-basis '(
+  <<Project $(1+\gamma_0)$>>
+  <<Project $(1+\gamma_1)$>>
+  <<Project $(1+\gamma_2)$>>
+  <<Project $(1+\gamma_3)$>>
+  <<Project $(1-\gamma_0)$>>
+  <<Project $(1-\gamma_1)$>>
+  <<Project $(1-\gamma_2)$>>
+  <<Project $(1-\gamma_3)$>>
+  <<Unproject $(1+\gamma_0)$>>
+  <<Unproject $(1+\gamma_1)$>>
+  <<Unproject $(1+\gamma_2)$>>
+  <<Unproject $(1+\gamma_3)$>>
+  <<Unproject $(1-\gamma_0)$>>
+  <<Unproject $(1-\gamma_1)$>>
+  <<Unproject $(1-\gamma_2)$>>
+  <<Unproject $(1-\gamma_3)$>>))
+@
+
+We also define a starting link in a sum over links:
+<<Scheme definitions>>=
+<<Start $\mu$ sum>>
+@
+
+Here is a module for PLT:
+<<File [[../utils/basis.ss]]>>=
+(module basis
+        mzscheme
+   (provide mdwf-basis
+            mdwf-start-sum-dimension
+            mdwf-start-sum-direction)
+   <<Scheme definitions>>
+)
+@
+
+\pagebreak\section{Preconditioning}
+We use four dimensional preconditioner to improve convergence of the CG.
+Let us color the lattice sites according to the
+parity of $x_0+x_1+x_2+x_3$. Then we can rewrite $D_{CL}$ from Eq.~(\ref{D_CL})
+as follows:
+\begin{equation}\label{EO-form}
+D_{CL}=\left(\begin{array}{cc}
+A_{oo} & B_{oe}\\
+B_{eo} & A_{ee}
+\end{array}\right),
+\end{equation}
+where
+\begin{eqnarray}
+A_{oo}(x,x') & = & \delta_{x,x'} - \kappa c_{SW} T(x,x') \\
+B_{oe}(x,x') & = & -\kappa
+            \sum_{\mu=0}^{3}\left[(1-\gamma_\mu)U_\mu(x)\delta_{x,x'-\hat\mu}
+         +(1+\gamma_\mu)U_\mu^{\dagger}(x-\hat\mu)\delta_{x,x'+\hat\mu}\right],
+\end{eqnarray}
+and similary for other parity components.
+(Hereafter spinor and color indices are suppressed but presumed.)
+
+Let us rewrite Eq.~(\ref{EO-form}) as follows:
+\begin{equation}
+D_{CL}=
+\left(\begin{array}{cc}
+I_{oo} & 0\\
+B_{eo}A_{oo}^{-1} & A_{ee}
+\end{array}\right)
+\left(\begin{array}{cc}
+A_{oo} & B_{oe}\\
+0 & I_{ee}-A_{ee}^{-1}B_{eo}A_{oo}^{-1}B_{oe}
+\end{array}\right).
+\end{equation}
+
+To solve the equation
+\[
+D_{CL}\psi=
+\left(\begin{array}{cc}
+A_{oo} & B_{oe}\\
+B_{eo} & A_{ee}
+\end{array}\right)
+\left(\begin{array}{c}\psi_e\\\psi_o\end{array}\right) =
+   \left(\begin{array}{c}\eta_e\\\eta_o\end{array}\right),
+\]
+one performs the following steps:
+\begin{enumerate}
+\item Use $M=I_{ee}-A_{ee}^{-1}B_{eo}A_{oo}^{-1}B_{oe}$ in the
+following.
+\item Use $M^\dagger=I_{ee}-\left(B_{oe}\right)^\dagger
+\left(A_{oo}^{-1}\right)^\dagger
+\left(B_{eo}\right)^\dagger
+\left(A_{ee}^{-1}\right)^\dagger$ in the following.
+\item Compute
+\[
+\chi_e =M^{\dagger} A_{ee}^{-1}\left(\eta_e
+            - B_{eo}A_{oo}^{-1}\eta_o\right).
+\]
+\item Solve
+\[
+M^{\dagger}M\psi_e = \chi_e
+\]
+for $\psi_e$ using Alg.~\ref{real}.
+\item Compute
+\begin{eqnarray}
+\psi_o &=& A_{oo}^{-1}\left(\eta_o-B_{oe}\psi_e\right).
+\end{eqnarray}
+\end{enumerate}
+
+Note, that computing $A_{ee}^{-1}$ is local. One can write Eq.~{\ref{Tsw}}
+as follows
+\begin{eqnarray*}
+T &=& \left(\begin{array}{cc}X & 0 \\ 0 & Y\end{array}\right) \\
+X &=& \left(\begin{array}{cc}
+F_{23}+F_{01} &
+F_{12}-F_{03}-i(F_{02}+F_{13}) \\
+F_{12}-F_{03}+i(F_{02}+F_{13})&
+-(F_{23}+F_{01})
+\end{array}\right)\\
+Y &=& \left(\begin{array}{cc}
+F_{01}-F_{23} &
+F_{12}+F_{03}-i(F_{02}-F_{13})\\
+F_{12}+F_{03}+i(F_{02}-F_{13})&
+-(F_{01}-F_{23})
+\end{array}\right)
+\end{eqnarray*}
+Here $X$ acts on two upper components of the fermion and $Y$ acts on
+two lower components.
+Inverting $6\times6$ local matrices $1-\kappa c_{SW}X$ and $1-\kappa c_{SW}Y$
+can be done with Gaussian elimination.
+
+\chapter{ALGORITHMS}
+
+\section{Conjugate gradient}
+The equation
+\[
+   M^\dagger M \xi = \chi
+\]
+can be solve by the conjugate gradient method if the condition number of
+ $M^\dagger M$ is small enough.
+\incmargin{20pt}
+\begin{algorithm}
+\SetKwData{Input}{input}
+\KwIn{$M$, the matrix}
+\KwIn{$\chi$, the right hand side of the linear equation}
+\KwIn{$\xi_0$, an initial guess}
+\KwIn{$n$, the maximum number of iterations}
+\KwIn{$\epsilon$, required precision}
+\KwOut{$\xi$, approximate solution}
+\KwOut{$r$, final residue}
+\KwOut{$k$, number of iterations used}
+\SetKw{Break}{break}
+\dontprintsemicolon
+\Begin{
+  $\xi\leftarrow \xi_0$\;
+  $\rho\leftarrow \chi - M^{\dagger}M\xi$\;
+  $\pi\leftarrow \rho$\;
+  $r\leftarrow\langle \rho,\rho\rangle$\;
+  $k\leftarrow 0$\;
+  \While{$r > \epsilon$ or $k < n$}{
+    $\omega\leftarrow Mp$\;
+    $\zeta\leftarrow M^{\dagger}\omega$\;
+    $a\leftarrow r/\langle \omega,\omega\rangle$\;
+    $\rho\leftarrow \rho - a \zeta$\;
+    $ g \leftarrow \langle \rho,\rho\rangle$\;
+    \If{$ g<\epsilon$}{
+       $\xi\leftarrow \xi+ a \pi$\;
+       $r \leftarrow g$\;
+       \Break}
+    $b\leftarrow g/r$\;
+    $r\leftarrow g$\;
+    $\xi\leftarrow \xi + a \pi$\;
+    $\pi\leftarrow \rho + b \pi$\;
+    $k\leftarrow k + 1$\;
+  }
+  \Return {$\xi$, $r$, $k$}.
+}
+\caption{\label{real}Conjugate Gradient Solver.}
+\end{algorithm}
+\decmargin{20pt}
+
+
+\chapter{INTERFACE}
+The Clover interface is fully functional to isolate users of the code from
+implementation details. Several types defined in the interface provide help
+with typechecking.
+<<File [[../port/qop-clover.h]]>>=
+#ifndef QOP_CLOVER_1a978487255540d18dde15681e99166a
+# define `QOP_CLOVER_1a978487255540d18dde15681e99166a
+  <<Interface macros>>
+  <<Interface types>>
+  <<Interface functions>>
+# if defined(QOP_CLOVER_DEFAULT_PRECISION) && (QOP_CLOVER_DEFAULT_PRECISION == 'F')
+   <<Single precision defaults>>
+# endif
+# if defined(QOP_CLOVER_DEFAULT_PRECISION) && (QOP_CLOVER_DEFAULT_PRECISION == 'D')
+    <<Double precision defaults>>
+# endif
+#endif
+@
+
+
+\section{Magic numbers}
+The numbers below are provided as names for magic numbers in the code. They can
+not be safely changed.
+
+First, the dimension is always four:
+<<Interface macros>>=
+#define `QOP_CLOVER_DIM 4
+@
+
+Next, the number of components in the Dirac fermion and the projected fermion
+<<Interface macros>>=
+#define `QOP_CLOVER_FERMION_DIM 4
+#define `QOP_CLOVER_PROJECTED_FERMION_DIM 2
+@
+
+We work only with $SU(3)$
+<<Interface macros>>=
+#define `QOP_CLOVER_COLORS 3
+@
+
+\section{Library version}
+The following function returns a version of the library. The goal is to
+provide enough information to uniquely identify library's version. Since
+there are many features packed into the library, a human-readable string is
+returned.
+<<Interface functions>>=
+const char *`QOP_CLOVER_version(void);
+@
+
+\section{Performance monitoring}
+Each interface function records its exectution time and number of floating point
+operations in the [[State]] structure. These numbers are accessed via the
+following function. Only data on the current node is recorded. The function
+returns [[0]] if performance counters are updated.
+<<Interface functions>>=
+int `QOP_CLOVER_performance(double *time_sec,
+                            long long *flops,
+                            long long *sent,
+                            long long *receive,
+                            struct QOP_CLOVER_State *state);
+@
+
+\section{Initialization}
+All library state is incapsulated into an opaque structure. We do not need
+to expose any components of the structure to the user.
+<<Interface types>>=
+struct `QOP_CLOVER_State;
+@
+
+The library initialization routine creates the state structure and fills it
+with necessary information. It returns [[0]] if successful and a non-zero value
+otherwise. In any case [[state_ptr]] is set to some value suitable for other
+library functions.
+<<Interface functions>>=
+int `QOP_CLOVER_init(struct QOP_CLOVER_State **state_ptr,
+                     const int lattice[QOP_CLOVER_DIM],
+                     const int network[QOP_CLOVER_DIM],
+                     const int node[QOP_CLOVER_DIM],
+                     int master_p,
+                     void (*sublattice)(int lo[],
+                                        int hi[],
+                                        const int node[],
+                                        void *env),
+                     void *env);
+@
+Arguments of [[init()]] are
+\begin{itemize}
+\item[\texttt{state\_ptr}] points to the [[State]] to be set.
+\item[\texttt{lattice}] 4--d lattice geometry.
+\item[\texttt{network}] 4--d network geometry. Each element should be positive.
+\item[\texttt{node}] 4--d address of this node.
+\item[\texttt{master\_p}] is non-zero on the master node, zero otherwise.
+\item[\texttt{sublattice}] Function giving sublattice dimensions on an arbitrary node.
+\item[\texttt{env}] Common environment for [[sublattice()]].
+\end{itemize}
+
+When [[QOP_CLOVER_init()]] returns, [[*state_ptr]] will point to a valid
+state of the library (if any error occurs during initialization, the
+error will be stored in [[*ptr]]. The [[lattice[]]] provides the total
+lattice size, and [[sublattice]] is a pointer to a function that given
+a 4-d node address [[node]] returns in
+[[lo]] and [[hi]] the sublattice coordinates local to the [[node]], in
+effect saying that the local sublattice starts at [[x[i]=lo[i]]] and
+ends at [[x[i]=hi[i]-1]].
+
+It is possible to call [[QOP_CLOVER_init()]] multiple times with different
+arguments. The library does not require that the lattice size and layout agree
+in different calls.
+
+\section{Cleanup}
+When the state is no longer needed it should be closed by the following function
+<<Interface functions>>=
+void `QOP_CLOVER_fini(struct QOP_CLOVER_State **state_ptr);
+@
+It is an error to use [[*state_ptr]] after it was closed. To help in error
+detection this function sets [[*state_ptr]] to [[NULL]]. All library functions
+check if the state they are passed is [[NULL]] and abort if it is.
+
+\section{Errors}
+When something goes wrong in the library, a library function will return some
+non-zero value and store the error code in the library state. The error codes
+are accessible as human-readable strings via the following function:
+<<Interface functions>>=
+const char *`QOP_CLOVER_error(struct QOP_CLOVER_State *state);
+@
+Note that the first error will be latched until [[QOP_CLOVER_error()]] is
+called.
+This is a design choice made to help in pinpointing the origin of the problem
+when something goes wrong intead of reporting spiritious errors if multiple
+calls to the library are made before an error is checked for. If there is no
+error, [[QOP_CLOVER_error()]] returns [[NULL]]. The function could be called
+multiple times, it does not reset the error code, instead it marks in the state
+that the error was reported thus allowing latching another error.
+
+\section{Gauge}
+Any gauge field should be imported into the library format before it could
+be used. To keep the interface as general as possible, we use a query function
+approach for inport. There are two versions of [[QOP_CLOVER_import_gauge]], one
+for double precision, another for single precision. Note that the clover
+action parameters are specified in the gauge import routines. 
+<<Interface functions>>=
+int `QOP_F3_CLOVER_import_gauge(struct QOP_F3_CLOVER_Gauge **gauge_ptr,
+                                struct QOP_CLOVER_State *state,
+                                double kappa,
+                                double c_sw,
+                                double (*U_reader)(int dir,
+                                                   const int pos[4],
+                                                   int a,
+                                                   int b,
+                                                   int re_im,
+                                                   void *env),
+                                double (*F_reader)(int mu,
+                                                   int nu,
+                                                   const int pos[4],
+                                                   int a,
+                                                   int b,
+                                                   int re_im,
+                                                   void *env),
+                                void *env);
+int `QOP_D3_CLOVER_import_gauge(struct QOP_D3_CLOVER_Gauge **gauge_ptr,
+                                struct QOP_CLOVER_State *state,
+                                double kappa,
+                                double c_sw,
+                                double (*U_reader)(int dir,
+                                                   const int pos[4],
+                                                   int a,
+                                                   int b,
+                                                   int re_im,
+                                                   void *env),
+                                double (*F_reader)(int mu,
+                                                   int nu,
+                                                   const int pos[4],
+                                                   int a,
+                                                   int b,
+                                                   int re_im,
+                                                   void *env),
+                                void *env);
+@
+The [[U_reader()]] points to a function that provides a value of the gauge field
+at a given point on the lattice, e.g., it returns the value of
+[[U[dir][pos][a][b].re]] for [[re_im==0]] and 
+[[U[dir][pos][a][b].im]] for [[re_im==1]]. If will be called only for [[pos]] in
+a local sublattice.
+The [[F_reader()]] points to a function that provides a value of the clover
+plaquette, e.g., it returns the value of
+[[F[mu][nu][pos][a][b].re]] for [[re_im==0]] and
+[[F[mu][nu][pos][a][b].im]] for [[re_im==1]]. If will be called only for [[pos]]
+in a local sublattice.
+The [[U_reader()]] and [[F_reader()] functions are
+passed the [[env]] parameter
+that may be used to access the guage field from the outer space.  The [[env]]
+parameter is not used by [[import_gauge()]] functions for any other purpose.
+
+If the function succeeds then the [[*gauge_ptr]] will be initialized to a value
+that may be passed to other library functions. If something goes wrong,
+[[*gauge_ptr]] will be set to [[NULL]].
+
+Here are corresponding opaque types:
+<<Interface types>>=
+struct `QOP_F3_CLOVER_Gauge;
+struct `QOP_D3_CLOVER_Gauge;
+@
+
+We also need a couple of destructors for gauge fields. For convenience, they
+will accept [[NULL]] intead of a valid gauge field.
+<<Interface functions>>=
+void `QOP_F3_CLOVER_free_gauge(struct QOP_F3_CLOVER_Gauge **gauge_ptr);
+void `QOP_D3_CLOVER_free_gauge(struct QOP_D3_CLOVER_Gauge **gauge_ptr);
+@
+
+Here are macros defining default values for gauge field types and functions:
+<<Single precision defaults>>=
+#define `QOP_CLOVER_import_gauge QOP_F3_CLOVER_import_gauge
+#define `QOP_CLOVER_free_gauge QOP_F3_CLOVER_free_gauge
+#define `QOP_CLOVER_Gauge QOP_F3_CLOVER_Gauge
+@
+<<Double precision defaults>>=
+#define `QOP_CLOVER_import_gauge QOP_D3_CLOVER_import_gauge
+#define `QOP_CLOVER_free_gauge QOP_D3_CLOVER_free_gauge
+#define `QOP_CLOVER_Gauge QOP_D3_CLOVER_Gauge
+@
+
+\section{Fermions}
+Unlike the gauge field, fermions are provided with a richer set of functions.
+In addition to import and destruction, they could be created empty and exported.
+<<Interface functions>>=
+int `QOP_F3_CLOVER_import_fermion(struct QOP_F3_CLOVER_Fermion **fermion_ptr,
+                                  struct QOP_CLOVER_State *state,
+                                  double (*reader)(const int pos[4],
+                                                   int color,
+                                                   int dirac,
+                                                   int re_im,
+                                                   void *env),
+                                  void *env);
+int `QOP_D3_CLOVER_import_fermion(struct QOP_D3_CLOVER_Fermion **fermion_ptr,
+                                  struct QOP_CLOVER_State *state,
+                                  double (*reader)(const int pos[4],
+                                                   int color,
+                                                   int dirac,
+                                                   int re_im,
+                                                   void *env),
+                                  void *env);
+@
+The [[reader()]] points to a function that provides a value of the fermion field
+at a given point on the lattice, e.g., it returns the value of
+[[F[pos][color][dirac].re]] for [[re_im==0]] and 
+[[F[pos][color][dirac].im]] for [[re_im==1]].
+If will be called only for [[pos]] in
+a local sublattice. The [[env]] parameter
+is passed blindly to the [[reader()]] without any interpretation whatsoever. It
+could be used to access the fermion field from the outer space or for any other
+purpose.
+
+If the function succeeds then the [[*fermion_ptr]] will be initialized to a
+value that may be passed to other library functions. If something goes wrong,
+[[*fermion_ptr]] will be set to [[NULL]].
+
+Here are corresponding opaque types:
+<<Interface types>>=
+struct `QOP_F3_CLOVER_Fermion;
+struct `QOP_D3_CLOVER_Fermion;
+@
+
+One may also need to create a fermion field without any useful initial value.
+For convenience, we provide functions to do that
+<<Interface functions>>=
+int `QOP_F3_CLOVER_allocate_fermion(struct QOP_F3_CLOVER_Fermion **fermion_ptr,
+                                 struct QOP_CLOVER_State *state);
+int `QOP_D3_CLOVER_allocate_fermion(struct QOP_D3_CLOVER_Fermion **fermion_ptr,
+                                 struct QOP_CLOVER_State *state);
+@
+
+Unlike the gauge fields, fermions need a way to be exported back to the user.
+We also use a functional interface to provide indexing.
+<<Interface functions>>=
+int `QOP_F3_CLOVER_export_fermion(void (*writer)(const int pos[4],
+                                                 int color,
+                                                 int dirac,
+                                                 int re_im,
+                                                 double value,
+                                                 void *env),
+                                  void *env,
+                                  const struct QOP_F3_CLOVER_Fermion *fermion);
+int `QOP_D3_CLOVER_export_fermion(void (*writer)(const int pos[4],
+                                                 int color,
+                                                 int dirac,
+                                                 int re_im,
+                                                 double value,
+                                                 void *env),
+                                  void *env,
+                                  const struct QOP_D3_CLOVER_Fermion *fermion);
+@
+
+We also need a couple of destructors for fermion fields. For convenience, they
+will accept [[NULL]] intead of a valid fermion field.
+<<Interface functions>>=
+void `QOP_F3_CLOVER_free_fermion(struct QOP_F3_CLOVER_Fermion **fermion_ptr);
+void `QOP_D3_CLOVER_free_fermion(struct QOP_D3_CLOVER_Fermion **fermion_ptr);
+@
+
+Finally, macros for prefered precision
+<<Single precision defaults>>=
+#define `QOP_CLOVER_import_fermion QOP_F3_CLOVER_import_fermion
+#define `QOP_CLOVER_export_fermion QOP_F3_CLOVER_export_fermion
+#define `QOP_CLOVER_allocate_fermion QOP_F3_CLOVER_allocate_fermion
+#define `QOP_CLOVER_free_fermion QOP_F3_CLOVER_free_fermion
+#define `QOP_CLOVER_Fermion QOP_F3_CLOVER_Fermion
+@
+<<Double precision defaults>>=
+#define `QOP_CLOVER_import_fermion QOP_D3_CLOVER_import_fermion
+#define `QOP_CLOVER_export_fermion QOP_D3_CLOVER_export_fermion
+#define `QOP_CLOVER_allocate_fermion QOP_D3_CLOVER_allocate_fermion
+#define `QOP_CLOVER_free_fermion QOP_D3_CLOVER_free_fermion
+#define `QOP_CLOVER_Fermion QOP_D3_CLOVER_Fermion
+@
+
+\section{Preconditioned fermions}
+We also need preconditioned fermions. They exist in parallel with full fermions
+but the exact relation is not specified.
+Unlike the gauge field, fermions are provided with a richer set of functions.
+In addition to import and destruction, they could be created empty and exported.
+<<Interface functions>>=
+int `QOP_F3_CLOVER_import_half_fermion(struct QOP_F3_CLOVER_HalfFermion **hfermion_ptr,
+                                       struct QOP_CLOVER_State *state,
+                                       double (*reader)(const int pos[4],
+                                                        int color,
+                                                        int dirac,
+                                                        int re_im,
+                                                        void *env),
+                                       void *env);
+int `QOP_D3_CLOVER_import_half_fermion(struct QOP_D3_CLOVER_HalfFermion **hfermion_ptr,
+                                       struct QOP_CLOVER_State *state,
+                                       double (*reader)(const int pos[4],
+                                                        int color,
+                                                        int dirac,
+                                                        int re_im,
+                                                        void *env),
+                                       void *env);
+@
+The [[reader()]] points to a function that provides a value of the
+preconditioned fermion field
+at a given point on the lattice, e.g., it returns the value of
+[[F[pos][color][dirac].re]] for [[re_im==0]] and 
+[[F[pos][color][dirac].im]] for [[re_im==1]].
+If will be called only for [[pos]] in
+a local sublattice. The [[env]] parameter
+is passed blindly to the [[reader()]] without any interpretation whatsoever. It
+could be used to access the half fermion in the calling layer.
+
+If the function succeeds then the [[*hfermion_ptr]] will be initialized to a
+value that may be passed to other library functions. If something goes wrong,
+[[*hfermion_ptr]] will be set to [[NULL]].
+
+Here are corresponding opaque types:
+<<Interface types>>=
+struct `QOP_F3_CLOVER_HalfFermion;
+struct `QOP_D3_CLOVER_HalfFermion;
+@
+
+One may also need to create a fermion field without any useful initial value.
+For convenience, we provide functions to do that
+<<Interface functions>>=
+int `QOP_F3_CLOVER_allocate_half_fermion(struct QOP_F3_CLOVER_HalfFermion **hfermion_ptr,
+                                         struct QOP_CLOVER_State *state);
+int `QOP_D3_CLOVER_allocate_half_fermion(struct QOP_D3_CLOVER_HalfFermion **hfermion_ptr,
+                                         struct QOP_CLOVER_State *state);
+@
+
+Preconditioned fermions may be exported back to the user.
+We also use a functional interface to provide indexing.
+<<Interface functions>>=
+int `QOP_F3_CLOVER_export_half_fermion(void (*writer)(const int pos[4],
+                                                      int color,
+                                                      int dirac,
+                                                      int re_im,
+                                                      double value,
+                                                      void *env),
+                                      void *env,
+                                      const struct QOP_F3_CLOVER_HalfFermion *hfermion);
+int `QOP_D3_CLOVER_export_half_fermion(void (*writer)(const int pos[4],
+                                                      int color,
+                                                      int dirac,
+                                                      int re_im,
+                                                      double value,
+                                                      void *env),
+                                      void *env,
+                                      const struct QOP_D3_CLOVER_HalfFermion *hfermion);
+@
+
+We also need a couple of destructors for fermion fields. For convenience, they
+will accept [[NULL]] intead of a valid fermion field.
+<<Interface functions>>=
+void `QOP_F3_CLOVER_free_half_fermion(struct QOP_F3_CLOVER_HalfFermion **hfermion_ptr);
+void `QOP_D3_CLOVER_free_half_fermion(struct QOP_D3_CLOVER_HalfFermion **hfermion_ptr);
+@
+
+Finally, macros for prefered precision
+<<Single precision defaults>>=
+#define `QOP_CLOVER_import_half_fermion QOP_F3_CLOVER_import_half_fermion
+#define `QOP_CLOVER_export_half_fermion QOP_F3_CLOVER_export_half_fermion
+#define `QOP_CLOVER_allocate_half_fermion QOP_F3_CLOVER_allocate_half_fermion
+#define `QOP_CLOVER_free_half_fermion QOP_F3_CLOVER_free_half_fermion
+#define `QOP_CLOVER_HalfFermion QOP_F3_CLOVER_HalfFermion
+@
+<<Double precision defaults>>=
+#define `QOP_CLOVER_import_half_fermion QOP_D3_CLOVER_import_half_fermion
+#define `QOP_CLOVER_export_half_fermion QOP_D3_CLOVER_export_half_fermion
+#define `QOP_CLOVER_allocate_half_fermion QOP_D3_CLOVER_allocate_half_fermion
+#define `QOP_CLOVER_free_half_fermion QOP_D3_CLOVER_free_half_fermion
+#define `QOP_CLOVER_HalfFermion QOP_D3_CLOVER_HalfFermion
+@
+
+\section{Dirac Operator}
+We provide both normal and conjugated Dirac Operator for the full fermion as
+well as the precondition operator and its conjugate both in single and double
+precision.
+<<Interface functions>>=
+int `QOP_F3_CLOVER_D_operator(struct QOP_F3_CLOVER_Fermion *result,
+                              const struct QOP_F3_CLOVER_Gauge *gauge,
+                              const struct QOP_F3_CLOVER_Fermion *fermion);
+int `QOP_D3_CLOVER_D_operator(struct QOP_D3_CLOVER_Fermion *result,
+                              const struct QOP_D3_CLOVER_Gauge *gauge,
+                              const struct QOP_D3_CLOVER_Fermion *fermion);
+@
+<<Interface functions>>=
+int `QOP_F3_CLOVER_D_operator_conjugated(struct QOP_F3_CLOVER_Fermion *result,
+                                         const struct QOP_F3_CLOVER_Gauge *gauge,
+                                         const struct QOP_F3_CLOVER_Fermion *fermion);
+int `QOP_D3_CLOVER_D_operator_conjugated(struct QOP_D3_CLOVER_Fermion *result,
+                                         const struct QOP_D3_CLOVER_Gauge *gauge,
+                                         const struct QOP_D3_CLOVER_Fermion *fermion);
+@
+<<Interface functions>>=
+int `QOP_F3_CLOVER_M_operator(struct QOP_F3_CLOVER_HalfFermion *result,
+                              const struct QOP_F3_CLOVER_Gauge *gauge,
+                              const struct QOP_F3_CLOVER_HalfFermion *fermion);
+int `QOP_D3_CLOVER_M_operator(struct QOP_D3_CLOVER_HalfFermion *result,
+                              const struct QOP_D3_CLOVER_Gauge *gauge,
+                              const struct QOP_D3_CLOVER_HalfFermion *fermion);
+@
+<<Interface functions>>=
+int `QOP_F3_CLOVER_M_operator_conjugated(struct QOP_F3_CLOVER_HalfFermion *result,
+                                         const struct QOP_F3_CLOVER_Gauge *gauge,
+                                         const struct QOP_F3_CLOVER_HalfFermion *fermion);
+int `QOP_D3_CLOVER_M_operator_conjugated(struct QOP_D3_CLOVER_HalfFermion *result,
+                                         const struct QOP_D3_CLOVER_Gauge *gauge,
+                                         const struct QOP_D3_CLOVER_HalfFermion *fermion);
+@
+
+Also the default precision macros
+<<Single precision defaults>>=
+#define `QOP_CLOVER_D_operator QOP_F3_CLOVER_D_operator
+#define `QOP_CLOVER_D_operator_conjugated QOP_F3_CLOVER_D_operator_conjugated
+#define `QOP_CLOVER_M_operator QOP_F3_CLOVER_M_operator
+#define `QOP_CLOVER_M_operator_conjugated QOP_F3_CLOVER_M_operator_conjugated
+@
+<<Double precision defaults>>=
+#define `QOP_CLOVER_D_operator QOP_D3_CLOVER_D_operator
+#define `QOP_CLOVER_D_operator_conjugated QOP_D3_CLOVER_D_operator_conjugated
+#define `QOP_CLOVER_M_operator QOP_D3_CLOVER_M_operator
+#define `QOP_CLOVER_M_operator_conjugated QOP_D3_CLOVER_M_operator_conjugated
+@
+
+\section{Solvers}
+We provide three solvers for the Dirac operator. All solvers can optionally
+compute true CG and Dirac residuals on each iteration. Constants below can be
+bitwise combined to select which residual are computed and printed. The
+behavior of the solvers do not change when residuals are selected. Applications
+should not assume particular values of the constants except that
+[[QOP_CLOVER_LOG_NONE]] is zero.
+<<Interface types>>=
+enum {
+   `QOP_CLOVER_LOG_NONE = 0,
+   `QOP_CLOVER_LOG_CG_RESIDUAL = 1,
+   `QOP_CLOVER_LOG_TRUE_RESIDUAL = 2,
+   `QOP_CLOVER_LOG_DIRAC_RESIDUAL = 4,
+   `QOP_CLOVER_FINAL_CG_RESIDUAL = 8,
+   `QOP_CLOVER_FINAL_DIRAC_RESIDUAL = 16,
+   `QOP_CLOVER_LOG_EVERYTHING = 31
+};
+@
+
+First, the convenience routine to solve $D_{DW}\psi=\eta$. At most
+[[max_iterations]] are performed, the CG stops when the iterative precontioned
+residue becomes $\epsilon$ or less.
+If conjugate gradient converges, zero is returned. In this case
+[[out_iterations]] contains the number of iterations and [[out_epsilon]]
+contains normalized iterative CG residual.
+
+<<Interface functions>>=
+int `QOP_F3_CLOVER_D_CG(struct QOP_F3_CLOVER_Fermion *result,
+                        int *out_iterations,
+                        double *out_epsilon,
+                        const struct QOP_F3_CLOVER_Fermion *chi_0,
+                        const struct QOP_F3_CLOVER_Gauge *gauge,
+                        const struct QOP_F3_CLOVER_Fermion *rhs,
+                        int max_iteration,
+                        double epsilon,
+                        unsigned int options);
+int `QOP_D3_CLOVER_D_CG(struct QOP_D3_CLOVER_Fermion *result,
+                        int *out_iterations,
+                        double *out_epsilon,
+                        const struct QOP_D3_CLOVER_Fermion *x_0,
+                        const struct QOP_D3_CLOVER_Gauge *gauge,
+                        const struct QOP_D3_CLOVER_Fermion *rhs,
+                        int max_iteration,
+                        double epsilon,
+                        unsigned int options);
+@
+
+Again, macros
+<<Single precision defaults>>=
+#define `QOP_CLOVER_D_CG QOP_F3_CLOVER_D_CG
+@
+<<Double precision defaults>>=
+#define `QOP_CLOVER_D_CG QOP_D3_CLOVER_D_CG
+@
+
+\section{Helper routines}
+To avoid excessive export and import calls, we provide the following linear
+algebra on full and preconditioned fermions.
+\[
+r\leftarrow a + \alpha b
+\]
+<<Interface functions>>=
+int `QOP_F3_CLOVER_madd_fermion(struct QOP_F3_CLOVER_Fermion *r,
+                                const struct QOP_F3_CLOVER_Fermion *a,
+                                double alpha,
+                                const struct QOP_F3_CLOVER_Fermion *b);
+int `QOP_D3_CLOVER_madd_fermion(struct QOP_D3_CLOVER_Fermion *r,
+                                const struct QOP_D3_CLOVER_Fermion *a,
+                                double alpha,
+                                const struct QOP_D3_CLOVER_Fermion *b);
+int `QOP_F3_CLOVER_madd_half_fermion(struct QOP_F3_CLOVER_HalfFermion *r,
+                                     const struct QOP_F3_CLOVER_HalfFermion *a,
+                                     double alpha,
+                                     const struct QOP_F3_CLOVER_HalfFermion *b);
+int `QOP_D3_CLOVER_madd_half_fermion(struct QOP_D3_CLOVER_HalfFermion *r,
+                                     const struct QOP_D3_CLOVER_HalfFermion *a,
+                                     double alpha,
+                                     const struct QOP_D3_CLOVER_HalfFermion *b);
+@
+\[
+  \alpha \leftarrow \langle a,b\rangle
+\]
+<<Interface functions>>=
+int `QOP_F3_CLOVER_dot_fermion(double *r_re,
+                               double *r_im,
+                               const struct QOP_F3_CLOVER_Fermion *a,
+                               const struct QOP_F3_CLOVER_Fermion *b);
+int `QOP_D3_CLOVER_dot_fermion(double *r_re,
+                               double *r_im,
+                               const struct QOP_D3_CLOVER_Fermion *a,
+                               const struct QOP_D3_CLOVER_Fermion *b);
+int `QOP_F3_CLOVER_dot_half_fermion(double *r_re,
+                                    double *r_im,
+                                    const struct QOP_F3_CLOVER_HalfFermion *a,
+                                    const struct QOP_F3_CLOVER_HalfFermion *b);
+int `QOP_D3_CLOVER_dot_half_fermion(double *r_re,
+                                    double *r_im,
+                                    const struct QOP_D3_CLOVER_HalfFermion *a,
+                                    const struct QOP_D3_CLOVER_HalfFermion *b);
+@
+
+\[
+  \alpha \leftarrow \langle a,a\rangle
+\]
+<<Interface functions>>=
+int `QOP_F3_CLOVER_norm2_fermion(double *r,
+                                 const struct QOP_F3_CLOVER_Fermion *a);
+int `QOP_D3_CLOVER_norm2_fermion(double *r_re,
+                                 const struct QOP_D3_CLOVER_Fermion *a);
+int `QOP_F3_CLOVER_norm2_half_fermion(double *r_re,
+                                      const struct QOP_F3_CLOVER_HalfFermion *a);
+int `QOP_D3_CLOVER_norm2_half_fermion(double *r_re,
+                                      const struct QOP_D3_CLOVER_HalfFermion *a);
+@
+
+Also, the macros
+<<Single precision defaults>>=
+#define `QOP_CLOVER_madd_fermion QOP_F3_CLOVER_madd_fermion
+#define `QOP_CLOVER_madd_half_fermion QOP_F3_CLOVER_madd_half_fermion
+#define `QOP_CLOVER_dot_fermion QOP_F3_CLOVER_dot_fermion
+#define `QOP_CLOVER_dot_half_fermion QOP_F3_CLOVER_dot_half_fermion
+#define `QOP_CLOVER_norm2_fermion QOP_F3_CLOVER_norm2_fermion
+#define `QOP_CLOVER_norm2_half_fermion QOP_F3_CLOVER_norm2_half_fermion
+@
+<<Double precision defaults>>=
+#define `QOP_CLOVER_madd_fermion QOP_D3_CLOVER_madd_fermion
+#define `QOP_CLOVER_madd_half_fermion QOP_D3_CLOVER_madd_half_fermion
+#define `QOP_CLOVER_dot_fermion QOP_D3_CLOVER_dot_fermion
+#define `QOP_CLOVER_dot_half_fermion QOP_D3_CLOVER_dot_half_fermion
+#define `QOP_CLOVER_norm2_fermion QOP_D3_CLOVER_norm2_fermion
+#define `QOP_CLOVER_norm2_half_fermion QOP_D3_CLOVER_norm2_half_fermion
+@
+
+%XXX
+%\chapter{CHANGES}
+%\begin{tabular}{|p{72pt}|l|p{350pt}|}
+%\hline
+%May 17, 2008 & avp & Bug in error handling fixed. \\
+%\hline
+%\end{tabular}
+%XXX
+
+\appendix
+\chapter{CODE CHUNKS}
+\nowebchunks
+\pagebreak
+\chapter{SYMBOLS}
+\nowebindex
+
+\end{document}
