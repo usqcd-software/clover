@@ -1,4 +1,4 @@
-#include <mdwf.h>
+#include <clover.h>
 void
 QX(free_half_fermion)(struct QX(HalfFermion) **hf_ptr)
 {

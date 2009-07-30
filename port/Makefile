@@ -1,11 +1,11 @@
 #
 CONFIG     = macosx
-LIBRARY    = libqop-mdwf3.a
+LIBRARY    = libqop-clover.a
 LIMPDIR    = .
 
 QMP_CFLAGS = $(shell $(QMP_TOP:%=%/bin/qmp-config) --cflags)
 lib        = $(LIMPDIR)/$(LIBRARY)
-HDR        = qop-mdwf3.h
+HDR        = qop-clover.h
 
 include ../config/$(CONFIG)
 
@@ -21,12 +21,15 @@ endif
 
 .PHONY: all clean realclean library dist
 
-x.sources = error.c \
+x.sources = version.c \
+            error.c \
+            perf.c
+
+xxxx.x.sources = \
             alloc-aligned.c \
             alloc-eo.c \
             alloc.c \
             dealloc.c \
-            perf.c \
             set-borichi.c \
             set-chiu.c \
             set-moebius.c \
@@ -41,26 +44,24 @@ x.sources = error.c \
             comm-setup.c \
             comm-free.c
 
-p.sources = fermion-alloc.c \
+p.sources = fermion-dot.c \
+            fermion-madd.c \
+            fermion-norm2.c \
+            fermion-alloc.c \
+            fermion-free.c \
             fermion-import.c \
             fermion-export.c \
-            fermion-free.c \
-            fermion-madd.c \
-            fermion-dot.c \
-            fermion-norm2.c \
-            gauge-free.c \
-            gauge-import.c \
+            hfermion-dot.c \
+            hfermion-madd.c \
+            hfermion-norm2.c  \
             hfermion-alloc.c \
+            hfermion-free.c \
             hfermion-import.c \
             hfermion-export.c \
-            hfermion-free.c \
-            hfermion-madd.c \
-            hfermion-dot.c \
-            hfermion-norm2.c  \
-            vfermion-alloc.c \
-            vfermion-free.c \
-            vfermion-get.c \
-            vfermion-put.c \
+
+xxxx.p.sources =  \
+            gauge-free.c \
+            gauge-import.c \
             x-import.c \
             x-export.c \
             boundary-n.c \
@@ -115,7 +116,7 @@ p.objects = $(p.sources:%.c=$(LIMPDIR)/%f.o) \
 
 objects = $(x.objects) $(p.objects)
 
-headers = mdwf.h \
+headers = clover.h \
           $(HDR)
 
 

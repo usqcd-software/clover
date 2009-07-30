@@ -1,11 +1,11 @@
-#include <mdwf.h>
+#include <clover.h>
 
 int
 Q(performance)(double *time_sec,
-	       long long *flops,
-	       long long *sent,
-	       long long *received,
-	       struct Q(State) *state)
+               long long *flops,
+               long long *sent,
+               long long *received,
+               struct Q(State) *state)
 {
   if (state == NULL || state->error_latched)
     return 1;

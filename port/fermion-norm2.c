@@ -1,16 +1,16 @@
-#include <mdwf.h>
+#include <clover.h>
 
 unsigned int
 qx(op_norm2)(double *norm,
-	    const struct QX(Fermion) *a,
-	    struct Q(State) *state)
+            const struct QX(Fermion) *a,
+            struct Q(State) *state)
 {
     double n_e;
     double n_o;
     unsigned int flops = 0;
 
-    flops += qx(f_norm)(&n_e, state->even.full_size, state->Ls, a->even);
-    flops += qx(f_norm)(&n_o, state->odd.full_size, state->Ls, a->odd);
+    flops += qx(f_norm)(&n_e, state->even.full_size, a->even);
+    flops += qx(f_norm)(&n_o, state->odd.full_size, a->odd);
     *norm = n_e + n_o;
     QMP_sum_double(norm);
     return flops + 1;
@@ -18,7 +18,7 @@ qx(op_norm2)(double *norm,
 
 int
 QX(norm2_fermion)(double *v_r,
-		  const struct QX(Fermion) *a)
+                  const struct QX(Fermion) *a)
 {
   long long flops = 0;
   DECLARE_STATE;

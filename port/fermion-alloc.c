@@ -1,8 +1,8 @@
-#include <mdwf.h>
+#include <clover.h>
 
 int
 QX(allocate_fermion)(struct QX(Fermion) **fermion_ptr,
-		     struct Q(State) *state)
+                     struct Q(State) *state)
 {
   struct QX(Fermion) *fermion;
   void *even;
@@ -16,8 +16,8 @@ QX(allocate_fermion)(struct QX(Fermion) **fermion_ptr,
   
   *fermion_ptr = NULL;
   fermion = q(allocate_eo)(state, &size, &even,
-			   sizeof (struct QX(Fermion)), 1, 1,
-			   sizeof (REAL));
+                           sizeof (struct QX(Fermion)), 1, 1,
+                           sizeof (REAL));
   if (fermion == 0)
     return q(set_error)(state, 0, "allocate_fermion(): not enough memory");
 

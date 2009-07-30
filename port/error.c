@@ -1,4 +1,4 @@
-#include <mdwf.h>
+#include <clover.h>
 
 const char *
 Q(error)(struct Q(State) *state)
@@ -20,9 +20,9 @@ int
 q(set_error)(struct Q(State) *state, int fatal, const char *error)
 {
     if (state->error_latched == 0) {
-	state->error_latched = 1;
-	state->error = error;
-	state->fatal_error = fatal;
+        state->error_latched = 1;
+        state->error = error;
+        state->fatal_error = fatal;
     }
     return 1;
 }
