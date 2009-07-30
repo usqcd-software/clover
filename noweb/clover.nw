@@ -28,7 +28,7 @@ Release x.x.x}
 \maketitle
 \thispagestyle{empty}\hbox{}
 \vfill
-\copyright 2007 Massachusetts Institute of Technology
+\copyright 2009 Massachusetts Institute of Technology
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -350,7 +350,7 @@ B_{eo} & A_{ee}
 \end{equation}
 where
 \begin{eqnarray}
-A_{oo}(x,x') & = & \delta_{x,x'} - \kappa c_{SW} T(x,x') \\
+A_{oo}(x,x') & = & \delta_{x,x'} - \kappa c_{SW} T(x,x'), \\
 B_{oe}(x,x') & = & -\kappa
             \sum_{\mu=0}^{3}\left[(1-\gamma_\mu)U_\mu(x)\delta_{x,x'-\hat\mu}
          +(1+\gamma_\mu)U_\mu^{\dagger}(x-\hat\mu)\delta_{x,x'+\hat\mu}\right],
@@ -363,11 +363,11 @@ Let us rewrite Eq.~(\ref{EO-form}) as follows:
 D_{CL}=
 \left(\begin{array}{cc}
 I_{oo} & 0\\
-B_{eo}A_{oo}^{-1} & A_{ee}
+B_{eo}A_{oo}^{-1} & I_{ee}
 \end{array}\right)
 \left(\begin{array}{cc}
 A_{oo} & B_{oe}\\
-0 & I_{ee}-A_{ee}^{-1}B_{eo}A_{oo}^{-1}B_{oe}
+0 & A_{ee}-B_{eo}A_{oo}^{-1}B_{oe}
 \end{array}\right).
 \end{equation}
 
@@ -383,15 +383,14 @@ B_{eo} & A_{ee}
 \]
 one performs the following steps:
 \begin{enumerate}
-\item Use $M=I_{ee}-A_{ee}^{-1}B_{eo}A_{oo}^{-1}B_{oe}$ in the
+\item Use $M=A_{ee}-B_{eo}A_{oo}^{-1}B_{oe}$ in the
 following.
-\item Use $M^\dagger=I_{ee}-\left(B_{oe}\right)^\dagger
+\item Use $M^\dagger=A_{ee}^\dagger-\left(B_{oe}\right)^\dagger
 \left(A_{oo}^{-1}\right)^\dagger
-\left(B_{eo}\right)^\dagger
-\left(A_{ee}^{-1}\right)^\dagger$ in the following.
+\left(B_{eo}\right)^\dagger$ in the following.
 \item Compute
 \[
-\chi_e =M^{\dagger} A_{ee}^{-1}\left(\eta_e
+\chi_e =M^{\dagger} \left(\eta_e
             - B_{eo}A_{oo}^{-1}\eta_o\right).
 \]
 \item Solve
@@ -405,27 +404,25 @@ for $\psi_e$ using Alg.~\ref{real}.
 \end{eqnarray}
 \end{enumerate}
 
-Note, that computing $A_{ee}^{-1}$ is local. One can write Eq.~({\ref{Tsw}})
-as follows
+Note, that computing the inverse of $A_{oo}$ is local.
+One can write Eq.~({\ref{Tsw}}) as follows
 \begin{eqnarray*}
-T &=& \left(\begin{array}{cc}X & 0 \\ 0 & Y\end{array}\right) \\
+A_{oo} &=& \left(\begin{array}{cc}X & 0 \\ 0 & Y\end{array}\right),\\
 X &=& \left(\begin{array}{cc}
-(F_{01}-F_{23}) &
-(F_{12}-F_{03})-i(F_{02}+F_{13}) \\
-(F_{12}-F_{03})+i(F_{02}+F_{13})&
--(F_{01}-F_{23})
-\end{array}\right)\\
+1-\kappa c_{SW}(F_{01}-F_{23}) &
+-\kappa c_{SW}\left((F_{12}-F_{03})-i(F_{02}+F_{13})\right) \\
+-\kappa c_{SW}\left((F_{12}-F_{03})+i(F_{02}+F_{13})\right)&
+1+\kappa c_{SW}(F_{01}-F_{23})
+\end{array}\right),\\
 Y &=& \left(\begin{array}{cc}
-(F_{01}+F_{23}) &
-(F_{12}+F_{03})-i(F_{02}-F_{13})\\
-(F_{12}+F_{03})+i(F_{02}-F_{13})&
--(F_{01}+F_{23})
-\end{array}\right)
+1-\kappa c_{SW}(F_{01}+F_{23}) &
+-\kappa c_{SW}\left((F_{12}+F_{03})-i(F_{02}-F_{13})\right)\\
+-\kappa c_{SW}\left((F_{12}+F_{03})+i(F_{02}-F_{13})\right)&
+1+\kappa c_{SW}(F_{01}+F_{23})
+\end{array}\right).
 \end{eqnarray*}
 Here $X$ acts on two upper components of the fermion and $Y$ acts on
 two lower components.
-Inverting $6\times6$ local matrices $1-\kappa c_{SW}X$ and $1-\kappa c_{SW}Y$
-can be done with LU decomposition.
 
 \chapter{ALGORITHMS}
 
