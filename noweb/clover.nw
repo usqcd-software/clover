@@ -69,7 +69,8 @@ D_W(x,x') &=& \sum_{\mu=0}^3\left[(1-\gamma_\mu) U_\mu(x)\delta_{x,x'-\hat\mu}
 \\
 T_{SW}(x,x') &=& \delta_{x,x'} \sum_{\mu=0}^2\sum_{\nu=\mu+1}^3 \sigma_{\mu\nu}F_{\mu\nu}(x)
 \label{Tsw}\\
-F_{\mu\nu}(x) &=& U_\mu(x)U_\nu(x+\hat\mu)
+F_{\mu\nu}(x) &=& G_{\mu\nu}(x)-G_{\mu\nu}^\dagger(x)\\
+G_{\mu\nu}(x) &=& U_\mu(x)U_\nu(x+\hat\mu)
                        U_\mu^\dagger(x+\hat\nu)U_\nu^\dagger(x)\nonumber\\
             && + U_\nu^\dagger(x-\hat\nu)U_\mu(x-\hat\nu)
                        U_\nu(x-\hat\nu+\hat\mu)U_\mu^\dagger(x)\nonumber\\
@@ -79,13 +80,14 @@ F_{\mu\nu}(x) &=& U_\mu(x)U_\nu(x+\hat\mu)
                        U_\nu^\dagger(x-\hat\mu)U_\nu(x-\hat\mu)
 \end{eqnarray}
 
+\pagebreak
 \section{Gamma Matrices}
 We use the same $\gamma$-matrix basis as Chroma to simplify conversion between
 two codes. The Clover code expects $\gamma_5$ and $\sigma_{\mu\nu}$ to have values
 specified below.
 
-\begin{displaymath}
-\gamma_5 = \gamma_0 \gamma_1 \gamma_2 \gamma_3 = \sigma_3 \otimes 1 =
+\begin{eqnarray}
+\gamma_5 &=& \gamma_0 \gamma_1 \gamma_2 \gamma_3 = \sigma_3 \otimes 1 =
            \left(\begin{array}{cc}
              1 & 0 \\
              0 & -1
@@ -95,60 +97,57 @@ specified below.
              0 & 1 & 0 & 0\\
              0 & 0 &-1 & 0\\
              0 & 0 & 0 &-1
-           \end{array}\right)
-\end{displaymath}
-\begin{displaymath}
-\begin{array}{cc}
-  \sigma_{01} = \frac{i}{2}\left[\gamma_0, \gamma_1\right]
-   = 1 \otimes \sigma_3 
+           \end{array}\right),\nonumber\\
+\sigma_{\mu\nu} &=& \frac{i}{2}\left[\gamma_\mu,\gamma_\nu\right],\nonumber\\
+\sigma_{01} &=& 1 \otimes \sigma_3 
+   = \left(\begin{array}{cc}\sigma_3&0\\0&\sigma_3\end{array}\right)
    = \left(\begin{array}{cccc}
         1 & 0 & 0 & 0 \\
         0 & -1 & 0 & 0 \\
         0 & 0 & 1 & 0 \\
         0 & 0 & 0 & -1
-     \end{array}\right), &
-  \sigma_{02} = \frac{i}{2}\left[\gamma_0, \gamma_2\right]
-   = 1 \otimes \sigma_2
+     \end{array}\right),\nonumber\\
+  \sigma_{02} &=& 1 \otimes \sigma_2
+   = \left(\begin{array}{cc}\sigma_2&0\\0&\sigma_2\end{array}\right)
    = \left(\begin{array}{cccc}
         0 & -i & 0 & 0 \\
         i & 0 & 0 & 0 \\
         0 & 0 & 0 & -i \\
         0 & 0 & i & 0
-     \end{array}\right), \\
-  \sigma_{03} = \frac{i}{2}\left[\gamma_0, \gamma_3\right]
-   = -\sigma_3 \otimes \sigma_1
+     \end{array}\right),\nonumber\\
+  \sigma_{03} &=& -\sigma_3 \otimes \sigma_1
+   = \left(\begin{array}{cc}-\sigma_1&0\\0&\sigma_1\end{array}\right)
    = \left(\begin{array}{cccc}
         0 & -1 & 0 & 0 \\
         -1 & 0 & 0 & 0 \\
         0 & 0 & 0 & 1 \\
         0 & 0 & 1 & 0
-     \end{array}\right), &
-  \sigma_{12} = \frac{i}{2}\left[\gamma_1, \gamma_2\right]
-   = 1 \otimes \sigma_1
+     \end{array}\right),\nonumber\\
+  \sigma_{12} &=& 1 \otimes \sigma_1
+   = \left(\begin{array}{cc}\sigma_1&0\\0&\sigma_1\end{array}\right)
    = \left(\begin{array}{cccc}
         0 & 1 & 0 & 0 \\
         1 & 0 & 0 & 0 \\
         0 & 0 & 0 & 1 \\
         0 & 0 & 1 & 0
-     \end{array}\right), \\
-  \sigma_{13} = \frac{i}{2}\left[\gamma_1, \gamma_3\right]
-   = \sigma_3 \otimes \sigma_2
+     \end{array}\right),\nonumber\\
+  \sigma_{13} &=& \sigma_3 \otimes \sigma_2
+   = \left(\begin{array}{cc}\sigma_2&0\\0&-\sigma_2\end{array}\right)
    = \left(\begin{array}{cccc}
         0 & -i & 0 & 0 \\
         i & 0 & 0 & 0 \\
         0 & 0 & 0 & i \\
         0 & 0 & -i & 0
-     \end{array}\right), &
-  \sigma_{23} = \frac{i}{2}\left[\gamma_2, \gamma_3\right]
-   = \sigma_3 \otimes \sigma_3
+     \end{array}\right),\nonumber\\
+  \sigma_{23} &=& -\sigma_3 \otimes \sigma_3
+   = \left(\begin{array}{cc}-\sigma_3&0\\0&\sigma_3\end{array}\right)
    = \left(\begin{array}{cccc}
-        1 & 0 & 0 & 0 \\
-        0 & -1 & 0 & 0 \\
-        0 & 0 & -1 & 0 \\
-        0 & 0 & 0 & 1
-     \end{array}\right).
-\end{array}
-\end{displaymath}
+        -1 & 0 & 0 & 0 \\
+        0 & 1 & 0 & 0 \\
+        0 & 0 & 1 & 0 \\
+        0 & 0 & 0 & -1
+     \end{array}\right).\nonumber
+\end{eqnarray}
 
 Fragments for $\gamma_\mu$ below are not the most fool-proof, but they should do
 for now.
@@ -188,7 +187,7 @@ for now.
                         (plus-i 0)))
 @
 
-\pagebreak
+%\pagebreak
 \begin{equation}
 \gamma_1 = \sigma_2 \otimes \sigma_2  = 
            \left(\begin{array}{cc}
@@ -258,7 +257,7 @@ for now.
                         (minus-i 1)))
 @
 
-\pagebreak
+%\pagebreak
 \begin{equation}
 \gamma_3 = \sigma_1 \otimes 1 =
            \left(\begin{array}{cc}
@@ -406,27 +405,27 @@ for $\psi_e$ using Alg.~\ref{real}.
 \end{eqnarray}
 \end{enumerate}
 
-Note, that computing $A_{ee}^{-1}$ is local. One can write Eq.~{\ref{Tsw}}
+Note, that computing $A_{ee}^{-1}$ is local. One can write Eq.~({\ref{Tsw}})
 as follows
 \begin{eqnarray*}
 T &=& \left(\begin{array}{cc}X & 0 \\ 0 & Y\end{array}\right) \\
 X &=& \left(\begin{array}{cc}
-F_{23}+F_{01} &
-F_{12}-F_{03}-i(F_{02}+F_{13}) \\
-F_{12}-F_{03}+i(F_{02}+F_{13})&
--(F_{23}+F_{01})
+(F_{01}-F_{23}) &
+(F_{12}-F_{03})-i(F_{02}+F_{13}) \\
+(F_{12}-F_{03})+i(F_{02}+F_{13})&
+-(F_{01}-F_{23})
 \end{array}\right)\\
 Y &=& \left(\begin{array}{cc}
-F_{01}-F_{23} &
-F_{12}+F_{03}-i(F_{02}-F_{13})\\
-F_{12}+F_{03}+i(F_{02}-F_{13})&
--(F_{01}-F_{23})
+(F_{01}+F_{23}) &
+(F_{12}+F_{03})-i(F_{02}-F_{13})\\
+(F_{12}+F_{03})+i(F_{02}-F_{13})&
+-(F_{01}+F_{23})
 \end{array}\right)
 \end{eqnarray*}
 Here $X$ acts on two upper components of the fermion and $Y$ acts on
 two lower components.
 Inverting $6\times6$ local matrices $1-\kappa c_{SW}X$ and $1-\kappa c_{SW}Y$
-can be done with Gaussian elimination.
+can be done with LU decomposition.
 
 \chapter{ALGORITHMS}
 
