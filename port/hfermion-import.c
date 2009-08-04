@@ -10,13 +10,11 @@ QX(import_half_fermion)(struct QX(HalfFermion) **half_fermion_ptr,
                                          void *env),
                         void *env)
 {
-  double m[Q(FERMION_DIM) * Q(COLORS) * 2 * sizeof (double)];
-
   if (QX(allocate_half_fermion)(half_fermion_ptr, state) != 0)
     return 1;
 
   BEGIN_TIMING(state);
-  qx(x_import)(&state->even, m, (*half_fermion_ptr)->even, reader, env);
+  qx(x_import)(&state->even, (*half_fermion_ptr)->even, reader, env);
   END_TIMING(state, 0, 0, 0);
 
   return 0;

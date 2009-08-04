@@ -23,22 +23,14 @@ endif
 
 x.sources = version.c \
             error.c \
-            perf.c
-
-xxxx.x.sources = \
-            alloc-aligned.c \
-            alloc-eo.c \
-            alloc.c \
-            dealloc.c \
-            set-borichi.c \
-            set-chiu.c \
-            set-moebius.c \
-            set-shamir.c \
-            set-generic.c \
-            p-free.c \
+            perf.c \
             step-even.c \
             step-odd.c \
-            version.c \
+            alloc-aligned.c \
+            alloc.c \
+            dealloc.c \
+
+xxxx.x.sources = \
             init.c \
             fini.c \
             comm-setup.c \
@@ -58,12 +50,13 @@ p.sources = fermion-dot.c \
             hfermion-free.c \
             hfermion-import.c \
             hfermion-export.c \
-
-xxxx.p.sources =  \
-            gauge-free.c \
-            gauge-import.c \
+            alloc-eo.c \
             x-import.c \
             x-export.c \
+            gauge-import.c \
+            gauge-free.c \
+
+xxxx.p.sources =  \
             boundary-n.c \
             boundary-x.c \
             op-boundary.c \
@@ -153,10 +146,10 @@ $(x.objects): $(LIMPDIR)/%.o: %.c
 
 $(p.sources:%.c=$(LIMPDIR)/%f.o): $(LIMPDIR)/%f.o: %.c
 	$E CC-f $<
-	$C$(CC) $(CFLAGS) -I. -DQOP_MDWF_DEFAULT_PRECISION=\'F\' -c -o $@ $<
+	$C$(CC) $(CFLAGS) -I. -DQOP_CLOVER_DEFAULT_PRECISION=\'F\' -c -o $@ $<
 
 $(p.sources:%.c=$(LIMPDIR)/%d.o): $(LIMPDIR)/%d.o: %.c
 	$E CC-d $<
-	$C$(CC) $(CFLAGS) -I. -DQOP_MDWF_DEFAULT_PRECISION=\'D\' -c -o $@ $<
+	$C$(CC) $(CFLAGS) -I. -DQOP_CLOVER_DEFAULT_PRECISION=\'D\' -c -o $@ $<
 
 $(objects): $(headers)

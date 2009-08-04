@@ -1,7 +1,7 @@
 TOP     = ..
 V       = 0
 CONFIG  = macosx
-TARGETS = c99 c99-64 cee cee-64 bgl/xlc dry
+TARGETS = c99-32 c99-64 cee-32 cee-64 bgl/xlc dry
 TARGET  =
 DEST    =
 QA0     = qa0
@@ -21,11 +21,15 @@ endif
 DEST=$(TOP)/$(shell echo $(TARGET) | sed -e sx/x-xg)
 
 headers = types.qa0 \
+
+xxxxx.header = \
           defs-A.qa0 \
           defs-F.qa0 \
           defs-spin.qa0 \
 
-sources = fix-down.qa0 \
+sources =
+
+xxxxxx.sources = fix-down.qa0 \
           fix-up.qa0 \
           put-ab.qa0 \
           put-abi.qa0 \
@@ -44,11 +48,19 @@ sources = fix-down.qa0 \
           sizeof-up-pack.qa0 \
           sizeof-neighbor.qa0
 
-x.sources = get-fermion.qa0 \
+x.sources = f-dot.qa0 \
+            f-add3.qa0 \
+            f-norm.qa0 \
+            get-fermion.qa0 \
             put-fermion.qa0 \
-            put-gauge.qa0 \
             sizeof-fermion.qa0 \
+            put-gauge.qa0 \
             sizeof-gauge.qa0 \
+            put-clover-lo.qa0 \
+            put-clover-hi.qa0 \
+            sizeof-clover.qa0 \
+
+xxxxxxx.x.sources = \
             sizeof-pfermion.qa0 \
             fv-zero.qa0 \
             fv-copy.qa0 \
@@ -56,12 +68,9 @@ x.sources = get-fermion.qa0 \
             fv-put.qa0 \
             f-zero.qa0 \
             f-copy.qa0 \
-            f-norm.qa0 \
-            f-add3.qa0 \
             f-add2.qa0 \
             f-add2-norm.qa0 \
             f-add2x.qa0 \
-            f-dot.qa0 \
             f-diff-norm.qa0 \
             cg-xp.qa0 \
             scg-madd.qa0 \
@@ -89,7 +98,9 @@ x.sources = get-fermion.qa0 \
             do-A-inv-conj-B-conj-F-conj.qa0 \
 
 # Who include defs-A.qa0
-A.sources = do-A.qa0 \
+A.sources = 
+
+xxxxxx.A.sources = do-A.qa0 \
             do-A-conj.qa0 \
             do-A-inv.qa0 \
             do-A-conj-inv.qa0 \
@@ -103,7 +114,9 @@ A.sources = do-A.qa0 \
             do-A-inv-conj-B-conj-F-conj.qa0 \
 
 # Who include defs-F.qa0 (they also need defs-spin.qa0)
-F.sources = do-F.qa0 \
+F.sources = 
+
+xxxx.F.sources = do-F.qa0 \
             do-F-conj.qa0 \
             do-1-sub-F.qa0 \
             do-1-sub-F-conj.qa0 \
@@ -116,7 +129,9 @@ F.sources = do-F.qa0 \
             do-A-inv-conj-B-conj-F-conj.qa0 \
 
 # Who include defs-spin.qa0
-spin.sources = $(F.sources) \
+spin.sources = 
+
+xxxxx.spin.sources = $(F.sources) \
                proj-plus.qa0 \
                proj-u-plus.qa0 \
                proj-minus.qa0 \

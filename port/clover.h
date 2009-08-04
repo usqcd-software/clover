@@ -95,16 +95,14 @@ struct QX(HalfFermion) {
   struct Fermion *even;  
 };
 
-#if 0 /* XXXX */
-XXXX XXXX
-
-
 struct QX(Gauge) {
   struct Q(State) *state;
   size_t size;
-  struct SUn *data;
+  struct SUn *g_data;
+  struct Clover *ce_data;
+  struct Clover *co_data;
+  struct Clover *cox_data;
 };
-#endif /* XXXX */
 
 struct Q(State) {
   const char        *version;         /* to get version string into app */
@@ -151,17 +149,16 @@ void *q(malloc)(struct Q(State) *state, size_t bytes);
 void *q(allocate_aligned)(struct Q(State) *state,
                           size_t *size, void **aligned_ptr,
                           size_t hdr_size, size_t bulk_size);
-void *q(allocate_eo)(struct Q(State) *state,
-                     size_t *size, void **aligned_ptr,
-                     size_t hdr_size, int even_count, int odd_count,
-                     size_t f_size);
+void *qx(allocate_eo)(struct Q(State) *state,
+                      size_t *size, void **aligned_ptr,
+                      size_t hdr_size, int even_count, int odd_count,
+                      size_t f_size);
 void q(free)(struct Q(State) *state, void *ptr, size_t bytes);
 void q(cleanup_state)(struct Q(State) *state);
 void *q(step_even)(struct Q(State) *state, void *aligned_ptr, size_t fsize);
 void *q(step_odd)(struct Q(State) *state, void *aligned_ptr, size_t fsize);
 
 void qx(x_import)(struct eo_lattice *eo,
-                  double r[],
                   struct Fermion *data, 
                   double (*reader)(const int pos[Q(DIM)],
                                    int color,
@@ -170,7 +167,6 @@ void qx(x_import)(struct eo_lattice *eo,
                                    void *env),
                   void *env);
 void qx(x_export)(struct eo_lattice *eo,
-                  double r[],
                   const struct Fermion *data, 
                   void (*writer)(const int pos[Q(DIM)],
                                  int color,
@@ -286,14 +282,24 @@ int q(sizeof_up_pack)(int volume);
 int q(sizeof_down_pack)(int volume);
 int q(sizeof_ABTable)(int Ls);
 int q(sizeof_ABiTable)(int Ls);
-int qx(sizeof_fermion)(int volume, int Ls);
-int qx(sizeof_projected_fermion)(int volume, int Ls);
+#endif /* XXXX */
+int qx(sizeof_fermion)(int volume);
 int qx(sizeof_gauge)(int volume);
+int qx(sizeof_clover)(int volume);
+
+#if 0 /* XXXX */
+int qx(sizeof_projected_fermion)(int volume);
 
 /* qa0 level data access routines */
+#endif /* XXXX */
+
+void qx(put_fermion)(struct Fermion *data, int pos, const double r[]);
+void qx(get_fermion)(double r[], const struct Fermion *data, int pos);
 void qx(put_gauge)(struct SUn *ptr, int pos, const double r[]);
-void qx(put_fermion)(struct Fermion *data, int pos, int Ls, const double r[]);
-void qx(get_fermion)(double r[], const struct Fermion *data, int pos, int Ls);
+void qx(put_clover_lo)(struct Clover *ptr, int pos, const double r[]);
+void qx(put_clover_hi)(struct Clover *ptr, int pos, const double r[]);
+
+#if 0 /* XXXX */
 int q(get_down_pack_f)(const struct down_pack *up, int p);
 int q(get_up_pack_f)(const struct up_pack *up, int p);
 void q(put_down_pack)(struct down_pack *down, int p, int f);

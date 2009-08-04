@@ -19,7 +19,9 @@ endif
 
 headers = ../../port/mdwf.h
 
-i.sources = put-ab.c \
+i.sources =
+
+xxxx.i.sources = put-ab.c \
             put-abi.c \
             put-abi-z.c \
             put-down.c \
@@ -38,11 +40,19 @@ i.sources = put-ab.c \
             sizeof-neighbor.c \
             sizeof-up-pack.c
 
-x.sources = get-fermion \
+x.sources = f-norm \
+            f-add3 \
+            f-dot \
+            get-fermion \
             put-fermion \
-            put-gauge \
             sizeof-fermion \
+            put-gauge \
             sizeof-gauge \
+            put-clover-lo \
+            put-clover-hi \
+            sizeof-clover \
+
+xxxx.x.sources = \
             sizeof-pfermion \
             fv-zero \
             fv-copy \
@@ -50,12 +60,9 @@ x.sources = get-fermion \
             fv-put \
             f-zero \
             f-copy \
-            f-norm \
-            f-add3 \
             f-add2 \
             f-add2-norm \
             f-add2x \
-	    f-dot \
             f-diff-norm \
             cg-xp \
             scg-madd \
@@ -93,19 +100,19 @@ all: $(objects)
 	$C$(AR) cr $(LIBRARY) $^
 	$C$(RANLIB) $(LIBRARY)
 	$C$(MAKE) CONFIG='$(CONFIG)' V='$V' LIBRARY='$(LIBRARY)' \
-                LIMPDIR=../$(LIMP) -C ../port $@
+		LIMPDIR=../$(LIMP) -C ../port $@
 
 dist clean:
 	$E RM $(LIMP)/objects
 	$C$(RM) $(objects)
 	$C$(MAKE) CONFIG='$(CONFIG)' V='$V' LIBRARY='$(LIBRARY)' \
-                LIMPDIR=../$(LIMP) -C ../port $@
+		LIMPDIR=../$(LIMP) -C ../port $@
 
 realclean: clean
 	$E RM $(LIMP)/sources
 	$C$(RM) $(sources)
 	$C$(MAKE) CONFIG='$(CONFIG)' V='$V' LIBRARY='$(LIBRARY)' \
-                LIMPDIR=../$(LIMP) -C ../port $@
+		LIMPDIR=../$(LIMP) -C ../port $@
 	$C$(RM) $(LIBRARY)
 
 $(sources:%.c=%.o): %.o: %.c

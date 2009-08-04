@@ -11,14 +11,13 @@ QX(export_half_fermion)(void (*writer)(const int pos[4],
                         const struct QX(HalfFermion) *half_fermion)
 {
   struct Q(State) *state;
-  double m[Q(FERMION_DIM) * Q(COLORS) * 2 * sizeof (double)];
 
   if (half_fermion == 0)
     return 1;
 
   state = half_fermion->state;
   BEGIN_TIMING(state);
-  qx(x_export)(&state->even, m, half_fermion->even, writer, env);
+  qx(x_export)(&state->even, half_fermion->even, writer, env);
   END_TIMING(state, 0, 0, 0);
 
   return 0;

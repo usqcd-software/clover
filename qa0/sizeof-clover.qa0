@@ -1,0 +1,9 @@
+(verbose [(c99 bgl/xlc) "/* $Id$ */"])
+
+(include "types.qa0")
+
+(procedure size-clover ([stem "sizeof_clover"]
+                       [return total int "int"]
+                       prec&color)
+           ([volume int "volume" "int"])
+   (op int-mul () (total) ([reg volume] [const (size-of Clover)])))

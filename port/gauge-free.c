@@ -1,4 +1,4 @@
-#include <mdwf.h>
+#include <clover.h>
 void
 QX(free_gauge)(struct QX(Gauge) **g_ptr)
 {
