@@ -15,9 +15,9 @@ QX(allocate_half_fermion)(struct QX(HalfFermion) **hf_ptr,
     return q(set_error)(state, 0, "allocate_half_fermion(): NULL pointer");
 
   *hf_ptr = NULL;
-  hf = qx(allocate_eo)(state, &size, &even,
-                       sizeof (struct QX(Fermion)), 1, 0,
-                       sizeof (REAL));
+  hf = q(allocate_eo)(state, &size, &even,
+                      sizeof (struct QX(Fermion)), 1, 0,
+                      sizeof (REAL));
   if (hf == 0)
     return q(set_error)(state, 0, "allocate_half_fermion(): not enough memory");
 

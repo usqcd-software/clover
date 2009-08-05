@@ -27,26 +27,26 @@ xxxxx.header = \
           defs-F.qa0 \
           defs-spin.qa0 \
 
-sources =
-
-xxxxxx.sources = fix-down.qa0 \
-          fix-up.qa0 \
-          put-ab.qa0 \
-          put-abi.qa0 \
-          put-abi-z.qa0 \
-          put-down.qa0 \
-          get-down.qa0 \
-          get-down-f.qa0 \
+sources = sizeof-down-pack.qa0 \
+          sizeof-up-pack.qa0 \
+          sizeof-neighbor.qa0 \
+          put-neighbor.qa0 \
+          get-neighbor.qa0 \
           put-up.qa0 \
           get-up.qa0 \
           get-up-f.qa0 \
-          put-neighbor.qa0 \
-          get-neighbor.qa0 \
+          fix-up.qa0 \
+          put-down.qa0 \
+          get-down.qa0 \
+          get-down-f.qa0 \
+          fix-down.qa0 \
+
+xxxxxx.sources = \
+          put-ab.qa0 \
+          put-abi.qa0 \
+          put-abi-z.qa0 \
           sizeof-ab-table.qa0 \
           sizeof-abi-table.qa0 \
-          sizeof-down-pack.qa0 \
-          sizeof-up-pack.qa0 \
-          sizeof-neighbor.qa0
 
 x.sources = f-dot.qa0 \
             f-add3.qa0 \
@@ -59,6 +59,12 @@ x.sources = f-dot.qa0 \
             put-clover-lo.qa0 \
             put-clover-hi.qa0 \
             sizeof-clover.qa0 \
+            proj-minus.qa0 \
+            proj-plus.qa0 \
+            proj-u-minus.qa0 \
+            proj-u-plus.qa0 \
+            do-A-plus-B.qa0 \
+            do-A-conj-plus-B-conj.qa0 \
 
 xxxxxxx.x.sources = \
             sizeof-pfermion.qa0 \
@@ -75,17 +81,12 @@ xxxxxxx.x.sources = \
             cg-xp.qa0 \
             scg-madd.qa0 \
             scg-xp.qa0 \
-            proj-minus.qa0 \
-            proj-plus.qa0 \
-            proj-u-minus.qa0 \
-            proj-u-plus.qa0 \
             do-A.qa0 \
             do-A-conj.qa0 \
             do-A-inv.qa0 \
             do-A-inv-conj.qa0 \
             do-F.qa0 \
             do-F-conj.qa0 \
-            do-A-plus-F.qa0 \
             do-B-A-inv.qa0 \
             do-B-A-inv-F.qa0 \
             do-1-sub-F.qa0 \
@@ -93,19 +94,17 @@ xxxxxxx.x.sources = \
             do-1-sub-F-conj-norm.qa0 \
             do-1-sub-B-A-inv-F.qa0 \
             do-1-sub-B-A-inv-F-norm.qa0 \
-            do-A-conj-plus-B-conj-F-conj.qa0 \
             do-A-inv-conj-B-conj.qa0 \
             do-A-inv-conj-B-conj-F-conj.qa0 \
 
 # Who include defs-A.qa0
-A.sources = 
+A.sources = do-A-plus-B.qa0 \
+            do-A-conj-plus-B-conj.qa0 \
 
 xxxxxx.A.sources = do-A.qa0 \
             do-A-conj.qa0 \
             do-A-inv.qa0 \
             do-A-conj-inv.qa0 \
-            do-A-plus-F.qa0 \
-            do-A-conj-plus-B-conj-F-conj.qa0 \
             do-B-A-inv.qa0 \
             do-B-A-inv-F.qa0 \
             do-1-sub-B-A-inv-F.qa0 \
@@ -114,24 +113,21 @@ xxxxxx.A.sources = do-A.qa0 \
             do-A-inv-conj-B-conj-F-conj.qa0 \
 
 # Who include defs-F.qa0 (they also need defs-spin.qa0)
-F.sources = 
+B.sources = do-A-plus-B.qa0 \
+            do-A-conj-plus-B-conj.qa0 \
 
 xxxx.F.sources = do-F.qa0 \
             do-F-conj.qa0 \
             do-1-sub-F.qa0 \
             do-1-sub-F-conj.qa0 \
             do-1-sub-F-conj-norm.qa0 \
-            do-A-plus-F.qa0 \
             do-B-A-inv-F.qa0 \
-            do-A-conj-plus-B-conj-F-conj.qa0 \
             do-1-sub-B-A-inv-F.qa0 \
             do-1-sub-B-A-inv-F-norm.qa0 \
             do-A-inv-conj-B-conj-F-conj.qa0 \
 
 # Who include defs-spin.qa0
-spin.sources = 
-
-xxxxx.spin.sources = $(F.sources) \
+spin.sources = $(B.sources) \
                proj-plus.qa0 \
                proj-u-plus.qa0 \
                proj-minus.qa0 \
@@ -145,8 +141,8 @@ dst.sources = $(sources:%.qa0=$(DEST)/%.c) \
 c.A.sources = $(A.sources:%.qa0=$(DEST)/%d.c) \
               $(A.sources:%.qa0=$(DEST)/%f.c)
 
-c.F.sources = $(F.sources:%.qa0=$(DEST)/%d.c) \
-              $(F.sources:%.qa0=$(DEST)/%f.c)
+c.B.sources = $(B.sources:%.qa0=$(DEST)/%d.c) \
+              $(B.sources:%.qa0=$(DEST)/%f.c)
 
 c.spin.sources = $(spin.sources:%.qa0=$(DEST)/%d.c) \
                  $(spin.sources:%.qa0=$(DEST)/%f.c)
@@ -189,6 +185,6 @@ $(x.sources:%.qa0=$(DEST)/%f.c): $(DEST)/%f.c: %.qa0
 
 $(dst.sources): types.qa0
 $(c.A.sources): defs-A.qa0
-$(c.F.sources): defs-F.qa0
+$(c.B.sources): defs-B.qa0
 $(c.spin.sources): defs-spin.qa0
 

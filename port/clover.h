@@ -149,10 +149,10 @@ void *q(malloc)(struct Q(State) *state, size_t bytes);
 void *q(allocate_aligned)(struct Q(State) *state,
                           size_t *size, void **aligned_ptr,
                           size_t hdr_size, size_t bulk_size);
-void *qx(allocate_eo)(struct Q(State) *state,
-                      size_t *size, void **aligned_ptr,
-                      size_t hdr_size, int even_count, int odd_count,
-                      size_t f_size);
+void *q(allocate_eo)(struct Q(State) *state,
+                     size_t *size, void **aligned_ptr,
+                     size_t hdr_size, int even_count, int odd_count,
+                     size_t f_size);
 void q(free)(struct Q(State) *state, void *ptr, size_t bytes);
 void q(cleanup_state)(struct Q(State) *state);
 void *q(step_even)(struct Q(State) *state, void *aligned_ptr, size_t fsize);
@@ -176,86 +176,85 @@ void qx(x_export)(struct eo_lattice *eo,
                                  void *env),
                   void *env);
 
-#if 0 /* XXXX */
 /* Projections */
 typedef unsigned int (*Up_project)(struct ProjectedFermion *r,
-                                   int size, int Ls,
+                                   int size,
                                    const struct up_pack *link,
                                    const struct SUn *U,
                                    const struct Fermion *f);
 typedef unsigned int (*Down_project)(struct ProjectedFermion *r,
-                                     int size, int Ls,
+                                     int size,
                                      const struct down_pack *link,
                                      const struct Fermion *f);
 unsigned int qx(proj_g0plus)(struct ProjectedFermion *r,
-                             int size, int Ls,
+                             int size,
                              const struct down_pack *link,
                              const struct Fermion *f);
 unsigned int qx(proj_g1plus)(struct ProjectedFermion *r,
-                             int size, int Ls,
+                             int size,
                              const struct down_pack *link,
                              const struct Fermion *f);
 unsigned int qx(proj_g2plus)(struct ProjectedFermion *r,
-                             int size, int Ls,
+                             int size,
                              const struct down_pack *link,
                              const struct Fermion *f);
 unsigned int qx(proj_g3plus)(struct ProjectedFermion *r,
-                             int size, int Ls,
+                             int size,
                              const struct down_pack *link,
                              const struct Fermion *f);
 unsigned int qx(proj_g0minus)(struct ProjectedFermion *r,
-                              int size, int Ls,
+                              int size,
                               const struct down_pack *link,
                               const struct Fermion *f);
 unsigned int qx(proj_g1minus)(struct ProjectedFermion *r,
-                              int size, int Ls,
+                              int size,
                               const struct down_pack *link,
                               const struct Fermion *f);
 unsigned int qx(proj_g2minus)(struct ProjectedFermion *r,
-                              int size, int Ls,
+                              int size,
                               const struct down_pack *link,
                               const struct Fermion *f);
 unsigned int qx(proj_g3minus)(struct ProjectedFermion *r,
-                              int size, int Ls,
+                              int size,
                               const struct down_pack *link,
                               const struct Fermion *f);
 unsigned int qx(proj_Ucg0plus)(struct ProjectedFermion *r,
-                               int size, int Ls,
+                               int size,
                                const struct up_pack *link,
                                const struct SUn *U,
                                const struct Fermion *f);
 unsigned int qx(proj_Ucg1plus)(struct ProjectedFermion *r,
-                               int size, int Ls,
+                               int size,
                                const struct up_pack *link,
                                const struct SUn *U,
                                const struct Fermion *f);
 unsigned int qx(proj_Ucg2plus)(struct ProjectedFermion *r,
-                               int size, int Ls,
+                               int size,
                                const struct up_pack *link,
                                const struct SUn *U,
                                const struct Fermion *f);
 unsigned int qx(proj_Ucg3plus)(struct ProjectedFermion *r,
-                               int size, int Ls,
+                               int size,
                                const struct up_pack *link,
                                const struct SUn *U,
                                const struct Fermion *f);
 unsigned int qx(proj_Ucg0minus)(struct ProjectedFermion *r,
-                                int size, int Ls,
+                                int size,
                                 const struct up_pack *link,
                                 const struct SUn *U,
                                 const struct Fermion *f);
 unsigned int qx(proj_Ucg1minus)(struct ProjectedFermion *r,
-                                int size, int Ls,
+                                int size,
                                 const struct up_pack *link,
                                 const struct SUn *U,
                                 const struct Fermion *f);
 unsigned int qx(proj_Ucg2minus)(struct ProjectedFermion *r,
-                                int size, int Ls,
+                                int size,
                                 const struct up_pack *link,
                                 const struct SUn *U,
                                 const struct Fermion *f);
 unsigned int qx(proj_Ucg3minus)(struct ProjectedFermion *r,
-                                int size, int Ls,
+                                int size,
                                 const struct up_pack *link,
                                 const struct SUn *U,
                                 const struct Fermion *f);
@@ -269,20 +268,20 @@ extern Up_project qx(up_project_x)[Q(DIM)];
 extern Down_project qx(down_project_x)[Q(DIM)];
 /* compute projections on the boundary and fill the send buffers */
 void qx(boundary)(struct eo_lattice *xy,
-                  int Ls,
                   const Up_project up_proj[],
                   const Down_project down_proj[],
                   const struct SUn *U,
                   const struct Fermion *src_y,
                   long long *flops);
 
+#if 0 /* XXXX */
+int q(sizeof_ABTable)(int Ls);
+int q(sizeof_ABiTable)(int Ls);
+#endif /* XXXX */
 /* Backend controled structure sizes */
 int q(sizeof_neighbor)(int volume);
 int q(sizeof_up_pack)(int volume);
 int q(sizeof_down_pack)(int volume);
-int q(sizeof_ABTable)(int Ls);
-int q(sizeof_ABiTable)(int Ls);
-#endif /* XXXX */
 int qx(sizeof_fermion)(int volume);
 int qx(sizeof_gauge)(int volume);
 int qx(sizeof_clover)(int volume);
@@ -299,7 +298,6 @@ void qx(put_gauge)(struct SUn *ptr, int pos, const double r[]);
 void qx(put_clover_lo)(struct Clover *ptr, int pos, const double r[]);
 void qx(put_clover_hi)(struct Clover *ptr, int pos, const double r[]);
 
-#if 0 /* XXXX */
 int q(get_down_pack_f)(const struct down_pack *up, int p);
 int q(get_up_pack_f)(const struct up_pack *up, int p);
 void q(put_down_pack)(struct down_pack *down, int p, int f);
@@ -315,6 +313,7 @@ void q(get_neighbor)(int *m, int *f_up, int *u_up,
                      const struct neighbor *n, int p);
 void q(fix_neighbor_f_up)(struct neighbor *n, int p, int f_up, int d);
 void q(fix_neighbor_f_down)(struct neighbor *n, int p, int f_down, int d);
+#if 0 /* XXXX */
 void q(put_ABTable)(struct ABTable *t, int i, double w, double v);
 void q(put_ABiTableZ)(struct ABiTable *t, double z);
 void q(put_ABiTable)(struct ABiTable *t,
@@ -408,27 +407,25 @@ unsigned int qx(do_F_conj)(struct Fermion *res_x,
                            const struct Fermion *src_y,
                            void *rb[]);
 
-/* basic A+F, A and B */
-unsigned int qx(do_ApF)(struct Fermion *r_x,
-                        int start, int size, int Ls,
-                        const struct ABTable *aptable,
-                        const struct ABTable *amtable,
+#endif /* XXXX */
+/* basic A+B, A and B */
+unsigned int qx(do_ApB)(struct Fermion *r_x,
+                        int start, int size,
                         const struct neighbor *neighbor,
                         const struct SUn *U,
+                        const struct Clover *C,
                         const struct Fermion *s_x,
                         const struct Fermion *s_y,
                         void *rb[]);
-unsigned int qx(do_AxpBxFx)(struct Fermion *r_x,
-                            int start, int size, int Ls,
-                            const struct ABTable *aptable,
-                            const struct ABTable *amtable,
-                            const struct ABTable *bptable,
-                            const struct ABTable *bmtable,
-                            const struct neighbor *neighbor,
-                            const struct SUn *U,
-                            const struct Fermion *s_x,
-                            const struct Fermion *s_y,
-                            void *rb[]);
+unsigned int qx(do_AxpBx)(struct Fermion *r_x,
+                          int start, int size,
+                          const struct neighbor *neighbor,
+                          const struct SUn *U,
+                          const struct Clover *C,
+                          const struct Fermion *s_x,
+                          const struct Fermion *s_y,
+                          void *rb[]);
+#if 0 /* XXXX */
 /* basic B 1/A F */
 unsigned int qx(do_BA1)(struct Fermion *r_x,
                         int size, int Ls,
@@ -575,24 +572,26 @@ void qx(op_Fx)(struct Fermion *r_x,
                long long *flops,
                long long *sent,
                long long *received);
-void qx(op_ApF)(struct Fermion *r_x,
+#endif /* XXXX */
+void qx(op_ApB)(struct Fermion *r_x,
                 struct eo_lattice *xy,
-                const struct Q(Parameters) *params,
                 const struct SUn *U,
+                const struct Clover *C,
                 const struct Fermion *a_x,
                 const struct Fermion *a_y,
                 long long *flops,
                 long long *sent,
                 long long *received);
-void qx(op_AxpBxFx)(struct Fermion *r_x,
-                    struct eo_lattice *xy,
-                    const struct Q(Parameters) *params,
-                    const struct SUn *U,
-                    const struct Fermion *a_x,
-                    const struct Fermion *a_y,
-                    long long *flops,
-                    long long *sent,
-                    long long *received);
+void qx(op_AxpBx)(struct Fermion *r_x,
+                  struct eo_lattice *xy,
+                  const struct SUn *U,
+                  const struct Clover *C,
+                  const struct Fermion *a_x,
+                  const struct Fermion *a_y,
+                  long long *flops,
+                  long long *sent,
+                  long long *received);
+#if 0 /* XXXX */
 void qx(op_1mF)(struct Fermion *r_x,
                 struct eo_lattice *xy,
                 const struct SUn *U,

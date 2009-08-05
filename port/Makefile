@@ -29,8 +29,6 @@ x.sources = version.c \
             alloc-aligned.c \
             alloc.c \
             dealloc.c \
-
-xxxx.x.sources = \
             init.c \
             fini.c \
             comm-setup.c \
@@ -55,11 +53,15 @@ p.sources = fermion-dot.c \
             x-export.c \
             gauge-import.c \
             gauge-free.c \
-
-xxxx.p.sources =  \
+            op-dirac.c \
+            op-dirac-conj.c \
+            op-apb.c \
+            op-axpbx.c \
+            op-boundary.c \
             boundary-n.c \
             boundary-x.c \
-            op-boundary.c \
+
+xxxx.p.sources =  \
             op-a.c \
             op-ax.c \
 	    op-a1.c \
@@ -71,23 +73,18 @@ xxxx.p.sources =  \
             op-f.c \
             op-fx.c \
             op-a1xbx.c \
-            op-apf.c \
             op-1mf.c \
             op-1mfx.c \
             op-1mfxn.c \
             op-1mba1f.c \
             op-1mba1fn.c \
             op-a1xbxfx.c \
-            op-axpbxfx.c \
             op-ba1f.c \
             op-ba1.c \
-            op-d.c \
             op-m.c \
             op-mn.c \
             op-mx.c \
             op-mxn.c \
-            op-dirac.c \
-            op-dirac-conj.c \
             op-precond.c \
             op-precond-conj.c \
             op-print.c \

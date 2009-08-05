@@ -83,7 +83,7 @@ scale(int a, int i, int b, int j, double r[], double v[])
     }
 }
 
-void
+static void
 cl_invert(double v[], double r[])
 {
     int a, i, b, j, ax, ix;

@@ -19,26 +19,25 @@ endif
 
 headers = ../../port/mdwf.h
 
-i.sources =
+i.sources = sizeof-down-pack.c \
+            sizeof-neighbor.c \
+            sizeof-up-pack.c \
+            put-neighbor.c \
+            get-neighbor.c \
+            put-up.c \
+            get-up.c \
+            get-up-f.c \
+            fix-up.c \
+            put-down.c \
+            get-down.c \
+            fix-down.c \
+            get-down-f.c \
 
 xxxx.i.sources = put-ab.c \
             put-abi.c \
             put-abi-z.c \
-            put-down.c \
-            get-down.c \
-            get-down-f.c \
-            put-up.c \
-            get-up.c \
-            get-up-f.c \
-            put-neighbor.c \
-            get-neighbor.c \
-            fix-down.c \
-            fix-up.c \
             sizeof-ab-table.c \
             sizeof-abi-table.c \
-            sizeof-down-pack.c \
-            sizeof-neighbor.c \
-            sizeof-up-pack.c
 
 x.sources = f-norm \
             f-add3 \
@@ -51,6 +50,12 @@ x.sources = f-norm \
             put-clover-lo \
             put-clover-hi \
             sizeof-clover \
+            proj-minus \
+            proj-plus \
+            proj-u-minus \
+            proj-u-plus \
+            do-A-plus-B \
+            do-A-conj-plus-B-conj \
 
 xxxx.x.sources = \
             sizeof-pfermion \
@@ -67,17 +72,12 @@ xxxx.x.sources = \
             cg-xp \
             scg-madd \
             scg-xp \
-            proj-minus \
-            proj-plus \
-            proj-u-minus \
-            proj-u-plus \
             do-A \
             do-A-conj \
             do-A-inv \
             do-A-inv-conj \
             do-F \
             do-F-conj \
-            do-A-plus-F \
             do-B-A-inv \
             do-B-A-inv-F \
             do-1-sub-B-A-inv-F \
@@ -85,7 +85,6 @@ xxxx.x.sources = \
             do-1-sub-F-conj \
             do-1-sub-F-conj-norm \
             do-1-sub-B-A-inv-F-norm \
-            do-A-conj-plus-B-conj-F-conj \
             do-A-inv-conj-B-conj \
             do-A-inv-conj-B-conj-F-conj \
 

@@ -1,9 +1,9 @@
 #include <clover.h>
 
 void *
-qx(allocate_eo)(struct Q(State) *state,
-                size_t *size, void **aligned_ptr,
-                size_t hdr_size, int even_count, int odd_count, size_t fsize)
+q(allocate_eo)(struct Q(State) *state,
+               size_t *size, void **aligned_ptr,
+               size_t hdr_size, int even_count, int odd_count, size_t fsize)
 {
   int es = qx(sizeof_fermion)(state->even.full_size);
   int os = qx(sizeof_fermion)(state->odd.full_size);
