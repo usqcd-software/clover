@@ -248,8 +248,6 @@ main(int argc, char *argv[])
 
     QOP_CLOVER_D_operator_conjugated(c_f[3], c_g, c_f[1]);
     QOP_CLOVER_export_fermion(f_writer, F[3], c_f[3]);
-    /* Export f[2] */
-    /* XXX Export f[3] */
     
     /* free CLOVER */
     QOP_CLOVER_free_gauge(&c_g);
@@ -274,9 +272,9 @@ main(int argc, char *argv[])
         printf0(" |f|^2 [%d] = %20.10e\n", i, (double)(n[i]));
 
     /* Compute and display <f[1] f[2]> */
-    show_dot("D", F[1], F[2]);
+    show_dot("1|D0", F[1], F[2]);
     /* Compute and display <f[3] f[0]> */
-    show_dot("X", F[3], F[0]);
+    show_dot("X1|0", F[3], F[0]);
 
     QDP_destroy_S(state);
     QDP_destroy_I(I_seed);
