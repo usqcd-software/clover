@@ -2,7 +2,7 @@
 # common makefile for standard targets
 TOP        = ..
 V          = 0
-LIBRARY    = libqop-mdwf3.a
+LIBRARY    = libqop-clover.a
 QMP_CFLAGS = $(shell $(QMP_TOP:%=%/bin/qmp-config) --cflags)
 
 include $(TOP)/config/$(CONFIG)

@@ -1,6 +1,9 @@
 TOP = ..
 V = 0
 CONFIG = ../target
+library = qop-clover
+CDEBUG = -g
+PREC = D
 
 QMP_CFLAGS  = $(shell $(QMP_TOP:%=%/bin/qmp-config) --cflags)
 QMP_LDFLAGS = $(shell $(QMP_TOP:%=%/bin/qmp-config) --ldflags)
@@ -28,13 +31,15 @@ endif
 
 programs = get-gauge \
            check-gamma \
-           check-clover
+           check-clover \
+           check-dxd
 
 utils = gauge.c \
         fermion.c \
         clover.c
 
-headers = clover-test.h
+headers = clover-test.h \
+          ../port/qop-clover.h
 
 sources = $(programs:%=%.c) $(utils)
 
@@ -57,12 +62,16 @@ dist: realclean
 
 $(programs):%: %.o
 	$E LD $@
-	$C$(CC) $(TLDFLAGS) -o $@ $^ $(TCLIBS)
+	$C$(CC) $(CDEBUG) $(TLDFLAGS)  \
+               -DQOP_CLOVER_DEFAULT_PRECISION=\'$(PREC)\' \
+               -L$(TOP)/$(LIMPDIR)  -o $@ $^ \
+               -l$(library) $(TCLIBS)
 
 $(programs): $(utils:%.c=%.o)
 
 $(objects): %.o: %.c
 	$E CC $@
-	$C$(CC) $(TCFLAGS) -c -o $@ $<
+	$C$(CC) $(CDEBUG) -DQOP_CLOVER_DEFAULT_PRECISION=\'$(PREC)\' \
+               $(TCFLAGS) -c -o $@ $<
 
 $(objects): $(headers)

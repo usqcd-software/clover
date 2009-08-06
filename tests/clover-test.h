@@ -6,7 +6,9 @@
 #define NDIM  4
 #define NELEMS(x) (sizeof (x) / sizeof ((x)[0]))
 
+/* 
 extern int lattice[NDIM];
+*/
 
 #define printf0 if (QDP_this_node == 0) printf
 
@@ -32,7 +34,7 @@ extern void point_fermion(QDP_DiracFermion *f,
 extern void dump_fermion(char *name, QDP_DiracFermion *f);
 
 /* clover */
-void
+extern void
 std_clover_op(QDP_DiracFermion *psi,
               QDP_ColorMatrix *U[],
               QDP_ColorMatrix *Cl[],

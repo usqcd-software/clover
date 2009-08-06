@@ -149,10 +149,9 @@ void *q(malloc)(struct Q(State) *state, size_t bytes);
 void *q(allocate_aligned)(struct Q(State) *state,
                           size_t *size, void **aligned_ptr,
                           size_t hdr_size, size_t bulk_size);
-void *q(allocate_eo)(struct Q(State) *state,
-                     size_t *size, void **aligned_ptr,
-                     size_t hdr_size, int even_count, int odd_count,
-                     size_t f_size);
+void *qx(allocate_eo)(struct Q(State) *state,
+                      size_t *size, void **aligned_ptr,
+                      size_t hdr_size, int even_count, int odd_count);
 void q(free)(struct Q(State) *state, void *ptr, size_t bytes);
 void q(cleanup_state)(struct Q(State) *state);
 void *q(step_even)(struct Q(State) *state, void *aligned_ptr, size_t fsize);
