@@ -63,8 +63,20 @@ x.sources = f-dot.qa0 \
             proj-plus.qa0 \
             proj-u-minus.qa0 \
             proj-u-plus.qa0 \
+            do-A.qa0 \
+            do-A-times-B.qa0 \
+            do-A-conj-times-B-conj.qa0 \
             do-A-plus-B.qa0 \
+            do-A-minus-B.qa0 \
+            do-A-minus-B-norm.qa0 \
+            do-C-minus-B.qa0 \
             do-A-conj-plus-B-conj.qa0 \
+            do-A-conj-minus-B-conj.qa0 \
+            cg-xp.qa0 \
+            f-add2.qa0 \
+            f-add2-norm.qa0 \
+            f-copy.qa0 \
+            f-diff-norm.qa0 \
 
 xxxxxxx.x.sources = \
             sizeof-pfermion.qa0 \
@@ -73,12 +85,7 @@ xxxxxxx.x.sources = \
             fv-get.qa0 \
             fv-put.qa0 \
             f-zero.qa0 \
-            f-copy.qa0 \
-            f-add2.qa0 \
-            f-add2-norm.qa0 \
             f-add2x.qa0 \
-            f-diff-norm.qa0 \
-            cg-xp.qa0 \
             scg-madd.qa0 \
             scg-xp.qa0 \
             do-A.qa0 \

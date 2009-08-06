@@ -60,9 +60,25 @@ p.sources = fermion-dot.c \
             op-boundary.c \
             boundary-n.c \
             boundary-x.c \
+            solver-dirac.c \
+            op-print.c \
+            cg-dirac-error.c \
+            cg-inflate.c \
+	    cg-precondition.c \
+            cg-solver.c \
+            cg-log.c \
+            op-m.c \
+            op-mn.c \
+            op-mx.c \
+            op-a1b.c \
+            op-a1xbx.c \
+            op-amb.c \
+            op-axmbx.c \
+            op-ambn.c \
+            op-cmb.c \
+            op-a.c \
 
 xxxx.p.sources =  \
-            op-a.c \
             op-ax.c \
 	    op-a1.c \
             op-a1x.c \
@@ -81,20 +97,10 @@ xxxx.p.sources =  \
             op-a1xbxfx.c \
             op-ba1f.c \
             op-ba1.c \
-            op-m.c \
-            op-mn.c \
-            op-mx.c \
             op-mxn.c \
             op-precond.c \
             op-precond-conj.c \
-            op-print.c \
-	    cg-precondition.c \
-            cg-solver.c \
-            cg-inflate.c \
-            cg-log.c \
-            cg-dirac-error.c \
             scg-solver.c \
-            solver-dirac.c \
             solver-mxm.c \
             solver-shifted.c
 

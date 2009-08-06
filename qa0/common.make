@@ -54,8 +54,20 @@ x.sources = f-norm \
             proj-plus \
             proj-u-minus \
             proj-u-plus \
+            do-A \
+            do-A-times-B \
+            do-A-conj-times-B-conj \
             do-A-plus-B \
+            do-A-minus-B \
+            do-A-minus-B-norm \
+            do-C-minus-B \
             do-A-conj-plus-B-conj \
+            do-A-conj-minus-B-conj \
+            cg-xp \
+            f-add2 \
+            f-add2-norm \
+            f-copy \
+            f-diff-norm \
 
 xxxx.x.sources = \
             sizeof-pfermion \
@@ -64,12 +76,7 @@ xxxx.x.sources = \
             fv-get \
             fv-put \
             f-zero \
-            f-copy \
-            f-add2 \
-            f-add2-norm \
             f-add2x \
-            f-diff-norm \
-            cg-xp \
             scg-madd \
             scg-xp \
             do-A \
