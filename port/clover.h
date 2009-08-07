@@ -1,9 +1,9 @@
-#ifndef MARK_21eedb1e5eff4d4ba0462475b43ae655
-#define MARK_21eedb1e5eff4d4ba0462475b43ae655
-
 # ifndef QOP_CLOVER_DEFAULT_PRECISION
 #  define QOP_CLOVER_DEFAULT_PRECISION 'D'
 # endif
+
+#ifndef MARK_21eedb1e5eff4d4ba0462475b43ae655
+#define MARK_21eedb1e5eff4d4ba0462475b43ae655
 
 # include <qop-clover.h>
 # include <stdlib.h>
@@ -17,34 +17,21 @@
 # define Q(x) QOP_CLOVER_##x
 # define QF(x) QOP_F3_CLOVER_##x
 # define QD(x) QOP_D3_CLOVER_##x
-# if QOP_CLOVER_DEFAULT_PRECISION=='D'
-#  define qx(x) qd(x)
-#  define QX(x) QD(x)
-#  define REAL double
-# endif
-# if QOP_CLOVER_DEFAULT_PRECISION=='F'
-#  define qx(x) qf(x)
-#  define QX(x) QF(x)
-#  define REAL float
-# endif
 
 /* Cache size */
 #define CACHE_LINE_SIZE 128
 #define ALIGN(p) ((void *)((((ptrdiff_t)(p))+CACHE_LINE_SIZE-1) & \
                            ~(CACHE_LINE_SIZE-1)))
 
-
 /* QCD types (qa0 controls these definitions) */
-struct SUn;
 struct SUnF;
 struct SUnD;
-struct Clover;
 struct CloverF;
 struct CloverD;
-struct Fermion;
 struct FermionF;
 struct FermionD;
-struct ProjectedFermion;
+struct ProjectedFermionF;
+struct ProjectedFermionD;
 
 /* Internal types */
 struct local {
@@ -92,29 +79,6 @@ struct eo_lattice {
   int              total_receive;          /* bytes to receive */
 };
 
-/* CLOVER types */
-struct QX(Fermion) {
-  struct Q(State) *state;
-  size_t size;
-  struct Fermion *even;  
-  struct Fermion *odd;
-};
-
-struct QX(HalfFermion) {
-  struct Q(State) *state;
-  size_t size;
-  struct Fermion *even;  
-};
-
-struct QX(Gauge) {
-  struct Q(State) *state;
-  size_t size;
-  struct SUn *g_data;
-  struct Clover *ce_data;
-  struct Clover *co_data;
-  struct Clover *cox_data;
-};
-
 struct Q(State) {
   const char        *version;         /* to get version string into app */
   int                used;            /* gc ref counter */
@@ -160,14 +124,129 @@ void *q(malloc)(struct Q(State) *state, size_t bytes);
 void *q(allocate_aligned)(struct Q(State) *state,
                           size_t *size, void **aligned_ptr,
                           size_t hdr_size, size_t bulk_size);
+void q(free)(struct Q(State) *state, void *ptr, size_t bytes);
+void q(cleanup_state)(struct Q(State) *state);
+
+/* Backend controled structure sizes */
+int q(sizeof_neighbor)(int volume);
+int q(sizeof_up_pack)(int volume);
+int q(sizeof_down_pack)(int volume);
+
+/* qa0 level data access routines */
+int q(get_down_pack_f)(const struct down_pack *up, int p);
+int q(get_up_pack_f)(const struct up_pack *up, int p);
+void q(put_down_pack)(struct down_pack *down, int p, int f);
+void q(get_down_pack)(int *f, const struct down_pack *up, int p);
+void q(put_up_pack)(struct up_pack *up, int p, int f, int u);
+void q(get_up_pack)(int *f, int *u, const struct up_pack *up, int p);
+void q(put_neighbor)(struct neighbor *n, int p,
+                     int m,
+                     const int f_up[Q(DIM)], int u_up,
+                     const int f_down[Q(DIM)], const int u_down[Q(DIM)]);
+void q(get_neighbor)(int *m, int *f_up, int *u_up,
+                     int *f_down, int *u_down,
+                     const struct neighbor *n, int p);
+void q(fix_neighbor_f_up)(struct neighbor *n, int p, int f_up, int d);
+void q(fix_neighbor_f_down)(struct neighbor *n, int p, int f_down, int d);
+
+/* mixed precision operations */
+/* Fd = Fd + Ff */
+unsigned int q(f_d_eq_dpf)(struct FermionD *dst,
+                           int size,
+                           const struct FermionD *src_d,
+                           const struct FermionF *src_f);
+/* Ff = Fd - Fd */
+unsigned int q(f_f_eq_dmd)(struct FermionF *dst,
+                           int size,
+                           const struct FermionD *src_a,
+                           const struct FermionD *src_b);
+
+/* converting gauge and clover from double down to float */
+void q(g_f_eq_d)(struct SUnF *dst,
+                 int size,
+                 const struct SUnD *src);
+void q(c_f_eq_d)(struct CloverF *dst,
+                 int size,
+                 const struct CloverD *src);
+
+/* Timing */
+#define BEGIN_TIMING(s) do { gettimeofday(&((s)->t0), NULL); } while (0)
+#define END_TIMING(s, f, snd, rcv) do { \
+    gettimeofday(&((s)->t1), NULL); \
+    (s)->time_sec = ((s)->t1.tv_sec - (s)->t0.tv_sec) \
+      + 1e-6 * ((s)->t1.tv_usec - (s)->t0.tv_usec); \
+    (s)->flops = (f); (s)->sent = (snd); (s)->received = (rcv); } while (0)
+
+/* Argument checking */
+#define DECLARE_STATE struct Q(State) *state = NULL
+#define CHECK_ARG0(n) do { if ((n) == 0) return 1;      \
+    state = (n)->state; } while (0)
+#define CHECK_ARGn(n,f) do { if ((n) == 0)                              \
+      return q(set_error)(state, 0, f "(): NULL argument");             \
+    if ((n)->state != state)                                            \
+      return q(set_error)(state, 0, f "(): geometry mismatch"); } while (0)
+#define CHECK_POINTER(n,f) do { if ((n) == 0)                           \
+      return q(set_error)(state, 0, f "(): NULL argument"); } while (0)
+
+#endif /* !defined(MARK_21eedb1e5eff4d4ba0462475b43ae655) */
+
+# undef qx
+# undef QX
+# undef REAL
+# undef SUn
+# undef Clover
+# undef Fermion
+# undef ProjectedFermion
+# if QOP_CLOVER_DEFAULT_PRECISION=='D'
+#  define qx(x) qop_d3_clover_##x
+#  define QX(x) QOP_D3_CLOVER_##x
+#  define REAL double
+#  define SUn SUnD
+#  define Clover CloverD
+#  define Fermion FermionD
+#  define ProjectedFermion ProjectedFermionD
+# endif
+# if QOP_CLOVER_DEFAULT_PRECISION=='F'
+#  define qx(x) qop_f3_clover_##x
+#  define QX(x) QOP_F3_CLOVER_##x
+#  define REAL float
+#  define SUn SUnF
+#  define Clover CloverF
+#  define Fermion FermionF
+#  define ProjectedFermion ProjectedFermionF
+# endif
+
+/* CLOVER types */
+struct QX(Fermion) {
+  struct Q(State) *state;
+  size_t size;
+  struct Fermion *even;  
+  struct Fermion *odd;
+};
+
+struct QX(HalfFermion) {
+  struct Q(State) *state;
+  size_t size;
+  struct Fermion *even;  
+};
+
+struct QX(Gauge) {
+  struct Q(State) *state;
+  size_t size;
+  struct SUn *g_data;
+  struct Clover *ce_data;
+  struct Clover *co_data;
+  struct Clover *cox_data;
+};
+
+/* allocation routines */
 void *qx(allocate_eo)(struct Q(State) *state,
                       size_t *size, void **aligned_ptr,
                       size_t hdr_size, int even_count, int odd_count);
-void q(free)(struct Q(State) *state, void *ptr, size_t bytes);
-void q(cleanup_state)(struct Q(State) *state);
-void *q(step_even)(struct Q(State) *state, void *aligned_ptr, size_t fsize);
-void *q(step_odd)(struct Q(State) *state, void *aligned_ptr, size_t fsize);
+void *qx(step_even)(struct Q(State) *state, void *aligned_ptr);
+void *qx(step_odd)(struct Q(State) *state, void *aligned_ptr);
 
+/* data interface routines types */
 void qx(x_import)(struct eo_lattice *eo,
                   struct Fermion *data, 
                   double (*reader)(const int pos[Q(DIM)],
@@ -187,15 +266,15 @@ void qx(x_export)(struct eo_lattice *eo,
                   void *env);
 
 /* Projections */
-typedef unsigned int (*Up_project)(struct ProjectedFermion *r,
-                                   int size,
-                                   const struct up_pack *link,
-                                   const struct SUn *U,
-                                   const struct Fermion *f);
-typedef unsigned int (*Down_project)(struct ProjectedFermion *r,
-                                     int size,
-                                     const struct down_pack *link,
-                                     const struct Fermion *f);
+typedef unsigned int (*qx(Up_project))(struct ProjectedFermion *r,
+                                       int size,
+                                       const struct up_pack *link,
+                                       const struct SUn *U,
+                                       const struct Fermion *f);
+typedef unsigned int (*qx(Down_project))(struct ProjectedFermion *r,
+                                         int size,
+                                         const struct down_pack *link,
+                                         const struct Fermion *f);
 unsigned int qx(proj_g0plus)(struct ProjectedFermion *r,
                              int size,
                              const struct down_pack *link,
@@ -271,23 +350,20 @@ unsigned int qx(proj_Ucg3minus)(struct ProjectedFermion *r,
 
 /* projection tables */
 /*  normal projection */
-extern Up_project qx(up_project_n)[Q(DIM)];
-extern Down_project qx(down_project_n)[Q(DIM)];
+extern qx(Up_project) qx(up_project_n)[Q(DIM)];
+extern qx(Down_project) qx(down_project_n)[Q(DIM)];
 /*  conjugated projection */
-extern Up_project qx(up_project_x)[Q(DIM)];
-extern Down_project qx(down_project_x)[Q(DIM)];
+extern qx(Up_project) qx(up_project_x)[Q(DIM)];
+extern qx(Down_project) qx(down_project_x)[Q(DIM)];
 /* compute projections on the boundary and fill the send buffers */
 void qx(boundary)(struct eo_lattice *xy,
-                  const Up_project up_proj[],
-                  const Down_project down_proj[],
+                  const qx(Up_project) up_proj[],
+                  const qx(Down_project) down_proj[],
                   const struct SUn *U,
                   const struct Fermion *src_y,
                   long long *flops);
 
 /* Backend controled structure sizes */
-int q(sizeof_neighbor)(int volume);
-int q(sizeof_up_pack)(int volume);
-int q(sizeof_down_pack)(int volume);
 int qx(sizeof_fermion)(int volume);
 int qx(sizeof_gauge)(int volume);
 int qx(sizeof_clover)(int volume);
@@ -298,22 +374,6 @@ void qx(get_fermion)(double r[], const struct Fermion *data, int pos);
 void qx(put_gauge)(struct SUn *ptr, int pos, const double r[]);
 void qx(put_clover_lo)(struct Clover *ptr, int pos, const double r[]);
 void qx(put_clover_hi)(struct Clover *ptr, int pos, const double r[]);
-
-int q(get_down_pack_f)(const struct down_pack *up, int p);
-int q(get_up_pack_f)(const struct up_pack *up, int p);
-void q(put_down_pack)(struct down_pack *down, int p, int f);
-void q(get_down_pack)(int *f, const struct down_pack *up, int p);
-void q(put_up_pack)(struct up_pack *up, int p, int f, int u);
-void q(get_up_pack)(int *f, int *u, const struct up_pack *up, int p);
-void q(put_neighbor)(struct neighbor *n, int p,
-                     int m,
-                     const int f_up[Q(DIM)], int u_up,
-                     const int f_down[Q(DIM)], const int u_down[Q(DIM)]);
-void q(get_neighbor)(int *m, int *f_up, int *u_up,
-                     int *f_down, int *u_down,
-                     const struct neighbor *n, int p);
-void q(fix_neighbor_f_up)(struct neighbor *n, int p, int f_up, int d);
-void q(fix_neighbor_f_down)(struct neighbor *n, int p, int f_down, int d);
 
 /* Linear algebra on fermions */
 void qx(f_zero)(struct Fermion *dst, 
@@ -612,43 +672,3 @@ unsigned int qx(cg_xp)(struct Fermion *x,
                        double beta,
                        const struct Fermion *r);
 
-/* mixed precision operations */
-/* Fd = Fd + Ff */
-unsigned int q(f_d_eq_dpf)(struct FermionD *dst,
-                           int size,
-                           const struct FermionD *src_d,
-                           const struct FermionF *src_f);
-/* Ff = Fd - Fd */
-unsigned int q(f_f_eq_dmd)(struct FermionF *dst,
-                           int size,
-                           const struct FermionD *src_a,
-                           const struct FermionD *src_b);
-
-/* converting gauge and clover from double down to float */
-void q(g_f_eq_d)(struct SUnF *dst,
-                 int size,
-                 const struct SUnD *src);
-void q(c_f_eq_d)(struct CloverF *dst,
-                 int size,
-                 const struct CloverD *src);
-
-/* Timing */
-#define BEGIN_TIMING(s) do { gettimeofday(&((s)->t0), NULL); } while (0)
-#define END_TIMING(s, f, snd, rcv) do { \
-    gettimeofday(&((s)->t1), NULL); \
-    (s)->time_sec = ((s)->t1.tv_sec - (s)->t0.tv_sec) \
-      + 1e-6 * ((s)->t1.tv_usec - (s)->t0.tv_usec); \
-    (s)->flops = (f); (s)->sent = (snd); (s)->received = (rcv); } while (0)
-
-/* Argument checking */
-#define DECLARE_STATE struct Q(State) *state = NULL
-#define CHECK_ARG0(n) do { if ((n) == 0) return 1;      \
-    state = (n)->state; } while (0)
-#define CHECK_ARGn(n,f) do { if ((n) == 0)                              \
-      return q(set_error)(state, 0, f "(): NULL argument");             \
-    if ((n)->state != state)                                            \
-      return q(set_error)(state, 0, f "(): geometry mismatch"); } while (0)
-#define CHECK_POINTER(n,f) do { if ((n) == 0)                           \
-      return q(set_error)(state, 0, f "(): NULL argument"); } while (0)
-
-#endif /* !defined(MARK_21eedb1e5eff4d4ba0462475b43ae655) */

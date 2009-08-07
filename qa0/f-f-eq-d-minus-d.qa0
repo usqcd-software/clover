@@ -13,7 +13,7 @@
      (op pointer-add () (A) ([reg A] [const (size-of Fermion-double)]))
      (load qcd-fermion-double () vB ([reg B]))
      (op pointer-add () (B) ([reg B] [const (size-of Fermion-double)]))
-     (op qcd-addf () (A+B) ([reg vA] [reg vB]))
+     (op qcd-subf () (A+B) ([reg vA] [reg vB]))
      (store qcd-fermion-float () ([reg R]) [reg A+B])
      (op pointer-add () (R) ([reg R] [const (size-of Fermion-float)]))))
 

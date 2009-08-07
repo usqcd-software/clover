@@ -907,35 +907,15 @@ int `QOP_D3_CLOVER_D_operator_conjugated(struct QOP_D3_CLOVER_Fermion *result,
                                          const struct QOP_D3_CLOVER_Gauge *gauge,
                                          const struct QOP_D3_CLOVER_Fermion *fermion);
 @
-<<Interface functions>>=
-int `QOP_F3_CLOVER_M_operator(struct QOP_F3_CLOVER_HalfFermion *result,
-                              const struct QOP_F3_CLOVER_Gauge *gauge,
-                              const struct QOP_F3_CLOVER_HalfFermion *fermion);
-int `QOP_D3_CLOVER_M_operator(struct QOP_D3_CLOVER_HalfFermion *result,
-                              const struct QOP_D3_CLOVER_Gauge *gauge,
-                              const struct QOP_D3_CLOVER_HalfFermion *fermion);
-@
-<<Interface functions>>=
-int `QOP_F3_CLOVER_M_operator_conjugated(struct QOP_F3_CLOVER_HalfFermion *result,
-                                         const struct QOP_F3_CLOVER_Gauge *gauge,
-                                         const struct QOP_F3_CLOVER_HalfFermion *fermion);
-int `QOP_D3_CLOVER_M_operator_conjugated(struct QOP_D3_CLOVER_HalfFermion *result,
-                                         const struct QOP_D3_CLOVER_Gauge *gauge,
-                                         const struct QOP_D3_CLOVER_HalfFermion *fermion);
-@
 
 Also the default precision macros
 <<Single precision defaults>>=
 #define `QOP_CLOVER_D_operator QOP_F3_CLOVER_D_operator
 #define `QOP_CLOVER_D_operator_conjugated QOP_F3_CLOVER_D_operator_conjugated
-#define `QOP_CLOVER_M_operator QOP_F3_CLOVER_M_operator
-#define `QOP_CLOVER_M_operator_conjugated QOP_F3_CLOVER_M_operator_conjugated
 @
 <<Double precision defaults>>=
 #define `QOP_CLOVER_D_operator QOP_D3_CLOVER_D_operator
 #define `QOP_CLOVER_D_operator_conjugated QOP_D3_CLOVER_D_operator_conjugated
-#define `QOP_CLOVER_M_operator QOP_D3_CLOVER_M_operator
-#define `QOP_CLOVER_M_operator_conjugated QOP_D3_CLOVER_M_operator_conjugated
 @
 
 \section{Solvers}
@@ -984,6 +964,23 @@ int `QOP_D3_CLOVER_D_CG(struct QOP_D3_CLOVER_Fermion *result,
                         double epsilon,
                         unsigned int options);
 @
+
+The mixed precision solver uses the trick communicated by Stefan Krieg: run the
+CG in single precision while accumulating the result in double. It has only
+a double precision version and takes an extra parameter [[f_iterations]] which
+controls the number of float CG iterations between double updates.
+<<Interface functions>>=
+int `QOP_CLOVER_mixed_D_CG(struct QOP_D3_CLOVER_Fermion *result,
+                           int *out_iterations,
+                           double *out_epsilon,
+                           const struct QOP_D3_CLOVER_Fermion *x_0,
+                           const struct QOP_D3_CLOVER_Gauge *gauge,
+                           const struct QOP_D3_CLOVER_Fermion *rhs,
+                           int f_iterations,
+                           int max_iteration,
+                           double epsilon,
+                           unsigned int options);
+@                      
 
 Again, macros
 <<Single precision defaults>>=

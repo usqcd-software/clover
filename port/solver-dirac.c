@@ -64,13 +64,13 @@ QX(D_CG)(struct QX(Fermion)          *psi,
         return q(set_error)(state, 0, "D_CG(): not enough memory");
     }
     t0_e  = temps;
-    t1_e  = temps = q(step_even)(state, temps, sizeof (REAL));
-    chi_e = temps = q(step_even)(state, temps, sizeof (REAL));
-    rho_e = temps = q(step_even)(state, temps, sizeof (REAL));
-    pi_e = temps = q(step_even)(state, temps, sizeof (REAL));
-    zeta_e = temps = q(step_even)(state, temps, sizeof (REAL));
-    t0_o  = temps = q(step_even)(state, temps, sizeof (REAL));
-    t1_o  = temps = q(step_odd)(state, temps, sizeof (REAL));
+    t1_e  = temps  = qx(step_even)(state, temps);
+    chi_e = temps  = qx(step_even)(state, temps);
+    rho_e = temps  = qx(step_even)(state, temps);
+    pi_e = temps   = qx(step_even)(state, temps);
+    zeta_e = temps = qx(step_even)(state, temps);
+    t0_o  = temps  = qx(step_even)(state, temps);
+    t1_o  = temps  = qx(step_odd)(state, temps);
 
     /* clear bits we do not understand */
     options = options & MAX_OPTIONS;

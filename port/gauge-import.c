@@ -316,7 +316,7 @@ QX(import_gauge)(struct QX(Gauge) **gauge_ptr,
 
   *gauge_ptr = NULL;
   u_s = qx(sizeof_gauge)(state->volume);
-  ce_s = qx(sizeof_clover)(state->even.full_size);
+  co_s = ce_s = qx(sizeof_clover)(state->even.full_size);
   co_s = qx(sizeof_clover)(state->odd.full_size);
   gauge = q(allocate_aligned)(state, &size, &ptr,
                               sizeof (struct QX(Gauge)), u_s + ce_s + 2 * co_s);

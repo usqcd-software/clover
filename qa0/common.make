@@ -34,8 +34,11 @@ i.sources = sizeof-down-pack.c \
             get-down-f.c \
             f-d-eq-d-plus-f.c \
             f-f-eq-d-minus-d.c \
+            g-f-eq-d.c \
+            c-f-eq-d.c \
 
 x.sources = f-norm \
+            f-zero \
             f-add3 \
             f-dot \
             get-fermion \

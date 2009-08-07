@@ -24,7 +24,7 @@ QX(allocate_fermion)(struct QX(Fermion) **fermion_ptr,
   fermion->state = state;
   fermion->size = size;
   fermion->even = even;
-  fermion->odd = q(step_even)(state, even, sizeof (REAL));
+  fermion->odd = qx(step_even)(state, even);
   *fermion_ptr = fermion;
   END_TIMING(state, 0, 0, 0);
 

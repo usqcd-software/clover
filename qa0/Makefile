@@ -40,10 +40,13 @@ sources = sizeof-down-pack.qa0 \
           fix-down.qa0 \
           f-d-eq-d-plus-f.qa0 \
           f-f-eq-d-minus-d.qa0 \
+          g-f-eq-d.qa0 \
+          c-f-eq-d.qa0 \
 
 x.sources = f-dot.qa0 \
             f-add3.qa0 \
             f-norm.qa0 \
+            f-zero.qa0 \
             get-fermion.qa0 \
             put-fermion.qa0 \
             sizeof-fermion.qa0 \

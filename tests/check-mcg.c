@@ -1,3 +1,4 @@
+#define QOP_CLOVER_DEFAULT_PRECISION 'D'
 #include <assert.h>
 #include "clover-test.h"
 #include "../port/qop-clover.h"
@@ -152,6 +153,7 @@ main(int argc, char *argv[])
     double kappa;
     double c_sw;
     double in_eps;
+    int in_fiter;
     int in_iter;
     int log_flag;
     double out_eps;
@@ -163,8 +165,8 @@ main(int argc, char *argv[])
     /* start QDP */
     QDP_initialize(&argc, &argv);
 
-    if (argc != 1 + NDIM + 6) {
-        printf0("ERROR: usage: %s Lx ... seed kappa c_sw iter eps log?\n",
+    if (argc != 1 + NDIM + 7) {
+        printf0("usage: %s Lx ... seed kappa c_sw fiter diter eps log?\n",
                 argv[0]);
         goto end;
     }
@@ -175,10 +177,11 @@ main(int argc, char *argv[])
     i_seed = atoi(argv[1 + NDIM]);
     kappa = atof(argv[2 + NDIM]);
     c_sw = atof(argv[3 + NDIM]);
-    in_iter = atoi(argv[4 + NDIM]);
-    in_eps = atof(argv[5 + NDIM]);
+    in_fiter = atoi(argv[4 + NDIM]);
+    in_iter = atoi(argv[5 + NDIM]);
+    in_eps = atof(argv[6 + NDIM]);
     
-    log_flag = atoi(argv[6 + NDIM]) == 0? 0: QOP_CLOVER_LOG_EVERYTHING;
+    log_flag = atoi(argv[7 + NDIM]) == 0? 0: QOP_CLOVER_LOG_EVERYTHING;
 
     /* set lattice size and create layout */
     QDP_set_latsize(NDIM, lattice);
@@ -204,6 +207,7 @@ main(int argc, char *argv[])
     printf0("kappa: %20.15f\n", kappa);
     printf0("c_sw:  %20.15f\n", c_sw);
 
+    printf0("in_fiter: %d\n", in_fiter);
     printf0("in_iter: %d\n", in_iter);
     printf0("in_eps: %15.2e\n", in_eps);
 
@@ -261,9 +265,9 @@ main(int argc, char *argv[])
     }
 
     QOP_CLOVER_D_operator(c_f[2], c_g, c_f[0]);
-    cg_status = QOP_CLOVER_D_CG(c_f[3], &out_iter, &out_eps,
-                                c_f[2], c_g, c_f[2], in_iter, in_eps,
-                                log_flag);
+    cg_status = QOP_CLOVER_mixed_D_CG(c_f[3], &out_iter, &out_eps,
+                                      c_f[2], c_g, c_f[2],
+                                      in_fiter, in_iter, in_eps, log_flag);
 
     msg = QOP_CLOVER_error(clover_state);
 
@@ -276,12 +280,9 @@ main(int argc, char *argv[])
     printf0("CG iter: %d\n", out_iter);
     printf0("CG eps: %20.10e\n", out_eps);
     printf0("CG performance: runtime %e sec\n", run_time);
-    printf0("CG performance: flops  %.3e MFlop/s (%lld)\n",
-            flops * 1e-6 / run_time, flops);
-    printf0("CG performance: snd    %.3e MB/s (%lld)\n",
-            sent * 1e-6 / run_time, sent);
-    printf0("CG performance: rcv    %.3e MB (%lld)/s\n",
-            received * 1e-6 / run_time, received);
+    printf0("CG performance: flops  %.3e MFlop/s\n", flops * 1e-6 / run_time);
+    printf0("CG performance: snd    %.3e MB/s\n", sent * 1e-6 / run_time);
+    printf0("CG performance: rcv    %.3e MB/s\n", received * 1e-6 / run_time);
 
     /* free CLOVER */
     QOP_CLOVER_free_gauge(&c_g);

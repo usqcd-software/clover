@@ -38,7 +38,7 @@ programs = get-gauge \
 programs.f = $(programs:%=%F)
 programs.d = $(programs:%=%D)
 
-programs.all = $(programs.f) $(programs.d)
+programs.all = $(programs.f) $(programs.d) check_mcg
 
 utils = gauge.c \
         fermion.c \
@@ -85,6 +85,16 @@ $(programs.d):%: %.o
                -DQOP_CLOVER_DEFAULT_PRECISION=\'D\' \
                -L$(TOP)/$(LIMPDIR)  -o $@ $< $(utils:%.c=%D.o) \
                -l$(library) $(TCLIBS)
+
+check-mcg: check-mcg.o $(utils:%.c=%D.o)
+	$E LD $@
+	$C$(CC) $(CDEBUG) $(TLDFLAGS)  \
+               -L$(TOP)/$(LIMPDIR)  -o $@ $<  $(utils:%.c=%D.o) \
+               -l$(library) $(TCLIBS)
+
+check-mcg.o: check-mcg.c
+	$E CC $@
+	$C$(CC) $(TCFLAGS) -c -o $@ $<
 
 $(programs.f): $(utils:%.c=%F.o)
 $(programs.d): $(utils:%.c=%D.o)

@@ -24,15 +24,14 @@ endif
 x.sources = version.c \
             error.c \
             perf.c \
-            step-even.c \
-            step-odd.c \
             alloc-aligned.c \
             alloc.c \
             dealloc.c \
             init.c \
             fini.c \
             comm-setup.c \
-            comm-free.c
+            comm-free.c \
+            solver-dirac-mixed.c
 
 p.sources = fermion-dot.c \
             fermion-madd.c \
@@ -77,33 +76,8 @@ p.sources = fermion-dot.c \
             op-ambn.c \
             op-cmb.c \
             op-a.c \
-
-xxxx.p.sources =  \
-            op-ax.c \
-	    op-a1.c \
-            op-a1x.c \
-            op-b.c \
-            op-bx.c \
-	    op-b1.c \
-            op-b1x.c \
-            op-f.c \
-            op-fx.c \
-            op-a1xbx.c \
-            op-1mf.c \
-            op-1mfx.c \
-            op-1mfxn.c \
-            op-1mba1f.c \
-            op-1mba1fn.c \
-            op-a1xbxfx.c \
-            op-ba1f.c \
-            op-ba1.c \
-            op-mxn.c \
-            op-precond.c \
-            op-precond-conj.c \
-            scg-solver.c \
-            solver-mxm.c \
-            solver-shifted.c
-
+            step-even.c \
+            step-odd.c \
 
 x.objects = $(x.sources:%.c=$(LIMPDIR)/%.o)
 
