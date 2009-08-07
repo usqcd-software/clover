@@ -32,7 +32,6 @@ QX(D_CG)(struct QX(Fermion)          *psi,
     size_t ptr_size = 0;
     void *temps = 0;
     int status = 1;
-    struct Fermion *xi_e = 0;
     struct Fermion *chi_e = 0;
     struct Fermion *rho_e = 0;
     struct Fermion *pi_e = 0;
@@ -58,7 +57,7 @@ QX(D_CG)(struct QX(Fermion)          *psi,
     /* allocate locals */
     ptr = qx(allocate_eo)(state, &ptr_size, &temps,
                           0,  /* header */
-                          7,  /* evens */
+                          6,  /* evens */
                           2); /* odds */
 
     if (ptr == 0) {
@@ -66,7 +65,6 @@ QX(D_CG)(struct QX(Fermion)          *psi,
     }
     t0_e  = temps;
     t1_e  = temps = q(step_even)(state, temps, sizeof (REAL));
-    xi_e  = temps = q(step_even)(state, temps, sizeof (REAL));
     chi_e = temps = q(step_even)(state, temps, sizeof (REAL));
     rho_e = temps = q(step_even)(state, temps, sizeof (REAL));
     pi_e = temps = q(step_even)(state, temps, sizeof (REAL));
@@ -84,7 +82,7 @@ QX(D_CG)(struct QX(Fermion)          *psi,
         qx(zprint)(state, "DCL CG", "rhs norm %e normalized epsilon %e",
                    rhs_norm, min_epsilon * rhs_norm);
     }
-    
+
     /* precondition */
     qx(cg_precondition)(chi_e, state,
                         gauge, eta->even, eta->odd,
@@ -92,9 +90,9 @@ QX(D_CG)(struct QX(Fermion)          *psi,
                         t0_e, t0_o);
 
     /* solve */
-    status = qx(cg_solver)(xi_e, "DCL CG", out_iterations, out_epsilon,
+    status = qx(cg_solver)(psi->even, "DCL CG", out_iterations, out_epsilon,
                            state, gauge,
-                           chi_e, eta->even, eta->odd,
+                           psi_0->even, chi_e, eta->even, eta->odd,
                            max_iterations, min_epsilon * rhs_norm, options,
                            &flops, &sent, &received,
                            rho_e, pi_e, zeta_e,

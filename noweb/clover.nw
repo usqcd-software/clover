@@ -429,7 +429,7 @@ two lower components.
 \section{Conjugate gradient}
 The equation
 \[
-   M^\dagger M \xi = \chi
+   M^\dagger M \psi = \chi
 \]
 can be solve by the conjugate gradient method if the condition number of
  $M^\dagger M$ is small enough.
@@ -438,37 +438,37 @@ can be solve by the conjugate gradient method if the condition number of
 \SetKwData{Input}{input}
 \KwIn{$M$, the matrix}
 \KwIn{$\chi$, the right hand side of the linear equation}
-\KwIn{$\xi_0$, an initial guess}
+\KwIn{$\psi_0$, an initial guess}
 \KwIn{$n$, the maximum number of iterations}
 \KwIn{$\epsilon$, required precision}
-\KwOut{$\xi$, approximate solution}
+\KwOut{$\psi$, approximate solution}
 \KwOut{$r$, final residue}
 \KwOut{$k$, number of iterations used}
 \SetKw{Break}{break}
 \dontprintsemicolon
 \Begin{
-  $\xi\leftarrow \xi_0$\;
-  $\rho\leftarrow \chi - M^{\dagger}M\xi$\;
+  $\psi\leftarrow \psi_0$\;
+  $\rho\leftarrow \chi - M^{\dagger}M\psi$\;
   $\pi\leftarrow \rho$\;
   $r\leftarrow\langle \rho,\rho\rangle$\;
   $k\leftarrow 0$\;
   \While{$r > \epsilon$ or $k < n$}{
-    $\omega\leftarrow Mp$\;
+    $\omega\leftarrow M\pi$\;
     $\zeta\leftarrow M^{\dagger}\omega$\;
     $a\leftarrow r/\langle \omega,\omega\rangle$\;
     $\rho\leftarrow \rho - a \zeta$\;
     $ g \leftarrow \langle \rho,\rho\rangle$\;
     \If{$ g<\epsilon$}{
-       $\xi\leftarrow \xi+ a \pi$\;
+       $\psi\leftarrow \psi + a \pi$\;
        $r \leftarrow g$\;
        \Break}
     $b\leftarrow g/r$\;
     $r\leftarrow g$\;
-    $\xi\leftarrow \xi + a \pi$\;
+    $\psi\leftarrow \psi + a \pi$\;
     $\pi\leftarrow \rho + b \pi$\;
     $k\leftarrow k + 1$\;
   }
-  \Return {$\xi$, $r$, $k$}.
+  \Return {$\psi$, $r$, $k$}.
 }
 \caption{\label{real}Conjugate Gradient Solver.}
 \end{algorithm}

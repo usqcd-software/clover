@@ -3,7 +3,7 @@ V = 0
 CONFIG = ../target
 library = qop-clover
 CDEBUG = -g
-PREC = D
+# PREC = D
 
 QMP_CFLAGS  = $(shell $(QMP_TOP:%=%/bin/qmp-config) --cflags)
 QMP_LDFLAGS = $(shell $(QMP_TOP:%=%/bin/qmp-config) --ldflags)
@@ -19,7 +19,7 @@ TCLIBS   = $(QDP_LIBS) $(QMP_LIBS) $(CLIBS)
 
 include $(TOP)/config/$(CONFIG)
 
-.PHONY: all clean realclean dist
+.PHONY: all clean realclean thelib dist
 
 ifeq ("$V", "0")
    E=@echo "  "
@@ -32,46 +32,74 @@ endif
 programs = get-gauge \
            check-gamma \
            check-clover \
-           check-dxd
+           check-dxd \
+           check-cg
+
+programs.f = $(programs:%=%F)
+programs.d = $(programs:%=%D)
+
+programs.all = $(programs.f) $(programs.d)
 
 utils = gauge.c \
         fermion.c \
         clover.c
 
 headers = clover-test.h \
-          ../port/qop-clover.h
+          $(TOP)/$(LIMPDIR)/qop-clover.h
 
 sources = $(programs:%=%.c) $(utils)
 
-objects = $(sources:%.c=%.o)
+objects.f = $(sources:%.c=%F.o)
+objects.d = $(sources:%.c=%D.o)
 
 ###############################################################################
-all: $(programs)
+all: $(programs.all)
 
 clean:
 	$E RM objects
-	$C$(RM) $(objects)
+	$C$(RM) $(objects.d) $(objects.f)
 
 realclean: clean
 	$E RM programs
-	$C$(RM) $(programs)
+	$C$(RM) $(programs.all)
 
 dist: realclean
 
+thelib:
+	$(MAKE) -C $(TOP)/$(LIMPDIR)
+
 ###############################################################################
 
-$(programs):%: %.o
+$(programs.all): thelib
+
+$(programs.f):%: %.o
 	$E LD $@
 	$C$(CC) $(CDEBUG) $(TLDFLAGS)  \
-               -DQOP_CLOVER_DEFAULT_PRECISION=\'$(PREC)\' \
-               -L$(TOP)/$(LIMPDIR)  -o $@ $^ \
+               -DQOP_CLOVER_DEFAULT_PRECISION=\'F\' \
+               -L$(TOP)/$(LIMPDIR)  -o $@ $< $(utils:%.c=%F.o) \
                -l$(library) $(TCLIBS)
 
-$(programs): $(utils:%.c=%.o)
+$(programs.d):%: %.o
+	$E LD $@
+	$C$(CC) $(CDEBUG) $(TLDFLAGS)  \
+               -DQOP_CLOVER_DEFAULT_PRECISION=\'D\' \
+               -L$(TOP)/$(LIMPDIR)  -o $@ $< $(utils:%.c=%D.o) \
+               -l$(library) $(TCLIBS)
 
-$(objects): %.o: %.c
+$(programs.f): $(utils:%.c=%F.o)
+$(programs.d): $(utils:%.c=%D.o)
+
+$(objects.f): %F.o: %.c
 	$E CC $@
-	$C$(CC) $(CDEBUG) -DQOP_CLOVER_DEFAULT_PRECISION=\'$(PREC)\' \
+	$C$(CC) $(CDEBUG) -DQOP_CLOVER_DEFAULT_PRECISION=\'F\' \
                $(TCFLAGS) -c -o $@ $<
 
-$(objects): $(headers)
+$(objects.d): %D.o: %.c
+	$E CC $@
+	$C$(CC) $(CDEBUG) -DQOP_CLOVER_DEFAULT_PRECISION=\'D\' \
+               $(TCFLAGS) -c -o $@ $<
+
+$(objects.f): $(headers)
+$(objects.d): $(headers)
+
+$(programs.all): $(TOP)/$(LIMPDIR)/lib$(library).a
