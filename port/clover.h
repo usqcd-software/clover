@@ -36,6 +36,11 @@
 
 /* QCD types (qa0 controls these definitions) */
 struct SUn;
+struct SUnF;
+struct SUnD;
+struct Clover;
+struct CloverF;
+struct CloverD;
 struct Fermion;
 struct FermionF;
 struct FermionD;
@@ -618,6 +623,14 @@ unsigned int q(f_f_eq_dmd)(struct FermionF *dst,
                            int size,
                            const struct FermionD *src_a,
                            const struct FermionD *src_b);
+
+/* converting gauge and clover from double down to float */
+void q(g_f_eq_d)(struct SUnF *dst,
+                 int size,
+                 const struct SUnD *src);
+void q(c_f_eq_d)(struct CloverF *dst,
+                 int size,
+                 const struct CloverD *src);
 
 /* Timing */
 #define BEGIN_TIMING(s) do { gettimeofday(&((s)->t0), NULL); } while (0)
