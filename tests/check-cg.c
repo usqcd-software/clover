@@ -152,15 +152,19 @@ main(int argc, char *argv[])
     double c_sw;
     double in_eps;
     int in_iter;
+    int log_flag;
     double out_eps;
     int out_iter;
     int cg_status;
+    double run_time;
+    long long flops, sent, received;
     
     /* start QDP */
     QDP_initialize(&argc, &argv);
 
-    if (argc != 1 + NDIM + 5) {
-        printf0("ERROR: usage: %s Lx ... seed kappa c_sw iter eps\n", argv[0]);
+    if (argc != 1 + NDIM + 6) {
+        printf0("ERROR: usage: %s Lx ... seed kappa c_sw iter eps log?\n",
+                argv[0]);
         goto end;
     }
 
@@ -173,6 +177,8 @@ main(int argc, char *argv[])
     in_iter = atoi(argv[4 + NDIM]);
     in_eps = atof(argv[5 + NDIM]);
     
+    log_flag = atoi(argv[6 + NDIM]) == 0? 0: QOP_CLOVER_LOG_EVERYTHING;
+
     /* set lattice size and create layout */
     QDP_set_latsize(NDIM, lattice);
     QDP_create_layout();
@@ -256,19 +262,19 @@ main(int argc, char *argv[])
     QOP_CLOVER_D_operator(c_f[2], c_g, c_f[0]);
     cg_status = QOP_CLOVER_D_CG(c_f[3], &out_iter, &out_eps,
                                 c_f[2], c_g, c_f[2], in_iter, in_eps,
-#if 0 
-                               QOP_CLOVER_LOG_CG_RESIDUAL |
-                                QOP_CLOVER_LOG_DIRAC_RESIDUAL |
-                                QOP_CLOVER_FINAL_DIRAC_RESIDUAL |
-                                QOP_CLOVER_FINAL_CG_RESIDUAL
-#endif
-        QOP_CLOVER_LOG_EVERYTHING);
+                                log_flag);
+
+    QOP_CLOVER_performance(&run_time, &flops, &sent, &received, clover_state);
 
     QOP_CLOVER_export_fermion(f_writer, F[3], c_f[3]);
 
     printf0("CG status: %d\n", cg_status);
     printf0("CG iter: %d\n", out_iter);
     printf0("CG eps: %20.10e\n", out_eps);
+    printf0("CG performance: runtime %e sec\n", run_time);
+    printf0("CG performance: flops  %.3e MFlop/s\n", flops * 1e-6 / run_time);
+    printf0("CG performance: snd    %.3e MB/s\n", sent * 1e-6 / run_time);
+    printf0("CG performance: rcv    %.3e MB/s\n", received * 1e-6 / run_time);
 
     /* free CLOVER */
     QOP_CLOVER_free_gauge(&c_g);

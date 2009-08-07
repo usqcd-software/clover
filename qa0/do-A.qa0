@@ -13,5 +13,7 @@
         [src-x     pointer   "src_x"    "const struct Fermion *"   ])
   (loop () (i [const 0] [reg size])
     (macro S-compute-A [reg Ap] [reg C] [reg src-x])
+    (op pointer-add () (src-x) ([reg src-x] [const (size-of Fermion)]))
+    (op pointer-add () (C) ([reg C] [const (size-of Clover)]))
     (store qcd-fermion () ([reg res-x]) [reg Ap])
     (op pointer-add () (res-x) ([reg res-x] [const (size-of Fermion)]))))

@@ -107,8 +107,8 @@ QX(D_CG)(struct QX(Fermion)          *psi,
     qx(cg_inflate)(psi->odd,
                    state, gauge, eta->odd, psi->even,
                    &flops, &sent, &received,
-                   t0_o);
-    
+                   t0_o);    
+
     if (options & (Q(FINAL_DIRAC_RESIDUAL) | Q(LOG_DIRAC_RESIDUAL))) {
         dirac_residual = qx(cg_dirac_error)(psi->even, psi->odd,
                                             state, gauge,
