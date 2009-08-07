@@ -1,7 +1,6 @@
 (verbose [(c99-32 cee-32 bgl/xlc) "/* $Id$ */"])
 
 (include "types.qa0")
-(include "defs-A.qa0")
 (include "defs-B.qa0")
 
 (procedure do-CmB ([stem "do_CmB"]

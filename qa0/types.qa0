@@ -5,6 +5,8 @@
 (verbose [(cee-32 cee-64 c99-32 c99-64 bgl/xlc dry) "#include <complex.h>"])
 (verbose [(cee-32 cee-64 c99-32 c99-64 bgl/xlc dry) "#include <clover.h>"])
 (verbose [(cee-32 cee-64 c99-32 c99-64 bgl/xlc dry) "struct Fermion;"])
+(verbose [(cee-32 cee-64 c99-32 c99-64 bgl/xlc dry) "struct FermionD;"])
+(verbose [(cee-32 cee-64 c99-32 c99-64 bgl/xlc dry) "struct FermionF;"])
 (verbose [(cee-32 cee-64 c99-32 c99-64 bgl/xlc dry) "struct ProjectedFermion;"])
 (verbose [(cee-32 cee-64 c99-32 c99-64 bgl/xlc dry) "struct SUn;"])
 (verbose [(cee-32 cee-64 c99-32 c99-64 bgl/xlc dry) "struct Clover;"])

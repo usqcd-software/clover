@@ -32,12 +32,8 @@ i.sources = sizeof-down-pack.c \
             get-down.c \
             fix-down.c \
             get-down-f.c \
-
-xxxx.i.sources = put-ab.c \
-            put-abi.c \
-            put-abi-z.c \
-            sizeof-ab-table.c \
-            sizeof-abi-table.c \
+            f-d-eq-d-plus-f.c \
+            f-f-eq-d-minus-d.c \
 
 x.sources = f-norm \
             f-add3 \
@@ -69,32 +65,6 @@ x.sources = f-norm \
             f-copy \
             f-diff-norm \
 
-xxxx.x.sources = \
-            sizeof-pfermion \
-            fv-zero \
-            fv-copy \
-            fv-get \
-            fv-put \
-            f-zero \
-            f-add2x \
-            scg-madd \
-            scg-xp \
-            do-A \
-            do-A-conj \
-            do-A-inv \
-            do-A-inv-conj \
-            do-F \
-            do-F-conj \
-            do-B-A-inv \
-            do-B-A-inv-F \
-            do-1-sub-B-A-inv-F \
-            do-1-sub-F \
-            do-1-sub-F-conj \
-            do-1-sub-F-conj-norm \
-            do-1-sub-B-A-inv-F-norm \
-            do-A-inv-conj-B-conj \
-            do-A-inv-conj-B-conj-F-conj \
-
 sources = $(i.sources) \
           $(x.sources:%=%f.c) \
           $(x.sources:%=%d.c)
@@ -124,4 +94,3 @@ realclean: clean
 $(sources:%.c=%.o): %.o: %.c
 	$E CC $<
 	$C$(CC) $(CFLAGS) -I../port -c -o $@ $<
-

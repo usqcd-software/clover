@@ -21,10 +21,8 @@ endif
 DEST=$(TOP)/$(shell echo $(TARGET) | sed -e sx/x-xg)
 
 headers = types.qa0 \
-
-xxxxx.header = \
           defs-A.qa0 \
-          defs-F.qa0 \
+          defs-B.qa0 \
           defs-spin.qa0 \
 
 sources = sizeof-down-pack.qa0 \
@@ -40,13 +38,8 @@ sources = sizeof-down-pack.qa0 \
           get-down.qa0 \
           get-down-f.qa0 \
           fix-down.qa0 \
-
-xxxxxx.sources = \
-          put-ab.qa0 \
-          put-abi.qa0 \
-          put-abi-z.qa0 \
-          sizeof-ab-table.qa0 \
-          sizeof-abi-table.qa0 \
+          f-d-eq-d-plus-f.qa0 \
+          f-f-eq-d-minus-d.qa0 \
 
 x.sources = f-dot.qa0 \
             f-add3.qa0 \
@@ -78,60 +71,25 @@ x.sources = f-dot.qa0 \
             f-copy.qa0 \
             f-diff-norm.qa0 \
 
-xxxxxxx.x.sources = \
-            sizeof-pfermion.qa0 \
-            fv-zero.qa0 \
-            fv-copy.qa0 \
-            fv-get.qa0 \
-            fv-put.qa0 \
-            f-zero.qa0 \
-            f-add2x.qa0 \
-            scg-madd.qa0 \
-            scg-xp.qa0 \
-            do-A.qa0 \
-            do-A-conj.qa0 \
-            do-A-inv.qa0 \
-            do-A-inv-conj.qa0 \
-            do-F.qa0 \
-            do-F-conj.qa0 \
-            do-B-A-inv.qa0 \
-            do-B-A-inv-F.qa0 \
-            do-1-sub-F.qa0 \
-            do-1-sub-F-conj.qa0 \
-            do-1-sub-F-conj-norm.qa0 \
-            do-1-sub-B-A-inv-F.qa0 \
-            do-1-sub-B-A-inv-F-norm.qa0 \
-            do-A-inv-conj-B-conj.qa0 \
-            do-A-inv-conj-B-conj-F-conj.qa0 \
-
 # Who include defs-A.qa0
-A.sources = do-A-plus-B.qa0 \
+A.sources = do-A.qa0 \
+            do-A-times-B.qa0 \
+            do-A-conj-times-B-conj.qa0 \
+            do-A-plus-B.qa0 \
+            do-A-minus-B.qa0 \
+            do-A-minus-B-norm.qa0 \
             do-A-conj-plus-B-conj.qa0 \
-
-xxxxxx.A.sources = do-A.qa0 \
-            do-A-conj.qa0 \
-            do-A-inv.qa0 \
-            do-A-conj-inv.qa0 \
-            do-B-A-inv.qa0 \
-            do-B-A-inv-F.qa0 \
-            do-1-sub-B-A-inv-F.qa0 \
-            do-1-sub-B-A-inv-F-norm.qa0 \
-            do-A-inv-conj-B-conj.qa0 \
-            do-A-inv-conj-B-conj-F-conj.qa0 \
+            do-A-conj-minus-B-conj.qa0 \
 
 # Who include defs-F.qa0 (they also need defs-spin.qa0)
-B.sources = do-A-plus-B.qa0 \
+B.sources = do-A-times-B.qa0 \
+            do-A-conj-times-B-conj.qa0 \
+            do-A-plus-B.qa0 \
+            do-A-minus-B.qa0 \
+            do-A-minus-B-norm.qa0 \
+            do-C-minus-B.qa0 \
             do-A-conj-plus-B-conj.qa0 \
-
-xxxx.F.sources = do-F.qa0 \
-            do-F-conj.qa0 \
-            do-1-sub-F.qa0 \
-            do-1-sub-F-conj.qa0 \
-            do-1-sub-F-conj-norm.qa0 \
-            do-B-A-inv-F.qa0 \
-            do-1-sub-B-A-inv-F.qa0 \
-            do-1-sub-B-A-inv-F-norm.qa0 \
-            do-A-inv-conj-B-conj-F-conj.qa0 \
+            do-A-conj-minus-B-conj.qa0 \
 
 # Who include defs-spin.qa0
 spin.sources = $(B.sources) \

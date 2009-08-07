@@ -12,15 +12,19 @@
 # include <sys/time.h>
 
 # define q(x) qop_clover_##x
+# define qf(x) qop_f3_clover_##x
+# define qd(x) qop_d3_clover_##x
 # define Q(x) QOP_CLOVER_##x
+# define QF(x) QOP_F3_CLOVER_##x
+# define QD(x) QOP_D3_CLOVER_##x
 # if QOP_CLOVER_DEFAULT_PRECISION=='D'
-#  define qx(x) qop_d3_clover_##x
-#  define QX(x) QOP_D3_CLOVER_##x
+#  define qx(x) qd(x)
+#  define QX(x) QD(x)
 #  define REAL double
 # endif
 # if QOP_CLOVER_DEFAULT_PRECISION=='F'
-#  define qx(x) qop_f3_clover_##x
-#  define QX(x) QOP_F3_CLOVER_##x
+#  define qx(x) qf(x)
+#  define QX(x) QF(x)
 #  define REAL float
 # endif
 
@@ -33,6 +37,8 @@
 /* QCD types (qa0 controls these definitions) */
 struct SUn;
 struct Fermion;
+struct FermionF;
+struct FermionD;
 struct ProjectedFermion;
 
 /* Internal types */
@@ -273,10 +279,6 @@ void qx(boundary)(struct eo_lattice *xy,
                   const struct Fermion *src_y,
                   long long *flops);
 
-#if 0 /* XXXX */
-int q(sizeof_ABTable)(int Ls);
-int q(sizeof_ABiTable)(int Ls);
-#endif /* XXXX */
 /* Backend controled structure sizes */
 int q(sizeof_neighbor)(int volume);
 int q(sizeof_up_pack)(int volume);
@@ -285,12 +287,7 @@ int qx(sizeof_fermion)(int volume);
 int qx(sizeof_gauge)(int volume);
 int qx(sizeof_clover)(int volume);
 
-#if 0 /* XXXX */
-int qx(sizeof_projected_fermion)(int volume);
-
 /* qa0 level data access routines */
-#endif /* XXXX */
-
 void qx(put_fermion)(struct Fermion *data, int pos, const double r[]);
 void qx(get_fermion)(double r[], const struct Fermion *data, int pos);
 void qx(put_gauge)(struct SUn *ptr, int pos, const double r[]);
@@ -312,13 +309,6 @@ void q(get_neighbor)(int *m, int *f_up, int *u_up,
                      const struct neighbor *n, int p);
 void q(fix_neighbor_f_up)(struct neighbor *n, int p, int f_up, int d);
 void q(fix_neighbor_f_down)(struct neighbor *n, int p, int f_down, int d);
-#if 0 /* XXXX */
-void q(put_ABTable)(struct ABTable *t, int i, double w, double v);
-void q(put_ABiTableZ)(struct ABiTable *t, double z);
-void q(put_ABiTable)(struct ABiTable *t,
-                     int i, double vp, double sp, double fp);
-
-#endif /* XXXX */
 
 /* Linear algebra on fermions */
 void qx(f_zero)(struct Fermion *dst, 
@@ -356,20 +346,6 @@ unsigned int qx(f_diff_norm)(double *s,
                              const struct Fermion *a,
                              const struct Fermion *b);
 
-#if 0 /* XXXX */
-void qx(fv_zero)(struct VectorFermion *vf,
-                 int size, int count);
-void qx(fv_copy)(struct VectorFermion *vf,
-                 int size, int Ls, int count,
-                 const struct Fermion *f);
-void qx(fv_get)(struct Fermion *f,
-                int size, int Ls, int count,
-                const struct VectorFermion *vf, int k);
-void qx(fv_put)(struct VectorFermion *vf, int k,
-                int size, int Ls, int count,
-                const struct Fermion *f);
-
-#endif /* XXXX */
 /* basic matrices */
 unsigned int qx(op_norm2)(double *global_norm,
                           const struct QX(Fermion) *psi,
@@ -378,36 +354,7 @@ unsigned int qx(do_A)(struct Fermion *r_x,
                       int size,
                       const struct Clover *C,
                       const struct Fermion *s_x);
-#if 0 /* XXXX */
-unsigned int qx(do_A_conj)(struct Fermion *r_x,
-                           int size, int Ls,
-                           const struct ABTable *axptable,
-                           const struct ABTable *axmtable,
-                           const struct Fermion *s_x);
-unsigned int qx(do_A_inverse)(struct Fermion *r,
-                              int size, int Ls,
-                              const struct ABiTable *iatable_p,
-                              const struct ABiTable *iatable_m,
-                              const struct Fermion *x);
-unsigned int qx(do_A_conj_inverse)(struct Fermion *r,
-                                   int size, int Ls,
-                                   const struct ABiTable *iatable_p,
-                                   const struct ABiTable *iatable_m,
-                                   const struct Fermion *x);
-unsigned int qx(do_F)(struct Fermion *res_x,
-                      int start, int size, int Ls,
-                      const struct neighbor *neighbor,
-                      const struct SUn *U,
-                      const struct Fermion *src_y,
-                      void *rb[]);
-unsigned int qx(do_F_conj)(struct Fermion *res_x,
-                           int start, int size, int Ls,
-                           const struct neighbor *neighbor,
-                           const struct SUn *U,
-                           const struct Fermion *src_y,
-                           void *rb[]);
 
-#endif /* XXXX */
 /* basic A+B, A, B, and their combinations  */
 unsigned int qx(do_ApB)(struct Fermion *r_x,
                         int start, int size,
@@ -472,89 +419,6 @@ unsigned int qx(do_AxBx)(struct Fermion *r_x,
                          const struct Fermion *s_y,
                          void *rb[]);
 
-#if 0 /* XXXX */
-/* basic B 1/A F */
-unsigned int qx(do_BA1)(struct Fermion *r_x,
-                        int size, int Ls,
-                        const struct ABTable *bptable,
-                        const struct ABTable *bmtable,
-                        const struct ABiTable *iatable_p,
-                        const struct ABiTable *iatable_m,
-                        const struct Fermion *s_x);
-unsigned int qx(do_BA1F)(struct Fermion *r_y,
-                         int start, int size, int Ls,
-                         const struct ABTable *bptable,
-                         const struct ABTable *bmtable,
-                         const struct ABiTable *iatable_p,
-                         const struct ABiTable *iatable_m,
-                         const struct neighbor *neighbor,
-                         const struct SUn *U,
-                         const struct Fermion *s_x,
-                         void *rb[]);
-unsigned int qx(do_1mBA1F)(struct Fermion *r_y,
-                           int start, int size, int Ls,
-                           const struct ABTable *bptable,
-                           const struct ABTable *bmtable,
-                           const struct ABiTable *iatable_p,
-                           const struct ABiTable *iatable_m,
-                           const struct neighbor *neighbor,
-                           const struct SUn *U,
-                           const struct Fermion *a_y,
-                           const struct Fermion *b_x,
-                           void *rb[]);
-unsigned int qx(do_1mBA1F_norm)(struct Fermion *r_y,
-                                double *local_norm,
-                                int start, int size, int Ls,
-                                const struct ABTable *bptable,
-                                const struct ABTable *bmtable,
-                                const struct ABiTable *iatable_p,
-                                const struct ABiTable *iatable_m,
-                                const struct neighbor *neighbor,
-                                const struct SUn *U,
-                                const struct Fermion *a_y,
-                                const struct Fermion *b_x,
-                                void *rb[]);
-unsigned int qx(do_A1xBx)(struct Fermion *r_y,
-                          int size, int Ls,
-                          const struct ABTable *bptable,
-                          const struct ABTable *bmtable,
-                          const struct ABiTable *iatable_p,
-                          const struct ABiTable *iatable_m,
-                          const struct Fermion *b_y);
-unsigned int qx(do_A1xBxFx)(struct Fermion *r_x,
-                            int start, int size, int Ls,
-                            const struct ABiTable *aiptable,
-                            const struct ABiTable *aimtable,
-                            const struct ABTable *bptable,
-                            const struct ABTable *bmtable,
-                            const struct neighbor *neighbor,
-                            const struct SUn *U,
-                            const struct Fermion *s_y,
-                            void *rb[]);
-unsigned int qx(do_1mF)(struct Fermion *r_y,
-                        int start, int size, int Ls,
-                        const struct neighbor *neighbor,
-                        const struct SUn *U,
-                        const struct Fermion *a_y,
-                        const struct Fermion *b_x,
-                        void *rb[]);
-unsigned int qx(do_1mFx)(struct Fermion *r_y,
-                         int start, int size, int Ls,
-                         const struct neighbor *neighbor,
-                         const struct SUn *U,
-                         const struct Fermion *a_y,
-                         const struct Fermion *b_x,
-                         void *rb[]);
-unsigned int qx(do_1mFx_norm)(struct Fermion *r_y,
-                              double *local_norm,
-                              int start, int size, int Ls,
-                              const struct neighbor *neighbor,
-                              const struct SUn *U,
-                              const struct Fermion *a_y,
-                              const struct Fermion *b_x,
-                              void *rb[]);
-
-#endif /* XXXX */
 /* even/odd level routines */
 void qx(op_CmB)(struct Fermion *res_x,
                 struct eo_lattice *r_x,
@@ -613,68 +477,6 @@ void qx(op_AxmBx)(struct Fermion *r_x,
                   long long *flops,
                   long long *sent,
                   long long *received);
-
-#if 0 /* XXXX */
-void qx(op_Ax)(struct Fermion *r_x,
-               struct eo_lattice *xy,
-               const struct Q(Parameters) *params,
-               const struct Fermion *s_x,
-               long long *flops);
-void qx(op_A1)(struct Fermion *r_x,
-               struct eo_lattice *xy,
-               const struct Q(Parameters) *params,
-               const struct Fermion *s_x,
-               long long *flops);
-void qx(op_A1x)(struct Fermion *r_x,
-                struct eo_lattice *xy,
-                const struct Q(Parameters) *params,
-                const struct Fermion *s_x,
-                long long *flops);
-void qx(op_B)(struct Fermion *r_x,
-              struct eo_lattice *xy,
-              const struct Q(Parameters) *params,
-              const struct Fermion *s_x,
-              long long *flops);
-void qx(op_Bx)(struct Fermion *r_x,
-               struct eo_lattice *xy,
-               const struct Q(Parameters) *params,
-               const struct Fermion *s_x,
-               long long *flops);
-void qx(op_B1)(struct Fermion *r_x,
-               struct eo_lattice *xy,
-               const struct Q(Parameters) *params,
-               const struct Fermion *s_x,
-               long long *flops);
-void qx(op_B1x)(struct Fermion *r_x,
-                struct eo_lattice *xy,
-                const struct Q(Parameters) *params,
-                const struct Fermion *s_x,
-                long long *flops);
-void qx(op_A1xBx)(struct Fermion *r_x,
-                  struct eo_lattice *xy,
-                  const struct Q(Parameters) *params,
-                  const struct Fermion *s_x,
-                  long long *flops);
-void qx(op_BA1)(struct Fermion *r_x,
-                struct eo_lattice *xy,
-                const struct Q(Parameters) *params,
-                const struct Fermion *a_x,
-                long long *flops);
-void qx(op_F)(struct Fermion *r_x,
-              struct eo_lattice *xy,
-              const struct SUn *U,
-              const struct Fermion *s_y,
-              long long *flops,
-              long long *sent,
-              long long *received);
-void qx(op_Fx)(struct Fermion *r_x,
-               struct eo_lattice *xy,
-               const struct SUn *U,
-               const struct Fermion *s_y,
-               long long *flops,
-               long long *sent,
-               long long *received);
-#endif /* XXXX */
 void qx(op_ApB)(struct Fermion *r_x,
                 struct eo_lattice *xy,
                 const struct SUn *U,
@@ -693,79 +495,6 @@ void qx(op_AxpBx)(struct Fermion *r_x,
                   long long *flops,
                   long long *sent,
                   long long *received);
-#if 0 /* XXXX */
-void qx(op_1mF)(struct Fermion *r_x,
-                struct eo_lattice *xy,
-                const struct SUn *U,
-                const struct Fermion *a_x,
-                const struct Fermion *a_y,
-                long long *flops,
-                long long *sent,
-                long long *received);
-void qx(op_1mFx)(struct Fermion *r_x,
-                 struct eo_lattice *xy,
-                 const struct SUn *U,
-                 const struct Fermion *a_x,
-                 const struct Fermion *a_y,
-                 long long *flops,
-                 long long *sent,
-                 long long *received);
-void qx(op_1mBA1F)(struct Fermion *r_x,
-                   struct eo_lattice *xy,
-                   const struct Q(Parameters) *params,
-                   const struct SUn *U,
-                   const struct Fermion *a_x,
-                   const struct Fermion *a_y,
-                   long long *flops,
-                   long long *sent,
-                   long long *received);
-void qx(op_1mBA1F_norm)(struct Fermion *r_x,
-                        double *norm,
-                        struct eo_lattice *xy,
-                        const struct Q(Parameters) *params,
-                        const struct SUn *U,
-                        const struct Fermion *a_x,
-                        const struct Fermion *a_y,
-                        long long *flops,
-                        long long *sent,
-                        long long *received);
-void qx(op_1mFx_norm)(struct Fermion *r_x,
-                      double *local_norm,
-                      struct eo_lattice *xy,
-                      const struct SUn *U,
-                      const struct Fermion *a_x,
-                      const struct Fermion *a_y,
-                      long long *flops,
-                      long long *sent,
-                      long long *received);
-void qx(op_A1xBxFx)(struct Fermion *r_x,
-                    struct eo_lattice *xy,
-                    const struct Q(Parameters) *params,
-                    const struct SUn *U,
-                    const struct Fermion *a_y,
-                    long long *flops,
-                    long long *sent,
-                    long long *received);
-void qx(op_BA1F)(struct Fermion *r_x,
-                 struct eo_lattice *xy,
-                 const struct Q(Parameters) *params,
-                 const struct SUn *U,
-                 const struct Fermion *a_y,
-                 long long *flops,
-                 long long *sent,
-                 long long *received);
-void qx(op_D)(struct Fermion *r_x,
-              struct eo_lattice *xy,
-              struct eo_lattice *yx,
-              const struct Q(Parameters) *params,
-              const struct SUn *U,
-              const struct Fermion *a_x,
-              const struct Fermion *a_y,
-              long long *flops,
-              long long *sent,
-              long long *received,
-              struct Fermion *tmp_y);
-#endif /* XXXX */
 void qx(op_even_M)(struct Fermion *r_x,
                    struct Q(State) *state,
                    const struct QX(Gauge) *gauge,
@@ -791,19 +520,7 @@ void qx(op_even_Mx)(struct Fermion *r_x,
                     long long *sent,
                     long long *received,
                     struct Fermion *tmp_y);
-#if 0 /* XXXX */
-void qx(op_even_Mxn)(struct Fermion *r_x,
-                     double *global_norm,
-                     struct Q(State) *state,
-                     const struct Q(Parameters) *params,
-                     const struct SUn *U,
-                     const struct Fermion *a_x,
-                     long long *flops,
-                     long long *sent,
-                     long long *received,
-                     struct Fermion *tmp_x,
-                     struct Fermion *tmp_y);
-#endif /* XXXX */
+
 /* logging */
 void qx(zprint)(struct Q(State) *state,
                 const char *source,
@@ -878,38 +595,7 @@ int qx(cg_solver)(struct Fermion *psi_e,
                   struct Fermion *t1_e,
                   struct Fermion *t0_o,
                   struct Fermion *t1_o);
-#if 0 /* XXXX */
-int qx(scg_solver)(struct VectorFermion *v_xi_e,
-                   struct Fermion *xi_e,
-                   int count,
-                   const char *source,
-                   int *out_iterations,
-                   double *out_epsilon,
-                   struct Q(State) *state,
-                   const struct Q(Parameters) *params,
-                   const double shift[],
-                   const struct SUn *U,
-                   const struct Fermion *chi_e,
-                   int max_iterations,
-                   double min_epsilon,
-                   unsigned options,
-                   long long *flops,
-                   long long *sent,
-                   long long *received,
-                   double dp[],
-                   double d[],
-                   double dn[],
-                   double ad[],
-                   double bdd[],
-                   struct Fermion *rho_e,
-                   struct VectorFermion *vpi_e,
-                   struct Fermion *pi_e,
-                   struct Fermion *zeta_e,
-                   struct Fermion *t0_e,
-                   struct Fermion *t1_e,
-                   struct Fermion *t2_e,
-                   struct Fermion *t0_o);
-#endif /* XXXX */
+
 /*
  *  compute x <- x + alpha p
  *          p <- r + beta p
@@ -920,37 +606,18 @@ unsigned int qx(cg_xp)(struct Fermion *x,
                        double alpha,
                        double beta,
                        const struct Fermion *r);
-#if 0 /* XXXX */
-/*
- * compute xi <- xi + a * pi
- *         v_xi[i] <- v_xi[i] + ad[i] * pi
- */
-unsigned int qx(scg_madd)(struct Fermion *xi_e,
-                          struct VectorFermion *v_xi_e,
-                          int size, int Ls, int count,
-                          double a,
-                          const double *ad,
-                          const struct Fermion *pi_e);
-/*
- * compute xi <- xi + a * pi
- *         pi <- rho + b * pi
- *         v_xi[i] <- v_xi[i] + ad[i] * v_pi[i]
- *         v_pi[i] <- rho + bdd[i] * v_pi[i]
- */
-unsigned int qx(scg_xp)(struct Fermion *xi_e,
-                        struct Fermion *pi_e,
-                        struct VectorFermion *v_xi_e,
-                        struct VectorFermion *v_pi_e,
-                        int size, int Ls, int count,
-                        double a,
-                        double b,
-                        const double *ad,
-                        const double *bdd,
-                        const struct Fermion *rho_e);
 
-/* --- other composites are here */
-#endif /* XXXX XXXX */
-
+/* mixed precision operations */
+/* Fd = Fd + Ff */
+unsigned int q(f_d_eq_dpf)(struct FermionD *dst,
+                           int size,
+                           const struct FermionD *src_d,
+                           const struct FermionF *src_f);
+/* Ff = Fd - Fd */
+unsigned int q(f_f_eq_dmd)(struct FermionF *dst,
+                           int size,
+                           const struct FermionD *src_a,
+                           const struct FermionD *src_b);
 
 /* Timing */
 #define BEGIN_TIMING(s) do { gettimeofday(&((s)->t0), NULL); } while (0)
