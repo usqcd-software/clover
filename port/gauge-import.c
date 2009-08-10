@@ -337,8 +337,8 @@ QX(import_gauge)(struct QX(Gauge) **gauge_ptr,
       for (v = r, d = 0; d < Q(DIM); d++) {
           for (a = 0; a < Q(COLORS); a++) {
               for (b = 0; b < Q(COLORS); b++) {
-                  *v++ = kappa * U_reader(d, x, a, b, 0, env);
-                  *v++ = kappa * U_reader(d, x, a, b, 1, env);
+                  *v++ = -kappa * U_reader(d, x, a, b, 0, env);
+                  *v++ = -kappa * U_reader(d, x, a, b, 1, env);
               }
           }
       }
