@@ -76,7 +76,7 @@ G_{\mu\nu}(x) &=& U_\mu(x)U_\nu(x+\hat\mu)
                        U_\nu(x-\hat\nu+\hat\mu)U_\mu^\dagger(x)\nonumber\\
             && + U_\mu^\dagger(x-\hat\mu)U_\nu^\dagger(x-\hat\nu-\hat\mu)
                        U_\mu(x-\hat\nu-\hat\mu)U_\nu(x-\hat\nu)\nonumber\\
-            && + U_\nu(x)U_\mu^\dagger(x+\hat\nu)
+            && + U_\nu(x)U_\mu^\dagger(x+\hat\nu-\hat\mu)
                        U_\nu^\dagger(x-\hat\mu)U_\nu(x-\hat\mu)
 \end{eqnarray}
 
