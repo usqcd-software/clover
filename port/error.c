@@ -6,7 +6,7 @@ Q(error)(struct Q(State) *state)
   const char *msg;
 
   if (state == 0)
-    return "NULL MDWF state";
+    return "NULL CLOVER state";
 
   msg = state->error;
   if (state->fatal_error == 0) {

@@ -1,4 +1,3 @@
-# XXX This file still needs editing.
 # common makefile for standard targets
 TOP        = ..
 V          = 0
@@ -17,7 +16,7 @@ else
    C=
 endif
 
-headers = ../../port/mdwf.h
+headers = ../../port/clover.h
 
 i.sources = sizeof-down-pack.c \
             sizeof-neighbor.c \

@@ -1,4 +1,4 @@
-# XXX this file needs editing.#!/bin/sh -f
+#!/bin/sh -f
 
 version='version 1.0.0 $Id$'
 
@@ -6,7 +6,7 @@ cc="@cc@"
 cflags="-I@incdir@ @qmp_cflags@ @cflags@"
 ld="@ld@"
 ldflags="-L@libdir@ @qmp_ldflags@ @ldflags@"
-libs="-lqop-mdwf3 @qmp_libs@ @libs@"
+libs="-lqop-clover @qmp_libs@ @libs@"
 qdp="@qdp@"
 qmp="@qmp@"
 target="@target@"

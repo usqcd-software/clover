@@ -69,7 +69,7 @@ D_W(x,x') &=& \sum_{\mu=0}^3\left[(1-\gamma_\mu) U_\mu(x)\delta_{x,x'-\hat\mu}
 \\
 T_{SW}(x,x') &=& \delta_{x,x'} \sum_{\mu=0}^2\sum_{\nu=\mu+1}^3 \sigma_{\mu\nu}F_{\mu\nu}(x)
 \label{Tsw}\\
-F_{\mu\nu}(x) &=& G_{\mu\nu}(x)-G_{\mu\nu}^\dagger(x)\\
+F_{\mu\nu}(x) &=&\frac{1}{8i}\left(G_{\mu\nu}(x)-G_{\mu\nu}^\dagger(x)\right)\\
 G_{\mu\nu}(x) &=& U_\mu(x)U_\nu(x+\hat\mu)
                        U_\mu^\dagger(x+\hat\nu)U_\nu^\dagger(x)\nonumber\\
             && + U_\nu^\dagger(x-\hat\nu)U_\mu(x-\hat\nu)
@@ -281,7 +281,8 @@ for now.
                        (plus-one 0)
                        (plus-one 1)))
 @
-This is our starting point in sums over directions
+This is our starting point in sums over directions. For historical reasons the
+name starts with [[mdwf]]. This is what other parts of QA0 expect.
 <<Start $\mu$ sum>>=
 (define mdwf-start-sum-dimension 3)
 (define mdwf-start-sum-direction 'plus)

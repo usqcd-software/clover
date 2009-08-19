@@ -7,32 +7,32 @@ show_help() {
 
     Options:
 
-     --help                   show this help and exit
-     --prefix=DIR             installation prefix
-     --bindir=DIR             use DIR instead of PREFIX/bin for executables
-     --libdir=DIR             use DIR instead of PREFIX/lib for libraries
-     --incdir=DIR             use DIR instead of PREFIX/include for headers
-     --docdir=DIR             use DIR instead of PREFIX/share/doc/mdwf for docs
-     --with-qdp=DIR           use DIR/bin/qdp-config to query QDP configuration
-     --with-qmp=DIR           use DIR/bin/qmp-config to query QMP configuration
-     --target=TARGET          build target architecture, see below
+     --help                 show this help and exit
+     --prefix=DIR           installation prefix
+     --bindir=DIR           use DIR instead of PREFIX/bin for executables
+     --libdir=DIR           use DIR instead of PREFIX/lib for libraries
+     --incdir=DIR           use DIR instead of PREFIX/include for headers
+     --docdir=DIR           use DIR instead of PREFIX/share/doc/clover for docs
+     --with-qdp=DIR         use DIR/bin/qdp-config to query QDP configuration
+     --with-qmp=DIR         use DIR/bin/qmp-config to query QMP configuration
+     --target=TARGET        build target architecture, see below
 
    Target architectures:
 
-     cee-32                  K&R C on a 32-bit target
-     cee-64                  K&R C on a 64-bit target
-     c99-32                  ISO/IEC 9899 (aka C99) on a 32-bit target
-     c99-64                  ISO/IEC 9899 (aka C99) on a 64-bit target
-     bgl/xlc                 BG/L or BG/P with IBM XLC compiler
+     cee-32                K&R C on a 32-bit target
+     cee-64                K&R C on a 64-bit target
+     c99-32                ISO/IEC 9899 (aka C99) on a 32-bit target
+     c99-64                ISO/IEC 9899 (aka C99) on a 64-bit target
+     bgl/xlc               BG/L or BG/P with IBM XLC compiler
 
    Environment variables:
-     CC                      C compiler to use
-     CFLAGS                  Flags to pass to the compiler
-     LD                      Link editor to use
-     LDFLAGS                 Flags to pass to the linker
-     LIBS                    Extra libraries to use
-     AR                      Library archiver
-     RANLIB                  Library indexing tool
+     CC                    C compiler to use
+     CFLAGS                Flags to pass to the compiler
+     LD                    Link editor to use
+     LDFLAGS               Flags to pass to the linker
+     LIBS                  Extra libraries to use
+     AR                    Library archiver
+     RANLIB                Library indexing tool
 EOF
 exit $1
 }
@@ -175,7 +175,7 @@ normalize() {
 
 # show_config
 show_config() {
-   echo "MDWF configuration summary:"
+   echo "CLOVER configuration summary:"
    echo "====================================="
    echo "prefix                  $prefix"
    echo "binaries directory      $bindir"
