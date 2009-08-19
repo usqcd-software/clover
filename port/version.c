@@ -6,5 +6,5 @@
 const char *
 Q(version)(void)
 {
-  return "Working code";
+  return "Clover version 1.0.0";
 }
