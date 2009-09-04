@@ -21,7 +21,7 @@
 \author{Andrew Pochinsky}
 \catcode`\$=11
 \date{$Id$\\
-Release x.x.x}
+Release 1.0.1}
 \catcode`\$=3
 
 \begin{document}
@@ -69,7 +69,8 @@ D_W(x,x') &=& \sum_{\mu=0}^3\left[(1-\gamma_\mu) U_\mu(x)\delta_{x,x'-\hat\mu}
 \\
 T_{SW}(x,x') &=& \delta_{x,x'} \sum_{\mu=0}^2\sum_{\nu=\mu+1}^3 \sigma_{\mu\nu}F_{\mu\nu}(x)
 \label{Tsw}\\
-F_{\mu\nu}(x) &=&\frac{1}{8i}\left(G_{\mu\nu}(x)-G_{\mu\nu}^\dagger(x)\right)\\
+F_{\mu\nu}(x) &=&\frac{1}{8i}\left(G_{\mu\nu}(x)-G_{\mu\nu}^\dagger(x)\right)
+\label{action-F}\\
 G_{\mu\nu}(x) &=& U_\mu(x)U_\nu(x+\hat\mu)
                        U_\mu^\dagger(x+\hat\nu)U_\nu^\dagger(x)\nonumber\\
             && + U_\nu^\dagger(x-\hat\nu)U_\mu(x-\hat\nu)
@@ -78,7 +79,12 @@ G_{\mu\nu}(x) &=& U_\mu(x)U_\nu(x+\hat\mu)
                        U_\mu(x-\hat\nu-\hat\mu)U_\nu(x-\hat\nu)\nonumber\\
             && + U_\nu(x)U_\mu^\dagger(x+\hat\nu-\hat\mu)
                        U_\nu^\dagger(x-\hat\mu)U_\nu(x-\hat\mu)
+\label{action-G}
 \end{eqnarray}
+
+The interface to the library is more generic than equations above would
+suggest, see detailed description of gauge field import routines in
+section~\ref{import-gauge} below.
 
 \pagebreak
 \section{Gamma Matrices}
@@ -338,7 +344,7 @@ Here is a module for PLT:
 )
 @
 
-\pagebreak\section{Preconditioning}
+\pagebreak\section{Preconditioning}\label{precond}
 We use four dimensional preconditioner to improve convergence of the CG.
 Let us color the lattice sites according to the
 parity of $x_0+x_1+x_2+x_3$. Then we can rewrite $D_{CL}$ from Eq.~(\ref{D_CL})
@@ -395,9 +401,10 @@ following.
             - B_{eo}A_{oo}^{-1}\eta_o\right).
 \]
 \item Solve
-\[
+\begin{equation}
 M^{\dagger}M\psi_e = \chi_e
-\]
+\label{normal-eq}
+\end{equation}
 for $\psi_e$ using Alg.~\ref{real}.
 \item Compute
 \begin{eqnarray}
@@ -610,7 +617,7 @@ error, [[QOP_CLOVER_error()]] returns [[NULL]]. The function could be called
 multiple times, it does not reset the error code, instead it marks in the state
 that the error was reported thus allowing latching another error.
 
-\section{Gauge}
+\section{Gauge}\label{import-gauge}
 Any gauge field should be imported into the library format before it could
 be used. To keep the interface as general as possible, we use a query function
 approach for inport. There are two versions of [[QOP_CLOVER_import_gauge]], one
@@ -668,6 +675,11 @@ The [[U_reader()]] and [[F_reader()] functions are
 passed the [[env]] parameter
 that may be used to access the guage field from the outer space.  The [[env]]
 parameter is not used by [[import_gauge()]] functions for any other purpose.
+
+Note that [[import_gauge]] routines do not assume that [[F_reader()]] provides
+values as specified by Eqs.~(\ref{action-F}) and~(\ref{action-G}). In
+particular, values returned by [[F_reader()]] are not expected to be related to
+values returned by [[U_reader()]] at all.
 
 If the function succeeds then the [[*gauge_ptr]] will be initialized to a value
 that may be passed to other library functions. If something goes wrong,
@@ -938,9 +950,14 @@ enum {
 };
 @
 
-First, the convenience routine to solve $D_{DW}\psi=\eta$. At most
-[[max_iterations]] are performed, the CG stops when the iterative precontioned
-residue becomes $\epsilon$ or less.
+First, the convenience routine to solve $D_{CL}\psi=\eta$. At most
+[[max_iterations]] are performed, the CG stops when it finds a vector $\psi_e$
+close enough to the solution in the following sense:
+\[
+    ||M^{\dagger}M\psi_e - \chi_e||^2 < \epsilon ||\chi_e||^2,
+\]
+see Eq.~(\ref{normal-eq}) in section~\ref{precond}.
+
 If conjugate gradient converges, zero is returned. In this case
 [[out_iterations]] contains the number of iterations and [[out_epsilon]]
 contains normalized iterative CG residual.

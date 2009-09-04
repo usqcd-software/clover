@@ -1,6 +1,6 @@
 #!/bin/sh -f
 
-version='version 1.0.0 $Id$'
+version='XXX version 1.0.1 $Id$'
 
 cc="@cc@"
 cflags="-I@incdir@ @qmp_cflags@ @cflags@"
