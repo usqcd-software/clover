@@ -10,7 +10,7 @@ qx(op_AxBx)(struct Fermion *r_x,
             long long *sent,
             long long *received)
 {
-    qx(boundary)(xy, qx(up_project_n), qx(down_project_n), U, a_y, flops);
+    qx(boundary)(xy, qx(up_project_x), qx(down_project_x), U, a_y, flops);
 
     if (xy->h_valid)
         QMP_start(xy->handle);

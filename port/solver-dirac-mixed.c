@@ -108,7 +108,7 @@ Q(mixed_D_CG)(struct QD(Fermion)          *psi,
     /* clear bits we do not understand */
     options = options & MAX_OPTIONS;
 
-    /* XXX allocate double locals */
+    /* allocate double locals */
     ptr_d = qd(allocate_eo)(state, &ptr_size_d, &temps,
                             0,  /* header */
                             3,  /* evens */
@@ -121,7 +121,7 @@ Q(mixed_D_CG)(struct QD(Fermion)          *psi,
     t1_e  = temps = qd(step_even)(state, temps);
     t0_o  = temps = qd(step_odd)(state, temps);
 
-    /* XXX allocate float temps */
+    /* allocate float temps */
     ptr_f = qf(allocate_eo)(state, &ptr_size_f, &temps,
                             0,  /* header */
                             8,  /* evens */
