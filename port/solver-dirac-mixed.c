@@ -119,7 +119,7 @@ Q(mixed_D_CG)(struct QD(Fermion)          *psi,
     chi_e = temps;
     t0_e  = temps = qd(step_even)(state, temps);
     t1_e  = temps = qd(step_even)(state, temps);
-    t0_o  = temps = qd(step_odd)(state, temps);
+    t0_o  = temps = qd(step_even)(state, temps);
 
     /* allocate float temps */
     ptr_f = qf(allocate_eo)(state, &ptr_size_f, &temps,
@@ -137,7 +137,7 @@ Q(mixed_D_CG)(struct QD(Fermion)          *psi,
     zeta_Fe  = temps = qf(step_even)(state, temps);
     t0_Fe    = temps = qf(step_even)(state, temps);
     t1_Fe    = temps = qf(step_even)(state, temps);
-    t0_Fo    = temps = qf(step_odd)(state, temps);
+    t0_Fo    = temps = qf(step_even)(state, temps);
     t1_Fo    = temps = qf(step_odd)(state, temps);
 
     ptr_g = allocate_fgauge(state, &gauge_F, gauge);
