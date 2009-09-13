@@ -43,8 +43,8 @@ allocate_fgauge(struct Q(State) *state,
 
     q(g_f_eq_d)(fg->g_data, Q(DIM) * state->volume, dg->g_data);
     q(c_f_eq_d)(fg->ce_data, state->even.full_size, dg->ce_data);
-    q(c_f_eq_d)(fg->co_data, state->even.full_size, dg->co_data);
-    q(c_f_eq_d)(fg->cox_data, state->even.full_size, dg->cox_data);
+    q(c_f_eq_d)(fg->co_data, state->odd.full_size, dg->co_data);
+    q(c_f_eq_d)(fg->cox_data, state->odd.full_size, dg->cox_data);
 
     return pgf;
 }
