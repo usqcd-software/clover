@@ -21,7 +21,7 @@
 \author{Andrew Pochinsky}
 \catcode`\$=11
 \date{$Id$\\
-Release 1.0.1}
+Release 1.0.3}
 \catcode`\$=3
 
 \begin{document}
