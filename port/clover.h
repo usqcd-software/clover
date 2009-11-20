@@ -156,10 +156,11 @@ unsigned int q(f_d_eq_dpf)(struct FermionD *dst,
                            const struct FermionD *src_d,
                            const struct FermionF *src_f);
 /* Ff = Fd - Fd */
-unsigned int q(f_f_eq_dmd)(struct FermionF *dst,
-                           int size,
-                           const struct FermionD *src_a,
-                           const struct FermionD *src_b);
+unsigned int q(f_f_eq_dmd_norm2)(struct FermionF *dst,
+                                 double *local_norm,
+                                 int size,
+                                 const struct FermionD *src_a,
+                                 const struct FermionD *src_b);
 
 /* converting gauge and clover from double down to float */
 void q(g_f_eq_d)(struct SUnF *dst,

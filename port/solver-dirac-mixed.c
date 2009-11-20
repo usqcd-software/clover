@@ -57,6 +57,7 @@ Q(mixed_D_CG)(struct QD(Fermion)          *psi,
               const struct QD(Gauge)      *gauge,
               const struct QD(Fermion)    *eta,
               int                          f_iter,
+              double                       f_epsilon,
               int                          max_iterations,
               double                       min_epsilon,
               unsigned int                 options)
@@ -171,15 +172,21 @@ Q(mixed_D_CG)(struct QD(Fermion)          *psi,
     qf(f_zero)(zero_Fe, state->even.full_size);
 
     scaled_eps = min_epsilon * rhs_norm;
-    for (iter_left = max_iterations; iter_left > 0 && status;) {
+    for (iter_left = max_iterations; iter_left > 0;) {
         int here_iter;
+        double delta_norm2;
+        double ff_eps;
 
         qd(op_even_M)(t0_e, state, gauge, psi->even,
                       &flops, &sent, &received, t0_o);
         qd(op_even_Mx)(t1_e, state, gauge, t0_e,
                        &flops, &sent, &received, t0_o);
-        q(f_f_eq_dmd)(delta_Fe, state->even.full_size, chi_e, t1_e);
-        
+        flops += q(f_f_eq_dmd_norm2)(delta_Fe, &delta_norm2, 
+                                     state->even.full_size, chi_e, t1_e);
+        QMP_sum_double(&delta_norm2);
+        ff_eps = delta_norm2 * f_epsilon;
+        if (ff_eps < scaled_eps)
+            ff_eps = scaled_eps;
         /* run the solver for a while */
         if (q(setup_comm)(state, sizeof (float))) {
             CG_ERROR_T("DDW_CG(): communication setup failed");
@@ -188,7 +195,7 @@ Q(mixed_D_CG)(struct QD(Fermion)          *psi,
                                state, &gauge_F,
                                zero_Fe, delta_Fe, NULL, NULL,
                                iter_left > f_iter ? f_iter : iter_left,
-                               scaled_eps, options,
+                               ff_eps, options,
                                &flops, &sent, &received,
                                rho_Fe, pi_Fe, zeta_Fe, t0_Fe,
                                t1_Fe, t0_Fo, t1_Fo);
@@ -201,8 +208,10 @@ Q(mixed_D_CG)(struct QD(Fermion)          *psi,
         iter_left -= here_iter;
         *out_iterations = max_iterations - iter_left;
         /* continue or not */
-        if (status > 1)
+        if (status != 0)
             CG_ERROR_T(NULL);
+        if (*out_epsilon < min_epsilon)
+            break;
     }
 
     /* inflate */

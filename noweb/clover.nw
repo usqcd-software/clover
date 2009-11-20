@@ -985,8 +985,9 @@ int `QOP_D3_CLOVER_D_CG(struct QOP_D3_CLOVER_Fermion *result,
 
 The mixed precision solver uses the trick communicated by Stefan Krieg: run the
 CG in single precision while accumulating the result in double. It has only
-a double precision version and takes an extra parameter [[f_iterations]] which
-controls the number of float CG iterations between double updates.
+a double precision version and takes two extra parameter [[f_iterations]] and
+[[f_epsilon]] which control the number of float CG iterations between double
+updates.
 <<Interface functions>>=
 int `QOP_CLOVER_mixed_D_CG(struct QOP_D3_CLOVER_Fermion *result,
                            int *out_iterations,
@@ -995,6 +996,7 @@ int `QOP_CLOVER_mixed_D_CG(struct QOP_D3_CLOVER_Fermion *result,
                            const struct QOP_D3_CLOVER_Gauge *gauge,
                            const struct QOP_D3_CLOVER_Fermion *rhs,
                            int f_iterations,
+                           double f_epsilon,
                            int max_iteration,
                            double epsilon,
                            unsigned int options);
