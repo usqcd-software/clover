@@ -1,4 +1,4 @@
-\documentclass[twoside,openright]{report}
+\documentclass[twoside,openright,letterpaper]{report}
 \usepackage{noweb}
 \noweboptions{externalindex,longchunks,longxref}
 \usepackage[boxed]{algorithm2e}
@@ -944,9 +944,6 @@ The deflators are created with given capacity, size and precision:
 int `QOP_CLOVER_create_deflator(struct QOP_CLOVER_Deflator **defl_ptr,
                                struct QOP_CLOVER_State *state,
                                int nev, int vsize, double eps);
-int `QOP_CLOVER_create_deflator(struct QOP_CLOVER_Deflator **defl_ptr,
-                               struct QOP_CLOVER_State *state,
-                               int nev, int vsize, double eps);
 @
 
 Once done, the deflators must be freed with the following functions:
@@ -965,13 +962,13 @@ the deflator is stopped, it can still be used in the deflated solver and
 queried about accumulated eigenvalues.
 <<Interface functions>>=
 void `QOP_CLOVER_deflator_stop(struct QOP_CLOVER_Deflator *defl_ptr);
-void `QOP_CLOVER_deflator_reset(struct QOP_CLOVER_Deflator *defl_ptr);
+void `QOP_CLOVER_deflator_resume(struct QOP_CLOVER_Deflator *defl_ptr);
 @
 
 The deflator can return its current estimate of the eigenvalues if it has it.
 There are either [[nev]] eigenmode estimates, or none. If the deflator does
-not have the estimates, [[eigen]] returns [[0]], otherwise it
-returns [[1]].
+not have the estimates, [[eigen]] returns [[1]], otherwise it
+returns [[0]].
 <<Interface functions>>=
 int `QOP_CLOVER_deflator_eigen(double *eigen_values,
                               struct QOP_CLOVER_Deflator *defl_ptr);

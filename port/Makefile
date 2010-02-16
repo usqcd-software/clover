@@ -31,7 +31,14 @@ x.sources = version.c \
             fini.c \
             comm-setup.c \
             comm-free.c \
-            solver-dirac-mixed.c
+            deflator-alloc.c \
+            deflator-free.c \
+            deflator-reset.c \
+            deflator-stop.c \
+            deflator-resume.c \
+            deflator-eigen.c \
+            solver-dirac-mixed.c \
+            solver-dirac-deflated-mixed.c
 
 p.sources = fermion-dot.c \
             fermion-madd.c \

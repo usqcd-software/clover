@@ -6,5 +6,5 @@
 const char *
 Q(version)(void)
 {
-  return "XXX CLOVER version Working code $Id$";
+  return "CLOVER version 1.2.0-XXX $Id$";
 }

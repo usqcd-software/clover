@@ -110,6 +110,15 @@ struct Q(State) {
   int               *v2lx;            /* Only for init */
 };
 
+/* Deflator state */
+struct Q(Deflator) {
+    struct Q(State) *state;
+    int nev;
+    int vsize;
+    double eps;
+    /* XXX other pieces of the deflation state */
+};
+
 /* layout translation */
 void q(l2v)(int x[Q(DIM)], const struct local *local, int p);
 int q(v2l)(const int x[Q(DIM)], const struct local *local);
