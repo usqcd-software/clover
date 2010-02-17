@@ -195,6 +195,36 @@ int q(mixed_cg)(struct Q(State)             *state,
                 double                       min_epsilon,
                 unsigned int                 options);
 
+/* handling eig deflator */
+int q(df_preamble)(struct Q(State)           *state,
+                   struct Q(Deflator)        *deflator,
+                   int                        e_size,
+                   struct FermionF           *psi_e,
+                   struct FermionF           *rho_e,
+                   const struct FermionF     *chi_e);
+int q(df_update0)(struct Q(State)          *state,
+                  struct Q(Deflator)       *deflator,
+                  int                       e_size,
+                  double                    a1,
+                  double                    b1,
+                  double                    a0,
+                  double                    b0,
+                  double                    r,
+                  const struct FermionF    *rho);
+void q(df_update1)(struct Q(State)          *state,
+                   struct Q(Deflator)       *deflator,
+                   int                       e_size,
+                   double                    a1,
+                   double                    b1,
+                   double                    a0,
+                   double                    b0,
+                   double                    r,
+                   const struct FermionF    *rho,
+                   const struct FermionF    *A_rho);
+int q(df_postamble)(struct Q(State)           *state,
+                    struct Q(Deflator)        *deflator,
+                    int                        e_size);
+
 /* Timing */
 #define BEGIN_TIMING(s) do { gettimeofday(&((s)->t0), NULL); } while (0)
 #define END_TIMING(s, f, snd, rcv) do { \
