@@ -98,7 +98,7 @@ QX(D_CG)(struct QX(Fermion)          *psi,
 
     /* solve */
     status = qx(cg_solver)(psi->even, "DCL CG", out_iterations, out_epsilon,
-                           state, gauge, chi_e,
+                           state, gauge, chi_e, NULL,
                            max_iterations, min_epsilon * rhs_norm, options,
                            &flops, &sent, &received,
                            rho_e, pi_e, zeta_e,

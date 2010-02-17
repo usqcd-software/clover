@@ -50,7 +50,9 @@ allocate_fgauge(struct Q(State) *state,
 }
 
 int
-q(mixed_cg)(struct QD(Fermion)          *psi,
+q(mixed_cg)(struct Q(State)             *state,
+            const char                  *name,
+            struct QD(Fermion)          *psi,
             int                         *out_iterations,
             double                      *out_epsilon,
             const struct QD(Fermion)    *psi_0,
@@ -63,7 +65,6 @@ q(mixed_cg)(struct QD(Fermion)          *psi,
             double                       min_epsilon,
             unsigned int                 options)
 {
-    DECLARE_STATE;
     long long flops = 0;
     long long sent = 0;
     long long received = 0;
@@ -143,7 +144,7 @@ q(mixed_cg)(struct QD(Fermion)          *psi,
     flops += qd(op_norm2)(&rhs_norm, eta, state);
     
     if (options) {
-        qd(zprint)(state, "mDCL CG", "rhs norm %e normalized epsilon %e",
+        qd(zprint)(state, name, "rhs norm %e normalized epsilon %e",
                    rhs_norm, min_epsilon * rhs_norm);
     }
 
@@ -182,8 +183,8 @@ q(mixed_cg)(struct QD(Fermion)          *psi,
         if (q(setup_comm)(state, sizeof (float))) {
             CG_ERROR_T("DDW_CG(): communication setup failed");
         }
-        status = qf(cg_solver)(dx_Fe, "MDCL CG", &here_iter, out_epsilon,
-                               state, &gauge_F, delta_Fe,
+        status = qf(cg_solver)(dx_Fe, name, &here_iter, out_epsilon,
+                               state, &gauge_F, delta_Fe, deflator,
                                iter_left > f_iter ? f_iter : iter_left,
                                ff_eps, options,
                                &flops, &sent, &received,
@@ -222,19 +223,19 @@ q(mixed_cg)(struct QD(Fermion)          *psi,
 
     /* output final residuals if desired */
         if (options) {
-        qx(zprint)(state, "DCL CG", "status %d, total iterations %d",
+        qx(zprint)(state, name, "status %d, total iterations %d",
                   status, *out_iterations);
     }
     if (options & (Q(FINAL_CG_RESIDUAL) | Q(LOG_CG_RESIDUAL))) {
         double norm = rhs_norm == 0? 1: rhs_norm;
 
-        qx(zprint)(state, "DCL CG", "solver residual %e normalized %e",
+        qx(zprint)(state, name, "solver residual %e normalized %e",
                    *out_epsilon, *out_epsilon / norm);
     }
     if (options & Q(FINAL_DIRAC_RESIDUAL)) {
         double norm = rhs_norm == 0? 1: rhs_norm;
 
-        qx(zprint)(state, "DCL CG", "Dirac residual %e normalized %e",
+        qx(zprint)(state, name, "Dirac residual %e normalized %e",
                    dirac_residual, dirac_residual / norm);
     }
     if (rhs_norm != 0.0)

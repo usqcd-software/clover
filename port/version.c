@@ -1,6 +1,7 @@
 #include <clover.h>
 
 /* Return version of the CLOVER library
+ *  log: ready for eigCG deflation.
  */
 
 const char *

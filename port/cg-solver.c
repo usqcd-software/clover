@@ -1,25 +1,27 @@
 #include <clover.h>
 
 int
-qx(cg_solver)(struct Fermion *psi_e, const char *source,
-              int *out_iter,
-              double *out_epsilon,
-              struct Q(State) *state,
-              const struct QX(Gauge) *gauge,
-              const struct Fermion *chi_e,
-              int max_iter,
-              double epsilon,
-              unsigned options,
-              long long *flops,
-              long long *sent,
-              long long *received,
-              struct Fermion *rho_e,
-              struct Fermion *pi_e,
-              struct Fermion *zeta_e,
-              struct Fermion *t0_e,
-              struct Fermion *t1_e,
-              struct Fermion *t0_o,
-              struct Fermion *t1_o)
+qx(cg_solver)(struct Fermion            *psi_e,
+              const char                *name,
+              int                       *out_iter,
+              double                    *out_epsilon,
+              struct Q(State)           *state,
+              const struct QX(Gauge)    *gauge,
+              const struct Fermion      *chi_e,
+              struct Q(Deflator)        *deflator,
+              int                        max_iter,
+              double                     epsilon,
+              unsigned                   options,
+              long long                 *flops,
+              long long                 *sent,
+              long long                 *received,
+              struct Fermion            *rho_e,
+              struct Fermion            *pi_e,
+              struct Fermion            *zeta_e,
+              struct Fermion            *t0_e,
+              struct Fermion            *t1_e,
+              struct Fermion            *t0_o,
+              struct Fermion            *t1_o)
 {
     int e_size = state->even.full_size;
     double a, b, g, r, norm_omega;
@@ -59,7 +61,7 @@ qx(cg_solver)(struct Fermion *psi_e, const char *source,
         r = g;
         qx(cg_xp)(psi_e, pi_e, e_size, a, b, rho_e);
         if (options)
-            qx(cg_log)(r, source,
+            qx(cg_log)(r, name,
                        i, psi_e, state, gauge, chi_e,
                        flops, sent, received,
                        options,

@@ -180,7 +180,9 @@ void q(c_f_eq_d)(struct CloverF *dst,
                  const struct CloverD *src);
 
 /* the mixed solver */
-int q(mixed_cg)(struct QD(Fermion)          *psi,
+int q(mixed_cg)(struct Q(State)             *state,
+                const char                  *name,
+                struct QD(Fermion)          *psi,
                 int                         *out_iterations,
                 double                      *out_epsilon,
                 const struct QD(Fermion)    *psi_0,
@@ -666,6 +668,7 @@ int qx(cg_solver)(struct Fermion *psi_e,
                   struct Q(State) *state,
                   const struct QX(Gauge) *gauge,
                   const struct Fermion *chi_e,
+                  struct Q(Deflator) *deflator,
                   int max_iter,
                   double epsilon,
                   unsigned options,

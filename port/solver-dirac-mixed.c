@@ -32,10 +32,9 @@ Q(mixed_D_CG)(struct QD(Fermion)          *psi,
     CHECK_ARGn(gauge, "mD_CG");
     CHECK_ARGn(eta, "mD_CG");
 
-    return q(mixed_cg)(psi, out_iterations, out_epsilon,
+    return q(mixed_cg)(state, "mD_CG", 
+                       psi, out_iterations, out_epsilon,
                        psi_0, gauge, eta, NULL,
                        f_iter, f_epsilon, max_iterations, min_epsilon,
                        options);
 }
-
-
