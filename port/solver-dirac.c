@@ -9,7 +9,6 @@
 
 #define MAX_OPTIONS (Q(LOG_CG_RESIDUAL)     | \
                      Q(LOG_TRUE_RESIDUAL)   | \
-                     Q(LOG_DIRAC_RESIDUAL)  | \
                      Q(FINAL_CG_RESIDUAL)   | \
                      Q(FINAL_DIRAC_RESIDUAL))
 
@@ -88,11 +87,18 @@ QX(D_CG)(struct QX(Fermion)          *psi,
                         gauge, eta->even, eta->odd,
                         &flops, &sent, &received,
                         t0_e, t0_o);
+    /* reduce rhs */
+    qx(op_even_M)(t1_e, state, gauge, psi_0->even,
+                  &flops, &sent, &received,
+                  t0_o);
+    qx(op_even_Mx)(t0_e, state, gauge, t1_e,
+                   &flops, &sent, &received,
+                   t0_o);
+    qx(f_add2)(chi_e, state->even.full_size, -1.0, t0_e);
 
     /* solve */
     status = qx(cg_solver)(psi->even, "DCL CG", out_iterations, out_epsilon,
-                           state, gauge,
-                           psi_0->even, chi_e, eta->even, eta->odd,
+                           state, gauge, chi_e,
                            max_iterations, min_epsilon * rhs_norm, options,
                            &flops, &sent, &received,
                            rho_e, pi_e, zeta_e,
@@ -109,7 +115,7 @@ QX(D_CG)(struct QX(Fermion)          *psi,
                    &flops, &sent, &received,
                    t0_o);    
 
-    if (options & (Q(FINAL_DIRAC_RESIDUAL) | Q(LOG_DIRAC_RESIDUAL))) {
+    if (options & Q(FINAL_DIRAC_RESIDUAL)) {
         dirac_residual = qx(cg_dirac_error)(psi->even, psi->odd,
                                             state, gauge,
                                             eta->even, eta->odd,
@@ -130,7 +136,7 @@ QX(D_CG)(struct QX(Fermion)          *psi,
         qx(zprint)(state, "DCL CG", "solver residual %e normalized %e",
                    *out_epsilon, *out_epsilon / norm);
     }
-    if (options & (Q(FINAL_DIRAC_RESIDUAL) | Q(LOG_DIRAC_RESIDUAL))) {
+    if (options & Q(FINAL_DIRAC_RESIDUAL)) {
         double norm = rhs_norm == 0? 1: rhs_norm;
 
         qx(zprint)(state, "DCL CG", "Dirac residual %e normalized %e",

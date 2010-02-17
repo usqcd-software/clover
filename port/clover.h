@@ -179,6 +179,20 @@ void q(c_f_eq_d)(struct CloverF *dst,
                  int size,
                  const struct CloverD *src);
 
+/* the mixed solver */
+int q(mixed_cg)(struct QD(Fermion)          *psi,
+                int                         *out_iterations,
+                double                      *out_epsilon,
+                const struct QD(Fermion)    *psi_0,
+                const struct QD(Gauge)      *gauge,
+                const struct QD(Fermion)    *eta,
+                struct Q(Deflator)          *deflator,
+                int                          f_iter,
+                double                       f_epsilon,
+                int                          max_iterations,
+                double                       min_epsilon,
+                unsigned int                 options);
+
 /* Timing */
 #define BEGIN_TIMING(s) do { gettimeofday(&((s)->t0), NULL); } while (0)
 #define END_TIMING(s, f, snd, rcv) do { \
@@ -637,8 +651,6 @@ void qx(cg_log)(double cg_res, const char *source, int iter,
                 struct Q(State) *state,
                 const struct QX(Gauge) *gauge,
                 const struct Fermion *chi_e,
-                const struct Fermion *eta_e,
-                const struct Fermion *eta_o,
                 long long *flops,
                 long long *sent,
                 long long *received,
@@ -653,10 +665,7 @@ int qx(cg_solver)(struct Fermion *psi_e,
                   double *out_epsilon,
                   struct Q(State) *state,
                   const struct QX(Gauge) *gauge,
-                  const struct Fermion *psi0_e,
                   const struct Fermion *chi_e,
-                  const struct Fermion *eta_e,
-                  const struct Fermion *eta_o,
                   int max_iter,
                   double epsilon,
                   unsigned options,

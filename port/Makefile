@@ -37,6 +37,7 @@ x.sources = version.c \
             deflator-stop.c \
             deflator-resume.c \
             deflator-eigen.c \
+            cg-mixed.c \
             solver-dirac-mixed.c \
             solver-dirac-deflated-mixed.c
 

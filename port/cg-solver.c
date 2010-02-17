@@ -6,10 +6,7 @@ qx(cg_solver)(struct Fermion *psi_e, const char *source,
               double *out_epsilon,
               struct Q(State) *state,
               const struct QX(Gauge) *gauge,
-              const struct Fermion *psi0_e,
               const struct Fermion *chi_e,
-              const struct Fermion *eta_e,
-              const struct Fermion *eta_o,
               int max_iter,
               double epsilon,
               unsigned options,
@@ -28,15 +25,11 @@ qx(cg_solver)(struct Fermion *psi_e, const char *source,
     double a, b, g, r, norm_omega;
     int i;
 
-    qx(f_copy)(psi_e, e_size, psi0_e);
-    qx(op_even_M)(t1_e, state, gauge, psi_e, flops, sent, received,
-                  t0_o);
-    qx(op_even_Mx)(t0_e, state, gauge, t1_e, flops, sent, received,
-                   t0_o);
-    *flops += qx(f_add3)(rho_e, e_size, chi_e, -1.0, t0_e);
+    qx(f_copy)(rho_e, e_size, chi_e);
     *flops += qx(f_norm)(&r, e_size, rho_e);
     QMP_sum_double(&r);
     qx(f_copy)(pi_e, e_size, rho_e);
+    qx(f_zero)(psi_e, e_size);
     if (r < epsilon) {
         i = 0;
         goto end;
@@ -67,7 +60,7 @@ qx(cg_solver)(struct Fermion *psi_e, const char *source,
         qx(cg_xp)(psi_e, pi_e, e_size, a, b, rho_e);
         if (options)
             qx(cg_log)(r, source,
-                       i, psi_e, state, gauge, chi_e, eta_e, eta_o,
+                       i, psi_e, state, gauge, chi_e,
                        flops, sent, received,
                        options,
                        t0_e, t1_e, t0_o, t1_o);
