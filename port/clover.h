@@ -200,7 +200,6 @@ int q(df_preamble)(struct Q(State)           *state,
                    struct Q(Deflator)        *deflator,
                    int                        e_size,
                    struct FermionF           *psi_e,
-                   struct FermionF           *rho_e,
                    const struct FermionF     *chi_e);
 int q(df_update0)(struct Q(State)          *state,
                   struct Q(Deflator)       *deflator,

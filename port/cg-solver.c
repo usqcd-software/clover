@@ -1,8 +1,8 @@
 #include <clover.h>
 
 #if QOP_CLOVER_DEFAULT_PRECISION == 'F'
-#define DF_PREAMBLE(psi_e, rho_e, chi_e) do { \
-    if (q(df_preamble)(state, deflator, e_size, psi_e, rho_e, chi_e)) { \
+#define DF_PREAMBLE(psi_e, chi_e) do { \
+    if (q(df_preamble)(state, deflator, e_size, psi_e, chi_e)) { \
       q(set_error)(state, 0, "cg_solver() not enough memory"); \
       return 3; \
     } } while (0)
@@ -14,8 +14,7 @@
 #define DF_POSTAMBLE() \
     do { q(df_postamble)(state, deflator, e_size); } while (0)
 #else
-#define DF_PREAMBLE(psi_e, rho_e, chi_e) do { \
-          qx(f_copy)(rho_e, e_size, chi_e); \
+#define DF_PREAMBLE(psi_e, chi_e) do { \
           qx(f_zero)(psi_e, e_size); \
     } while (0)
 #define DF_UPDATE0(a1,b1,a0,b0,r,rho)  0
@@ -52,7 +51,14 @@ qx(cg_solver)(struct Fermion            *psi_e,
     double a, b, g, r, norm_omega;
     int i;
 
-    DF_PREAMBLE(psi_e, rho_e, chi_e);
+    DF_PREAMBLE(psi_e, chi_e);
+    qx(op_even_M)(t0_e, state, gauge, psi_e,
+                  flops, sent, received,
+                  t0_o);
+    qx(op_even_Mx)(zeta_e, state, gauge, t0_e,
+                   flops, sent, received,
+                   t0_o);
+    qx(f_add3)(rho_e, e_size, chi_e, -1, zeta_e);
     *flops += qx(f_norm)(&r, e_size, rho_e);
     QMP_sum_double(&r);
     qx(f_copy)(pi_e, e_size, rho_e);
