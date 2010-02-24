@@ -7,6 +7,7 @@
 
 #if defined(HAVE_LAPACK)
 #  include <f2c_types.h>
+#  include <lapack.h>
 #elif defined(HAVE_GSL)
 #  define CHECK_GSL_STATUS(func) do { int status__ = func; assert(0 == status__); } while(0)
 #  include <gsl/gsl_vector.h>
@@ -35,6 +36,7 @@ typedef struct {
 latvec_c latvec_c_alloc(struct Q(State) *state, int dim);
 latvec_c latvec_c_view(int dim, struct FermionF *f);
 void latvec_c_copy(latvec_c x, latvec_c y); /* y <- x */
+void latvec_c_zero(latvec_c x); /* x <- 0 */
 void latvec_c_free(struct Q(State) *state, latvec_c *v);
 
 struct FermionD;
@@ -123,5 +125,10 @@ void lat_lm_dot_zv(int n,
                    latmat_c a, 
                    doublecomplex *x,
                    latvec_c y);
+
+
+/* lin. operator tie-back */
+void latvec_c_linop(latvec_c y, latvec_c x, latvec_c aux);
+//void latvec_z_linop();
 
 #endif/*DEFLATOR_LA_H_hbq6DwyKpy5jzcxzbemt*/

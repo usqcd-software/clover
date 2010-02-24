@@ -9,52 +9,59 @@ q(df_free)(struct Q(Deflator) **deflator_ptr)
         return;
     s = (*deflator_ptr)->state;
     BEGIN_TIMING(s);
+
+    struct Q(Deflator) *d = *deflator_ptr;
     
     /* XXX free other components of the deflator */
 #define guarded_free(v, cmd) { if (NULL == v) cmd; }
-    if (!latmat_c_is_null(&(d->V))) latmat_c_free(s, d->V);
-    guarded_free(d->T,          q(free)(s, d->T));
+    int vmax    = d->vmax;
+    int umax    = d->umax;
+#define ds      sizeof(double)
+#define zs      sizeof(doublecomplex)
+    if (!latmat_c_is_null(&(d->V))) latmat_c_free(s, &(d->V));
+    if (NULL != d->T)               q(free)(s, d->T, vmax * vmax * zs);
 
-    if (!latmat_c_is_null(&(d->U))) latmat_c_free(s, d->U);
-    guarded_free(d->H,          q(free)(s, d->H));
-    guarded_free(d->C,          q(free)(s, d->C));
+    if (!latmat_c_is_null(&(d->U))) latmat_c_free(s, &(d->U));
+    if (NULL != d->H)               q(free)(s, d->H, umax * umax * zs);
+    if (NULL != d->C)               q(free)(s, d->C, umax * umax * zs);
 
-    guarded_free(d->hevecs2,    q(free)(s, d->hevecs2));
-    guarded_free(d->hevals,     q(free)(s, d->hevals));
-    guarded_free(d->zwork,      q(free)(s, d->zwork));
+    if (NULL != d->hevecs2)         q(free)(s, d->hevecs2, vmax * vmax * zs);
+    if (NULL != d->hevals)          q(free)(s, d->hevals, vmax * ds);
+    if (NULL != d->zwork)           q(free)(s, d->zwork, d->lwork * zs);
 
 #if defined(HAVE_LAPACK)
-    guarded_free(d->hevecs1,    q(free)(s, d->hevecs1));
-    guarded_free(d->tau,        q(free)(s, d->tau));
-    guarded_free(d->rwork,      q(free)(s, d->rwork));
+    if (NULL != d->hevecs1)         q(free)(s, d->hevecs1, vmax * vmax * zs);
+    if (NULL != d->tau)             q(free)(s, d->tau, vmax * zs);
+    if (NULL != d->rwork)           q(free)(s, d->rwork, 3 * vmax * ds);
 #elif defined(HAVE_GSL)
-    guarded_free(d->zwork2,     q(free)(s, d->zwork2));
-    guarded_free(d->gsl_T_full,     gsl_matrix_complex_free(d->gsl_T_full));
-    guarded_free(d->gsl_hevecs1,    gsl_matrix_complex_free(d->gsl_hevecs1));
-    guarded_free(d->gsl_hevals1,    gsl_vector_free(d->gsl_hevals1));
-    guarded_free(d->gsl_wkspace1,   gsl_eigen_herm_free(d->gsl_wkspace1));
-    guarded_free(d->gsl_T_m1,       gsl_matrix_complex_free(d->gsl_T_m1));
-    guarded_free(d->gsl_hevecs2,    gsl_matrix_complex_free(d->gsl_hevecs2);
-    guarded_free(d->gsl_hevals2,    gsl_vector_free(d->gsl_hevals2));
-    guarded_free(d->gsl_wkspace2,   gsl_eigen_herm_free(d->gsl_wkspace2));
-    guarded_free(d->gsl_T_proj,     gsl_matrix_complex_free(d->gsl_T_proj));
-    guarded_free(d->gsl_hevecs3,    gsl_matrix_complex_free(d->gsl_hevecs3));
-    guarded_free(d->gsl_wkspace3,   gsl_eigen_herm_free(d->gsl_wkspace3));
-    guarded_free(d->gsl_QR,         gsl_matrix_complex_free(d->gsl_QR));
-    guarded_free(d->gsl_Q_unpack,   gsl_matrix_complex_free(d->gsl_Q_unpack));
-    guarded_free(d->gsl_tmp_MxS,    gsl_matrix_complex_free(d->gsl_tmp_MxS));
-    guarded_free(d->gsl_tau,        gsl_vector_complex_free(d->gsl_tau));
-    guarded_free(d->hevals_select1, q(free)(s, d->hevals_select1);
-    guarded_free(d->hevals_select2, q(free)(s, d->hevals_select2));
+    if (NULL != d->zwork2)          q(free)(s, d->zwork2, umax * zs);
+    if (NULL != d->gsl_T_full)      gsl_matrix_complex_free(d->gsl_T_full);
+    if (NULL != d->gsl_hevecs1)     gsl_matrix_complex_free(d->gsl_hevecs1);
+    if (NULL != d->gsl_hevals1)     gsl_vector_free(d->gsl_hevals1);
+    if (NULL != d->gsl_wkspace1)    gsl_eigen_herm_free(d->gsl_wkspace1);
+    if (NULL != d->gsl_T_m1)        gsl_matrix_complex_free(d->gsl_T_m1);
+    if (NULL != d->gsl_hevecs2)     gsl_matrix_complex_free(d->gsl_hevecs2);
+    if (NULL != d->gsl_hevals2)     gsl_vector_free(d->gsl_hevals2);
+    if (NULL != d->gsl_wkspace2)    gsl_eigen_herm_free(d->gsl_wkspace2);
+    if (NULL != d->gsl_T_proj)      gsl_matrix_complex_free(d->gsl_T_proj);
+    if (NULL != d->gsl_hevecs3)     gsl_matrix_complex_free(d->gsl_hevecs3);
+    if (NULL != d->gsl_wkspace3)    gsl_eigen_herm_free(d->gsl_wkspace3);
+    if (NULL != d->gsl_QR)          gsl_matrix_complex_free(d->gsl_QR);
+    if (NULL != d->gsl_Q_unpack)    gsl_matrix_complex_free(d->gsl_Q_unpack);
+    if (NULL != d->gsl_tmp_MxS)     gsl_matrix_complex_free(d->gsl_tmp_MxS);
+    if (NULL != d->gsl_tau)         gsl_vector_complex_free(d->gsl_tau);
+    if (NULL != d->hevals_select1)  q(free)(s, d->hevals_select1, vmax * sizeof(int));
+    if (NULL != d->hevals_select2)  q(free)(s, d->hevals_select2, vmax * sizeof(int));
 #  error "no linear algebra library"
 #endif
 
-    if (!latmat_c_is_null(&(d->tmp_V)))     latmat_c_free(s, tmp_V);
-    if (!latvec_z_is_null(&(d->work_z_1)))  latvec_z_free(s, d->work_z_1);
-    if (!latvec_z_is_null(&(d->work_z_2)))  latvec_z_free(s, d->work_z_2);
-    if (!latvec_z_is_null(&(d->work_z_3)))  latvec_z_free(s, d->work_z_3);
-    if (!latvec_c_is_null(&(d->work_c_1)))  latvec_c_free(s, d->work_c_1);
-    if (!latvec_c_is_null(&(d->work_c_2)))  latvec_c_free(s, d->work_c_2));
+
+    if (!latmat_c_is_null(&(d->tmp_V)))     latmat_c_free(s, &(d->tmp_V));
+    if (!latvec_z_is_null(&(d->work_z_1)))  latvec_z_free(s, &(d->work_z_1));
+    if (!latvec_z_is_null(&(d->work_z_2)))  latvec_z_free(s, &(d->work_z_2));
+    if (!latvec_z_is_null(&(d->work_z_3)))  latvec_z_free(s, &(d->work_z_3));
+    if (!latvec_c_is_null(&(d->work_c_1)))  latvec_c_free(s, &(d->work_c_1));
+    if (!latvec_c_is_null(&(d->work_c_2)))  latvec_c_free(s, &(d->work_c_2));
 
 
     END_TIMING(s, 0, 0, 0);

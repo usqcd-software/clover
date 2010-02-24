@@ -41,7 +41,14 @@ q(df_solve_in_eigenspace)(
 
     gsl_matrix_complex_view gsl_C = gsl_matrix_complex_view_array_with_tda(
             d->C, d->usize, d->usize, d->umax);
-    CHECK_GSL_STATUS(gsl_linalg_complex_cholesky_solve(gsl_C, d->zwork2));
+    gsl_vector_complex_view gsl_pb = gsl_vector_complex_view_array(
+            d->zwork, d->usize);
+    gsl_vector_complex_view gsl_px = gsl_vector_complex_view_array(
+            d->zwork2, d->usize);
+    CHECK_GSL_STATUS(gsl_linalg_complex_cholesky_solve(
+            &gsl_C.matrix, 
+            &gsl_pb.vector, 
+            &gsl_px.vector));
 #else
 #  error "no linear algebra library"
 #endif
@@ -74,10 +81,11 @@ q(df_preamble)(
         if (q(df_solve_in_eigenspace)(s, d, x, b))
             return 1;
         /* compute residual */
-        latvec_c_linop(s, d, cur_r, lv_x, cur_r_aux);
-        doublecomplex tmone = { -1., 0. };
-        lat_cc_axpy(tmone, lv_b, cur_r);
-        lat_c_scal_d(-1., cur_r);   /* FIXME optimize with special primitive */
+        latvec_c_linop(cur_r, lv_x, cur_r_aux);
+        /* FIXME optimize the code below with a special primitive;
+           cur_r <- lv_b - cur_r */
+        lat_cc_axpy_d(-1., lv_b, cur_r);
+        lat_c_scal_d(-1., cur_r);   
     }
     double rnorm = sqrt(lat_c_nrm2(cur_r));
     lat_c_scal_d(1. / rnorm, cur_r);

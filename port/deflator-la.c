@@ -30,6 +30,12 @@ latvec_c_copy(latvec_c x, latvec_c y)
     /* TODO copy fermion y <- x (note order!) */NOT_IMPLEMENTED;
 }
 void
+latvec_c_zero(latvec_c x)
+{
+    assert(!latvec_c_is_null(&x));
+    /* TODO x <- zero */NOT_IMPLEMENTED;
+}
+void
 latvec_c_free(struct Q(State) *state, latvec_c *v)
 {
     if (NULL != v && NULL != v->f) {

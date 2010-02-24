@@ -1,4 +1,5 @@
 #include <clover.h>
+#include <math.h>
 
 #if defined(HAVE_LAPACK)
 #  include <lapack.h>
@@ -22,7 +23,8 @@ q(df_postamble)(
             d->vsize < d->nev)
         return 0;
 
-
+#define eps_reortho 1e-7
+#define n_reortho   2
     double v_norm2_min = eps_reortho * eps_reortho;
     int unew = 0,
         i_v = 0;
@@ -32,9 +34,10 @@ q(df_postamble)(
 /* macros to reuse workspace */
 #define cur_v       (d->work_c_1)
 #define cur_Av      (d->work_c_2)
-#define cur_z_v     (d->work_z_1)
-#define cur_z_Av    (d->work_z_2)
-#define cur_z_aux   (d->work_z_3)
+#define cur_aux     (d->work_c_3)
+//#define cur_z_v     (d->work_z_1)
+//#define cur_z_Av    (d->work_z_2)
+//#define cur_z_aux   (d->work_z_3)
         latmat_c_get_col(d->V, i_v, cur_v);
         
         if (0 < d->usize) {
@@ -48,9 +51,9 @@ q(df_postamble)(
                               cur_U, 
                               d->zwork, 
                               cur_Av);
-                /* FIXME cur_v <- cur_v - cur_Av surely may be optimized */
-                doublecomplex tmone = {-1.0, 0.0 };
-                lat_cc_axpy(tmone, cur_Av, cur_v);
+                /* FIXME optimize with a special primitive 
+                   cur_v <- cur_v - cur_Av */
+                lat_cc_axpy_d(-1., cur_Av, cur_v);
             }
         }
         double v_norm2 = lat_c_nrm2(cur_v);
@@ -61,19 +64,18 @@ q(df_postamble)(
         lat_c_scal_d(1 / sqrt(v_norm2), cur_v);
         latmat_c_insert_col(d->U, d->usize, cur_v);
 
-        /* compute A U and store in V ; 
-           XXX requires(?) double precision operator */
-        latvec_cz_copy(cur_v, cur_z_v);
-        /* TODO apply double-prec operator to cur_z_v: */
-        latvec_z_linop(s, d, cur_z_Av, cur_z_v, cur_z_aux);
-        /* FIXME need to implement latmat_c^H (dot) latvec_z to make efficient */
+        /*  XXX requires(?) double precision operator */
+//        latvec_cz_copy(cur_v, cur_z_v);
+        latvec_c_linop(cur_Av, cur_v, cur_aux);
+        latmat_c cur_U = latmat_c_submat_col(d->U, 0, d->usize + 1);
+        lat_lmH_dot_lv(d->usize + 1, cur_U, cur_Av, d->H + d->usize * d->umax);
         for (int i = 0; i < d->usize; i++) {
-            d->H[i + d->usize*d->umax] = lat_cz_dotu(d->U.store[i], cur_z_Av);
-            d->H[d->usize + i*d->umax].r = d->H[i + d->usize*d->umax].r;
-            d->H[d->usize + i*d->umax].i =-d->H[i + d->usize*d->umax].i;
+            doublecomplex *p1 = d->H + i + d->usize * d->umax,
+                          *p2 = d->H + d->usize + i * d->umax;
+            p2->r =  p1->r;
+            p2->i = -p1->i;
         }
-        d->H[d->usize * (d->umax + 1)].r = lat_zz_dotu(cur_z_v, cur_z_Av);
-        d->H[d->usize * (d->umax + 1)].i = 0.0;
+        d->H[d->usize * (d->umax + 1)].i = 0.;
 
         d->usize ++;
         unew ++;
