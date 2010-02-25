@@ -100,8 +100,8 @@ q(df_postamble)(
     assert(0 == info);
 #elif HAVE_GSL
     gsl_matrix_complex_view gsl_C = gsl_matrix_complex_view_array_with_tda(
-            d->C, usize, usize, umax);
-    CHECK_GSL_STATUS(gsl_matrix_transpose(&gsl_C.matrix));
+            (double *)d->C, d->usize, d->usize, d->umax);
+    CHECK_GSL_STATUS(gsl_matrix_complex_transpose(&gsl_C.matrix));
     CHECK_GSL_STATUS(gsl_linalg_complex_cholesky_decomp(&gsl_C.matrix));
 #else
 #  error "no linear algebra library"

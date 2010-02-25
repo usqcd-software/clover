@@ -1,6 +1,5 @@
 #include <clover.h>
-#include <gsl/gsl_vector.h>
-#include <gsl/gsl_matrix.h>
+#include <math.h>
 
 #if defined(HAVE_LAPACK)
 #  include <blas.h>
@@ -9,6 +8,8 @@
 #  include <gsl/gsl_linalg.h>
 #  include <gsl/gsl_eigen.h>
 #  include <gsl/gsl_blas.h>
+#  include <gsl/gsl_complex_math.h>
+#  include <gsl/gsl_sort_double.h>
 #else
 #  error "no linear algebra library"
 #endif
@@ -22,8 +23,8 @@ q(df_update1)(
         double alpha_prev, 
         double beta_prev, 
         double resid_norm_sq, 
-        struct Fermion *resid,
-        struct Fermion *A_resid
+        struct FermionF *resid,
+        struct FermionF *A_resid
         )
 {
     if (NULL == d || 
@@ -64,7 +65,6 @@ q(df_update1)(
     zheev_(&cV, &cU, &vmax, d->hevecs1, &vmax, 
            d->hevals, d->zwork, &(d->lwork), 
            d->rwork, &info, 1, 1);
-    PRINT_STATUS(info, 0);
     assert(0 == info);
 
     /* diagonalize T:(vmax-1)*(vmax-1) matrix
@@ -74,7 +74,6 @@ q(df_update1)(
     zheev_(&cV, &cU, &tmp_i, d->hevecs2, &vmax,
            d->hevals, d->zwork, &(d->lwork),
            d->rwork, &info, 1, 1);
-    PRINT_STATUS(info, 0);
     assert(0 == info);
 
     /* select first nev vectors from both spaces */
@@ -131,12 +130,8 @@ q(df_update1)(
 
 #elif defined(HAVE_GSL)
 
-    gsl_complex gsl_tzero = gsl_complex_rect(0., 0.);
-    gsl_complex gsl_tpone = gsl_complex_rect(1., 0.);
-    gsl_complex gsl_tmone = gsl_complex_rect(-1., 0.);
-
     gsl_matrix_complex_view gsl_T = gsl_matrix_complex_view_array(
-            d->T, 
+            (double *)d->T, 
             vmax, vmax);
     gsl_matrix_complex_transpose(&gsl_T.matrix);    /* d->T uses FORTRAN matrix indexing */
     /* eigenpairs of T */
@@ -145,9 +140,9 @@ q(df_update1)(
             d->gsl_T_full, 
             d->gsl_hevals1, 
             d->gsl_hevecs1,
-            d->gsl_wkspace1))
+            d->gsl_wkspace1));
     CHECK_GSL_STATUS(gsl_sort_smallest_index(d->hevals_select1, d->nev, 
-            gsl_vector_const_ptr(d->gsl_hevals1, 0), 1, vmax))
+            gsl_vector_const_ptr(d->gsl_hevals1, 0), 1, vmax));
 
     /* eigenpairs of T[:-1, :-1] */
     gsl_matrix_complex_view gsl_T_m1 = gsl_matrix_complex_submatrix(
@@ -161,7 +156,7 @@ q(df_update1)(
             &gsl_T_m1.matrix, 
             d->gsl_hevals2,
             d->gsl_hevecs2,
-            d->gsl_wkspace2))
+            d->gsl_wkspace2));
     CHECK_GSL_STATUS(gsl_sort_smallest_index(d->hevals_select2, d->nev,
             gsl_vector_const_ptr(d->gsl_hevals2, 0), 1, vmax-1));
 
@@ -193,14 +188,14 @@ q(df_update1)(
 
     /* projecting matrix T on Q: Q^H . T . Q */
     CHECK_GSL_STATUS(gsl_blas_zgemm(CblasNoTrans, CblasNoTrans,
-            gsl_tpone, &gsl_T.matrix, gsl_Q.matrix,
-            gsl_tzero, d->gsl_tmp_MxS));
+            GSL_COMPLEX_ONE, &gsl_T.matrix, &gsl_Q.matrix,
+            GSL_COMPLEX_ZERO, d->gsl_tmp_MxS));
     CHECK_GSL_STATUS(gsl_blas_zgemm(CblasConjTrans, CblasNoTrans,
-            gsl_tpone, &gsl_Q.matrix, d->gsl_tmp_MxS,
-            gsl_tzero, d->gsl_T_proj));
+            GSL_COMPLEX_ONE, &gsl_Q.matrix, d->gsl_tmp_MxS,
+            GSL_COMPLEX_ZERO, d->gsl_T_proj));
 
     /* eigenpairs of Q^H . T . Q */
-    gsl_vector_complex_view gsl_hevals = gsl_vector_complex_view_array(
+    gsl_vector_view gsl_hevals = gsl_vector_view_array(
             d->hevals, vsize);
     CHECK_GSL_STATUS(gsl_eigen_hermv(
             d->gsl_T_proj,
@@ -208,11 +203,11 @@ q(df_update1)(
             d->gsl_hevecs3,
             d->gsl_wkspace3));
     CHECK_GSL_STATUS(gsl_blas_zgemm(CblasNoTrans, CblasNoTrans,
-            gsl_tpone, &gsl_Q.matrix, d->gsl_hevecs3,
-            gsl_tzero, d->gsl_tmp_MxS));
+            GSL_COMPLEX_ONE, &gsl_Q.matrix, d->gsl_hevecs3,
+            GSL_COMPLEX_ZERO, d->gsl_tmp_MxS));
 
     gsl_matrix_complex_view gsl_QZ_transp = gsl_matrix_complex_view_array_with_tda(
-            d->hevecs2, vsize, vmax, vmax);
+            (double *)d->hevecs2, vsize, vmax, vmax);
     CHECK_GSL_STATUS(gsl_matrix_complex_transpose_memcpy( /* back to FORTRAN */
                 &gsl_QZ_transp.matrix, d->gsl_tmp_MxS));
 
@@ -240,7 +235,7 @@ q(df_update1)(
     memset(d->T, 0, vmax * vmax * sizeof(d->T[0]));
     lat_lmH_dot_lv(vsize, 
                    tmp_V, 
-                   latvec_c_view(d->dim, Ar), 
+                   latvec_c_view(d->dim, A_resid), 
                    d->T + vsize * vmax);
     for (int i = 0 ; i < vsize ; i++) {
         d->T[i * (vmax + 1)].r      = d->hevals[i];
@@ -259,7 +254,7 @@ q(df_update1)(
     latvec_c_copy(latvec_c_view(d->dim, resid), 
                   cur_r);
     lat_c_scal_d(1. / resid_norm, cur_r);
-    latmat_c_insert_col(d->V, d->vsize, cur_r)
+    latmat_c_insert_col(d->V, d->vsize, cur_r);
 
     d->vsize += 1;
     

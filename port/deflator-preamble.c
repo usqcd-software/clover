@@ -40,11 +40,11 @@ q(df_solve_in_eigenspace)(
 #elif defined(HAVE_GSL)
 
     gsl_matrix_complex_view gsl_C = gsl_matrix_complex_view_array_with_tda(
-            d->C, d->usize, d->usize, d->umax);
+            (double *)d->C, d->usize, d->usize, d->umax);
     gsl_vector_complex_view gsl_pb = gsl_vector_complex_view_array(
-            d->zwork, d->usize);
+            (double *)d->zwork, d->usize);
     gsl_vector_complex_view gsl_px = gsl_vector_complex_view_array(
-            d->zwork2, d->usize);
+            (double *)d->zwork2, d->usize);
     CHECK_GSL_STATUS(gsl_linalg_complex_cholesky_solve(
             &gsl_C.matrix, 
             &gsl_pb.vector, 

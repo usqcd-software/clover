@@ -89,6 +89,7 @@ q(df_alloc)(struct Q(Deflator) **deflator_ptr,
     latvec_z_null(&(d->work_z_3));
     latvec_c_null(&(d->work_c_1));
     latvec_c_null(&(d->work_c_2));
+    latvec_c_null(&(d->work_c_3));
 
 
 
@@ -117,20 +118,20 @@ q(df_alloc)(struct Q(Deflator) **deflator_ptr,
     d->gsl_T_full       = gsl_matrix_complex_alloc(vmax, vmax);
     d->gsl_hevecs1      = gsl_matrix_complex_alloc(vmax, vmax);
     d->gsl_hevals1      = gsl_vector_alloc(vmax);
-    d->gsl_wkspace1     = gsl_eigen_herm_alloc(vmax);
+    d->gsl_wkspace1     = gsl_eigen_hermv_alloc(vmax);
     d->gsl_T_m1         = gsl_matrix_complex_alloc(vmax-1, vmax-1);
     d->gsl_hevecs2      = gsl_matrix_complex_alloc(vmax-1, vmax-1);
     d->gsl_hevals2      = gsl_vector_alloc(vmax-1);
-    d->gsl_wkspace2     = gsl_eigen_herm_alloc(vmax-1);
+    d->gsl_wkspace2     = gsl_eigen_hermv_alloc(vmax-1);
     d->gsl_T_proj       = gsl_matrix_complex_alloc(2*nev, 2*nev);
     d->gsl_hevecs3      = gsl_matrix_complex_alloc(2*nev, 2*nev);
-    d->gsl_wkspace3     = gsl_eigen_herm_alloc(2*nev);
+    d->gsl_wkspace3     = gsl_eigen_hermv_alloc(2*nev);
     d->gsl_QR           = gsl_matrix_complex_alloc(vmax, 2*nev);
     d->gsl_Q_unpack     = gsl_matrix_complex_alloc(vmax, vmax);
     d->gsl_tmp_MxS      = gsl_matrix_complex_alloc(vmax, 2*nev);
     d->gsl_tau          = gsl_vector_complex_alloc(2*nev);
-    d->hevals_select1   = q(malloc)(s, vmax * sizeof(int));
-    d->hevals_select2   = q(malloc)(s, vmax * sizeof(int));
+    d->hevals_select1   = q(malloc)(s, vmax * sizeof(d->hevals_select1[0]));
+    d->hevals_select2   = q(malloc)(s, vmax * sizeof(d->hevals_select2[0]));
 #else
 #  error "no linear algebra library"
 #endif
@@ -141,6 +142,7 @@ q(df_alloc)(struct Q(Deflator) **deflator_ptr,
     d->work_z_3         = latvec_z_alloc(s, dim);
     d->work_c_1         = latvec_c_alloc(s, dim);
     d->work_c_2         = latvec_c_alloc(s, dim);
+    d->work_c_3         = latvec_c_alloc(s, dim);
 
     /* check allocation */
     if (
@@ -186,7 +188,8 @@ q(df_alloc)(struct Q(Deflator) **deflator_ptr,
             latvec_z_is_null(&(d->work_z_2))    ||
             latvec_z_is_null(&(d->work_z_3))    ||
             latvec_c_is_null(&(d->work_c_1))    ||
-            latvec_c_is_null(&(d->work_c_2))
+            latvec_c_is_null(&(d->work_c_2))    ||
+            latvec_c_is_null(&(d->work_c_3))
     ) {
         q(df_free)(&d);
         return q(set_error)(s, 0, "allocate_deflator(): not enough memory");

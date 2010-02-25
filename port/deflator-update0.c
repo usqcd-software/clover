@@ -1,4 +1,5 @@
 #include <clover.h>
+#include <math.h>
 
 int
 q(df_update0)(
@@ -9,7 +10,7 @@ q(df_update0)(
         double alpha_prev, 
         double beta_prev, 
         double resid_norm_sq, 
-        struct Fermion *resid
+        struct FermionF *resid
         )
 {
     if (NULL == d || 
@@ -52,7 +53,7 @@ q(df_update0)(
     latvec_c_copy(latvec_c_view(d->dim, resid), 
                   cur_r);
     lat_c_scal_d(1. / resid_norm, cur_r);
-    latmat_c_insert_col(d->V, d->vsize, cur_r)
+    latmat_c_insert_col(d->V, d->vsize, cur_r);
 #undef cur_r
 
     d->vsize += 1;
