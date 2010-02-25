@@ -23,6 +23,7 @@
 #define ALIGN(p) ((void *)((((ptrdiff_t)(p))+CACHE_LINE_SIZE-1) & \
                            ~(CACHE_LINE_SIZE-1)))
 
+
 /* QCD types (qa0 controls these definitions) */
 struct SUnF;
 struct SUnD;
@@ -110,13 +111,80 @@ struct Q(State) {
   int               *v2lx;            /* Only for init */
 };
 
+
 /* Deflator state */
+#include <deflator-la.h>
+
+#if defined(HAVE_LAPACK)
+#elif defined(HAVE_GSL)
+#  include <gsl/gsl_vector.h>
+#  include <gsl/gsl_matrix.h>
+#  include <gsl/gsl_eigen.h>
+#else
+#  error "no linear algebra library"
+#endif
 struct Q(Deflator) {
     struct Q(State) *state;
-    int nev;
-    int vsize;
-    double eps;
+
     /* XXX other pieces of the deflation state */
+    int                 dim;     /* size of problem vectors */
+
+    int                 vmax;
+    int                 vsize;
+    int                 nev;
+    int                 umax;
+    int                 usize;
+    int                 frozen;
+
+    /* eig current state */
+    double              eps;
+    double              resid_norm_sq_min;
+    
+    latmat_c            V;
+    doublecomplex       *T;
+
+    /* incr_eig current state */
+    latmat_c            U;
+    doublecomplex       *H;
+    doublecomplex       *C;
+
+
+    long int            lwork;
+    doublecomplex       *zwork;
+    doublecomplex       *hevecs2;
+    double              *hevals;
+#if defined(HAVE_LAPACK)
+    doublecomplex       *hevecs1;
+    doublecomplex       *tau;
+    double              *rwork;
+#elif defined(HAVE_GSL)
+    doublecomplex       *zwork2;
+    gsl_matrix_complex  *gsl_T_full;
+    gsl_matrix_complex  *gsl_hevecs1;
+    gsl_vector          *gsl_hevals1;
+    gsl_eigen_hermv_workspace *gsl_wkspace1;
+    gsl_matrix_complex  *gsl_T_m1;
+    gsl_matrix_complex  *gsl_hevecs2;
+    gsl_vector          *gsl_hevals2;
+    gsl_eigen_hermv_workspace *gsl_wkspace2;
+    gsl_matrix_complex  *gsl_T_proj;
+    gsl_matrix_complex  *gsl_hevecs3;
+    gsl_eigen_hermv_workspace *gsl_wkspace3;
+    gsl_matrix_complex  *gsl_QR;
+    gsl_matrix_complex  *gsl_Q_unpack;
+    gsl_matrix_complex  *gsl_tmp_MxS;
+    gsl_vector_complex  *gsl_tau;
+    int                 *hevals_select1;
+    int                 *hevals_select2;
+#else
+#  error "no linear algebra library"
+#endif
+
+    latmat_c            tmp_V;
+    latvec_c            work_c_1;
+    latvec_c            work_c_2;
+    latvec_c            work_c_3;
+
 };
 
 /* layout translation */
@@ -196,33 +264,35 @@ int q(mixed_cg)(struct Q(State)             *state,
                 unsigned int                 options);
 
 /* handling eig deflator */
+int q(df_alloc)(
+        struct Q(Deflator) **deflator_ptr,
+        struct Q(State) *s,
+        int dim, int vmax, int nev,
+        double eps, int umax);
+void q(df_free)(struct Q(Deflator) **deflator_ptr);
 int q(df_preamble)(struct Q(State)           *state,
                    struct Q(Deflator)        *deflator,
-                   int                        e_size,
                    struct FermionF           *psi_e,
-                   const struct FermionF     *chi_e);
+                   struct FermionF     *chi_e);
 int q(df_update0)(struct Q(State)          *state,
                   struct Q(Deflator)       *deflator,
-                  int                       e_size,
                   double                    a1,
                   double                    b1,
                   double                    a0,
                   double                    b0,
                   double                    r,
-                  const struct FermionF    *rho);
-void q(df_update1)(struct Q(State)          *state,
+                  struct FermionF    *rho);
+int q(df_update1)(struct Q(State)          *state,
                    struct Q(Deflator)       *deflator,
-                   int                       e_size,
                    double                    a1,
                    double                    b1,
                    double                    a0,
                    double                    b0,
                    double                    r,
-                   const struct FermionF    *rho,
-                   const struct FermionF    *A_rho);
+                   struct FermionF    *rho,
+                   struct FermionF    *A_rho);
 int q(df_postamble)(struct Q(State)           *state,
-                    struct Q(Deflator)        *deflator,
-                    int                        e_size);
+                    struct Q(Deflator)        *deflator);
 
 /* Timing */
 #define BEGIN_TIMING(s) do { gettimeofday(&((s)->t0), NULL); } while (0)
@@ -465,6 +535,82 @@ unsigned int qx(f_diff_norm)(double *s,
                              int size,
                              const struct Fermion *a,
                              const struct Fermion *b);
+
+/* algebra for arrays of fermions */
+
+/* fv[fv_begin + (0 .. len-1)] = gv[gv_begin + (0 .. len-1)]
+*/
+unsigned int qx(fv_copy)(
+        int dim, int len,
+        struct vFermion *fv, int fv_size, int fv_begin,
+        const struct vFermion *gv, int gv_size, int gv_begin
+        );
+/*
+ * set fv[idx] = x
+*/
+unsigned int qx(fv_put)(
+        int dim,
+        struct vFermion *fv, int fv_size, int fv_idx,
+        const struct Fermion *x
+        );
+
+/*
+ * read x = fv[idx]
+*/
+unsigned int qx(fv_get)(
+        int dim,
+        struct Fermion *x,
+        const struct vFermion *fv, int fv_size, int fv_idx
+        );
+
+/*
+*   g = fv[fv_begin + (0 .. f_vlen-1)] . v
+*   v is a complex vector [fv_len] indexed as [re:0/im:1 + 2 * i]
+*/
+unsigned int qx(fv_dot_zv)(
+        int dim,
+        struct Fermion *g,
+        const struct vFermion *fv, int fv_size, int fv_begin, int fv_len,
+        const double *v
+        );
+
+/*
+*   gv[gv_begin + (0 .. gv_len-1)] = fv[fv_begin + (0 .. f_len - 1)] . m
+*   m is a complex matrix [fv_len*gv_len] indexed as [re:0/im:1 + 2 * (row + ldm * col) ]
+*/
+unsigned int qx(fv_dot_zm)(
+        int dim,
+        struct vFermion *gv, int gv_row_size, int gv_begin, int gv_len,
+        const struct vFermion *fv, int fv_row_size, int fv_begin, int fv_len,
+        const double *m, int ldm
+        );
+
+/*  XXX this includes global reduction
+ *  c[i] = herm(fv[fv_begin+i]) * g 
+ *      for all i = (0 .. fv_len-1)
+ *  c is complex vector as [re:0/im:1 + 2 * i]
+ */
+unsigned int qx(fvH_dot_f)(
+        int dim,
+        double *c,
+        const struct vFermion *fv, int fv_size, int fv_begin, int fv_len,
+        const struct Fermion *g
+        );
+//This is a local op, see port/fermion-dot.c for computing the global norm
+
+/* XXX this includes global reduction
+ * c[i,j] = herm(fv[fv_begin + i]) . g[gv_begin+j] 
+ *      for all i = (0 .. fv_len-1), 
+ *              j = (0 .. gv_len-1),
+ * c is a complex matrix as [re:0/im:1 + 2 * (i + ldc * j)]
+ */
+unsigned int qx(fvH_dot_fv)(
+        int dim,
+        double *c, int ldc,
+        const struct vFermion *fv, int fv_size, int fv_begin, int fv_len,
+        const struct vFermion *gv, int gv_size, int gv_begin, int gv_len
+        );
+
 
 /* basic matrices */
 unsigned int qx(op_norm2)(double *global_norm,

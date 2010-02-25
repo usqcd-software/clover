@@ -39,6 +39,11 @@ void latvec_c_copy(latvec_c x, latvec_c y); /* y <- x */
 void latvec_c_zero(latvec_c x); /* x <- 0 */
 void latvec_c_free(struct Q(State) *state, latvec_c *v);
 
+doublecomplex lat_c_dotu(latvec_c x, latvec_c y);
+void lat_c_scal_d(double alpha, latvec_c x);
+void lat_c_axpy_d(double alpha, latvec_c x, latvec_c y);
+double lat_c_nrm2(latvec_c x);
+
 struct FermionD;
 typedef struct {
     int dim;
@@ -49,29 +54,26 @@ typedef struct {
 #define latvec_z_is_null(p) (NULL == (p)->f)
 
 latvec_z latvec_z_alloc(struct Q(State) *state, int dim);
-latvec_z latvec_z_view(int dim, struct FermionD *f);
-void latvec_z_copy(latvec_z x, latvec_z y); /* y <- x */
 void latvec_z_free(struct Q(State) *state, latvec_z *v);
+latvec_z latvec_z_view(int dim, struct FermionD *f);
+#if 0
+void latvec_z_copy(latvec_z x, latvec_z y); /* y <- x */
 
 /* copy + conversion: y <- x */
 void latvec_cz_copy(latvec_c x, latvec_z y);
 void latvec_zc_copy(latvec_z x, latvec_c y);
 
-doublecomplex lat_cc_dotu(latvec_c x, latvec_c y);
-doublecomplex lat_zz_dotu(latvec_z x, latvec_z y);
+
+doublecomplex lat_z_dotu(latvec_z x, latvec_z y);
 doublecomplex lat_cz_dotu(latvec_c x, latvec_z y);
-#if 0
 void lat_c_scal(doublecomplex alpha, latvec_c x);
-void lat_cc_axpy(doublecomplex alpha, latvec_c x, latvec_c y);
+void lat_c_axpy(doublecomplex alpha, latvec_c x, latvec_c y);
 void lat_cz_axpy(doublecomplex alpha, latvec_c x, latvec_z y);
-void lat_zz_axpy(doublecomplex alpha, latvec_z x, latvec_z y);
-#endif
-void lat_c_scal_d(double alpha, latvec_c x);
-void lat_cc_axpy_d(double alpha, latvec_c x, latvec_c y);
+void lat_z_axpy(doublecomplex alpha, latvec_z x, latvec_z y);
 void lat_cz_axpy_d(double alpha, latvec_c x, latvec_z y);
-void lat_zz_axpy_d(double alpha, latvec_z x, latvec_z y);
-double lat_c_nrm2(latvec_c x);
-//double lat_z_nrm2(latvec_z x);
+void lat_z_axpy_d(double alpha, latvec_z x, latvec_z y);
+double lat_z_nrm2(latvec_z x);
+#endif
 
 
 /*******************************/
@@ -90,9 +92,9 @@ typedef struct {
 #define latmat_c_is_null(p) (NULL == (p)->fv)
 
 latmat_c latmat_c_alloc(struct Q(State) *state, int dim, int ncol);
+void latmat_c_free(struct Q(State) *state, latmat_c *m);
 latmat_c latmat_c_view(int dim, int size, struct vFermion *fv);
 void latmat_c_copy(latmat_c m1, latmat_c m2); /* m2 <- m1 */
-void latmat_c_free(struct Q(State) *state, latmat_c *m);
 /* create a submatrix of subset of columns
    only a 'view' is created, no allocation is performed
    do not try to 'free' submatrix: it may result in memory error */

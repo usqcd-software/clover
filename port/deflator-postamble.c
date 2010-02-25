@@ -35,9 +35,6 @@ q(df_postamble)(
 #define cur_v       (d->work_c_1)
 #define cur_Av      (d->work_c_2)
 #define cur_aux     (d->work_c_3)
-//#define cur_z_v     (d->work_z_1)
-//#define cur_z_Av    (d->work_z_2)
-//#define cur_z_aux   (d->work_z_3)
         latmat_c_get_col(d->V, i_v, cur_v);
         
         if (0 < d->usize) {
@@ -53,7 +50,7 @@ q(df_postamble)(
                               cur_Av);
                 /* FIXME optimize with a special primitive 
                    cur_v <- cur_v - cur_Av */
-                lat_cc_axpy_d(-1., cur_Av, cur_v);
+                lat_c_axpy_d(-1., cur_Av, cur_v);
             }
         }
         double v_norm2 = lat_c_nrm2(cur_v);
@@ -80,11 +77,6 @@ q(df_postamble)(
         d->usize ++;
         unew ++;
         i_v ++;
-#undef cur_v
-#undef cur_Av
-#undef cur_z_v
-#undef cur_z_Av
-#undef cur_z_aux
     }
     assert(usize_old + unew == d->usize);
 

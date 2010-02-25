@@ -84,9 +84,6 @@ q(df_alloc)(struct Q(Deflator) **deflator_ptr,
 
 
     latmat_c_null(&(d->tmp_V));
-    latvec_z_null(&(d->work_z_1));
-    latvec_z_null(&(d->work_z_2));
-    latvec_z_null(&(d->work_z_3));
     latvec_c_null(&(d->work_c_1));
     latvec_c_null(&(d->work_c_2));
     latvec_c_null(&(d->work_c_3));
@@ -137,9 +134,6 @@ q(df_alloc)(struct Q(Deflator) **deflator_ptr,
 #endif
 
     d->tmp_V            = latmat_c_alloc(s, dim, 2*nev);
-    d->work_z_1         = latvec_z_alloc(s, dim);
-    d->work_z_2         = latvec_z_alloc(s, dim);
-    d->work_z_3         = latvec_z_alloc(s, dim);
     d->work_c_1         = latvec_c_alloc(s, dim);
     d->work_c_2         = latvec_c_alloc(s, dim);
     d->work_c_3         = latvec_c_alloc(s, dim);
@@ -184,9 +178,6 @@ q(df_alloc)(struct Q(Deflator) **deflator_ptr,
 #  error "no linear algebra library"
 #endif
             latmat_c_is_null(&(d->tmp_V))       ||
-            latvec_z_is_null(&(d->work_z_1))    ||
-            latvec_z_is_null(&(d->work_z_2))    ||
-            latvec_z_is_null(&(d->work_z_3))    ||
             latvec_c_is_null(&(d->work_c_1))    ||
             latvec_c_is_null(&(d->work_c_2))    ||
             latvec_c_is_null(&(d->work_c_3))

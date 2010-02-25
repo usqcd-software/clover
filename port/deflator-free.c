@@ -57,9 +57,6 @@ q(df_free)(struct Q(Deflator) **deflator_ptr)
 #endif
 
     if (!latmat_c_is_null(&(d->tmp_V)))     latmat_c_free(s, &(d->tmp_V));
-    if (!latvec_z_is_null(&(d->work_z_1)))  latvec_z_free(s, &(d->work_z_1));
-    if (!latvec_z_is_null(&(d->work_z_2)))  latvec_z_free(s, &(d->work_z_2));
-    if (!latvec_z_is_null(&(d->work_z_3)))  latvec_z_free(s, &(d->work_z_3));
     if (!latvec_c_is_null(&(d->work_c_1)))  latvec_c_free(s, &(d->work_c_1));
     if (!latvec_c_is_null(&(d->work_c_2)))  latvec_c_free(s, &(d->work_c_2));
     if (!latvec_c_is_null(&(d->work_c_3)))  latvec_c_free(s, &(d->work_c_3));

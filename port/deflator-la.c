@@ -43,6 +43,50 @@ latvec_c_free(struct Q(State) *state, latvec_c *v)
         v->f = NULL;
     }
 }
+
+
+doublecomplex 
+lat_c_dotu(latvec_c x, latvec_c y)
+{
+    assert(x.dim == y.dim);
+    assert(!latvec_c_is_null(&x) &&
+            !latvec_c_is_null(&y));
+
+    doublecomplex res = { 0., 0. };
+    /* TODO return x^H . y */NOT_IMPLEMENTED;
+    
+    return res;
+}
+void 
+lat_c_scal_d(double alpha, latvec_c x)
+{
+    assert(!latvec_c_is_null(&x));
+    /* TODO implement x <- alpha * x */NOT_IMPLEMENTED;
+}
+
+void 
+lat_c_axpy_d(double alpha, latvec_c x, latvec_c y)
+{
+    assert(x.dim == y.dim);
+    assert(!latvec_c_is_null(&x) &&
+            !latvec_c_is_null(&y));
+
+    qx(f_add2)(y.f, y.dim, alpha, x.f);
+}
+double 
+lat_c_nrm2(latvec_c x) 
+{
+    assert(!latvec_c_is_null(&x));
+    
+    double res = 0.;
+    /* TODO check that all is correct */NOT_IMPLEMENTED;
+    qx(f_norm)(&res, x.dim, x.f);
+    res = res * res;
+    
+    return res;
+}
+
+#if 0
 latvec_z
 latvec_z_alloc(struct Q(State) *state, int dim)
 {
@@ -95,6 +139,94 @@ latvec_cz_copy(latvec_c x, latvec_z y)
 }
 
 
+doublecomplex 
+lat_cz_dotu(latvec_c x, latvec_z y)
+{
+    assert(x.dim == y.dim);
+    assert(!latvec_c_is_null(&x) &&
+            !latvec_z_is_null(&y));
+
+    doublecomplex res = { 0., 0. };
+    /* TODO return x^H . y */NOT_IMPLEMENTED;
+    
+    return res;
+}
+doublecomplex 
+lat_z_dotu(latvec_z x, latvec_z y)
+{
+    assert(x.dim == y.dim);
+    assert(!latvec_z_is_null(&x) &&
+            !latvec_z_is_null(&y));
+
+    doublecomplex res = { 0., 0. };
+    /* TODO return x^H . y */NOT_IMPLEMENTED;
+    
+    return res;
+}
+/* norm */
+double 
+lat_z_nrm2(latvec_z x) 
+{
+    assert(!latvec_z_is_null(&x));
+    double res = 0.;
+    
+    /* TODO check that all is correct */NOT_IMPLEMENTED;
+    qop_d3_clover_f_norm(&res, x.dim, x.f);
+    res = res * res;
+    
+    return res;
+}
+
+
+void 
+lat_c_scal(doublecomplex alpha, latvec_c x)
+{
+    assert(!latvec_c_is_null(&x));
+    /* TODO implement x <- alpha * x */NOT_IMPLEMENTED;
+}
+void 
+lat_c_axpy(doublecomplex alpha, latvec_c x, latvec_c y)
+{
+    assert(x.dim == y.dim);
+    assert(!latvec_c_is_null(&x) &&
+            !latvec_c_is_null(&y));
+
+    qx(f_add2)(y.f, y.dim, alpha, x.f);
+}
+void 
+lat_cz_axpy(doublecomplex alpha, latvec_c x, latvec_z y)
+{
+    assert(x.dim == y.dim);
+    assert(!latvec_c_is_null(&x) &&
+            !latvec_z_is_null(&y));
+    /* TODO implement y <- y + alpha * x */NOT_IMPLEMENTED;
+}
+void 
+lat_z_axpy(doublecomplex alpha, latvec_z x, latvec_z y)
+{
+    assert(x.dim == y.dim);
+    assert(!latvec_z_is_null(&x) &&
+            !latvec_z_is_null(&y));
+    /* TODO implement y <- y + alpha * x */NOT_IMPLEMENTED;
+}
+void 
+lat_cz_axpy_d(double alpha, latvec_c x, latvec_z y)
+{
+    assert(x.dim == y.dim);
+    assert(!latvec_c_is_null(&x) &&
+            !latvec_z_is_null(&y));
+    /* TODO implement y <- y + alpha * x */NOT_IMPLEMENTED;
+}
+void 
+lat_z_axpy_d(double alpha, latvec_z x, latvec_z y)
+{
+    assert(x.dim == y.dim);
+    assert(!latvec_z_is_null(&x) &&
+            !latvec_z_is_null(&y));
+    /* TODO implement y <- y + alpha * x */NOT_IMPLEMENTED;
+}
+
+#endif
     
     
 latmat_c 
@@ -181,137 +313,6 @@ latmat_c_get_col(latmat_c m, int col, latvec_c v)
                m.fv, m.size, col);
 }
 
-/* linear algebra */
-/* dot products */
-doublecomplex 
-lat_cc_dotu(latvec_c x, latvec_c y)
-{
-    assert(x.dim == y.dim);
-    assert(!latvec_c_is_null(&x) &&
-            !latvec_c_is_null(&y));
-
-    doublecomplex res = { 0., 0. };
-    /* TODO return x^H . y */NOT_IMPLEMENTED;
-    
-    return res;
-}
-doublecomplex 
-lat_cz_dotu(latvec_c x, latvec_z y)
-{
-    assert(x.dim == y.dim);
-    assert(!latvec_c_is_null(&x) &&
-            !latvec_z_is_null(&y));
-
-    doublecomplex res = { 0., 0. };
-    /* TODO return x^H . y */NOT_IMPLEMENTED;
-    
-    return res;
-}
-doublecomplex 
-lat_zz_dotu(latvec_z x, latvec_z y)
-{
-    assert(x.dim == y.dim);
-    assert(!latvec_z_is_null(&x) &&
-            !latvec_z_is_null(&y));
-
-    doublecomplex res = { 0., 0. };
-    /* TODO return x^H . y */NOT_IMPLEMENTED;
-    
-    return res;
-}
-/* norm */
-double 
-lat_c_nrm2(latvec_c x) 
-{
-    assert(!latvec_c_is_null(&x));
-    
-    double res = 0.;
-    /* TODO check that all is correct */NOT_IMPLEMENTED;
-    qop_f3_clover_f_norm(&res, x.dim, x.f);
-    res = res * res;
-    
-    return res;
-}
-double 
-lat_z_nrm2(latvec_z x) 
-{
-    assert(!latvec_z_is_null(&x));
-    double res = 0.;
-    
-    /* TODO check that all is correct */NOT_IMPLEMENTED;
-    qop_d3_clover_f_norm(&res, x.dim, x.f);
-    res = res * res;
-    
-    return res;
-}
-
-/* vector ops */
-#if 0
-void 
-lat_c_scal(doublecomplex alpha, latvec_c x)
-{
-    assert(!latvec_c_is_null(&x));
-    /* TODO implement x <- alpha * x */NOT_IMPLEMENTED;
-}
-void 
-lat_cc_axpy(doublecomplex alpha, latvec_c x, latvec_c y)
-{
-    assert(x.dim == y.dim);
-    assert(!latvec_c_is_null(&x) &&
-            !latvec_c_is_null(&y));
-
-    qx(f_add2)(y.f, y.dim, alpha, x.f);
-}
-void 
-lat_cz_axpy(doublecomplex alpha, latvec_c x, latvec_z y)
-{
-    assert(x.dim == y.dim);
-    assert(!latvec_c_is_null(&x) &&
-            !latvec_z_is_null(&y));
-    /* TODO implement y <- y + alpha * x */NOT_IMPLEMENTED;
-}
-void 
-lat_zz_axpy(doublecomplex alpha, latvec_z x, latvec_z y)
-{
-    assert(x.dim == y.dim);
-    assert(!latvec_z_is_null(&x) &&
-            !latvec_z_is_null(&y));
-    /* TODO implement y <- y + alpha * x */NOT_IMPLEMENTED;
-}
-#endif
-void 
-lat_c_scal_d(double alpha, latvec_c x)
-{
-    assert(!latvec_c_is_null(&x));
-    /* TODO implement x <- alpha * x */NOT_IMPLEMENTED;
-}
-
-void 
-lat_cc_axpy_d(double alpha, latvec_c x, latvec_c y)
-{
-    assert(x.dim == y.dim);
-    assert(!latvec_c_is_null(&x) &&
-            !latvec_c_is_null(&y));
-
-    qx(f_add2)(y.f, y.dim, alpha, x.f);
-}
-void 
-lat_cz_axpy_d(double alpha, latvec_c x, latvec_z y)
-{
-    assert(x.dim == y.dim);
-    assert(!latvec_c_is_null(&x) &&
-            !latvec_z_is_null(&y));
-    /* TODO implement y <- y + alpha * x */NOT_IMPLEMENTED;
-}
-void 
-lat_zz_axpy_d(double alpha, latvec_z x, latvec_z y)
-{
-    assert(x.dim == y.dim);
-    assert(!latvec_z_is_null(&x) &&
-            !latvec_z_is_null(&y));
-    /* TODO implement y <- y + alpha * x */NOT_IMPLEMENTED;
-}
-
 
 /* C <- A^\dag * B, A:lat*m, B:lat*n, C:m*n */
 void 
@@ -385,4 +386,14 @@ lat_lm_dot_zv(int n,
                   y.f,
                   a.fv, a.size, a.begin, a.len,
                   (double *)x);
+}
+
+void
+latvec_c_linop(latvec_c y, latvec_c x, latvec_c aux)
+{
+    /* TODO apply M^dag M to x:
+       aux <- M x
+       y <- M^dag aux
+       add parameters to the function call as needed, I will fix the rest
+       */NOT_IMPLEMENTED;
 }

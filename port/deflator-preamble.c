@@ -84,7 +84,7 @@ q(df_preamble)(
         latvec_c_linop(cur_r, lv_x, cur_r_aux);
         /* FIXME optimize the code below with a special primitive;
            cur_r <- lv_b - cur_r */
-        lat_cc_axpy_d(-1., lv_b, cur_r);
+        lat_c_axpy_d(-1., lv_b, cur_r);
         lat_c_scal_d(-1., cur_r);   
     }
     double rnorm = sqrt(lat_c_nrm2(cur_r));
