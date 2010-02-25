@@ -63,7 +63,7 @@ q(df_postamble)(
 
         /*  XXX requires(?) double precision operator */
 //        latvec_cz_copy(cur_v, cur_z_v);
-        latvec_c_linop(cur_Av, cur_v, cur_aux);
+        latvec_c_linop(s, cur_Av, cur_v, cur_aux);
         latmat_c cur_U = latmat_c_submat_col(d->U, 0, d->usize + 1);
         lat_lmH_dot_lv(d->usize + 1, cur_U, cur_Av, d->H + d->usize * d->umax);
         for (int i = 0; i < d->usize; i++) {

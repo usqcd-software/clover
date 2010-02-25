@@ -184,7 +184,7 @@ q(df_update1)(
             d->gsl_Q_unpack, d->gsl_tmp_MxS));
     gsl_matrix_complex_view gsl_Q = gsl_matrix_complex_submatrix(
             d->gsl_Q_unpack,
-            0, 0, vsize, vmax);
+            0, 0, vmax, vsize);
 
     /* projecting matrix T on Q: Q^H . T . Q */
     CHECK_GSL_STATUS(gsl_blas_zgemm(CblasNoTrans, CblasNoTrans,
@@ -212,7 +212,7 @@ q(df_update1)(
                 &gsl_QZ_transp.matrix, d->gsl_tmp_MxS));
 
 
-    /* TODO thorough review of the code above */NOT_IMPLEMENTED;
+//    /* TODO thorough review of the code above */NOT_IMPLEMENTED;
 #else
 #  error "no linear algebra library"
 #endif

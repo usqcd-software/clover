@@ -33,10 +33,10 @@ q(df_alloc)(struct Q(Deflator) **deflator_ptr,
         assert( &(dc.r) == (double *)(&dc) &&
                 &(dc.i) == (double *)(&dc) + 1 &&
                 sizeof(dc) == 2 * sizeof(double));
-        gsl_complex gc;
-        assert( &(dc.r) == &(gc.dat[0]) &&
-                &(dc.i) == &(gc.dat[1]) &&
-                sizeof(dc) == sizeof(gc));
+        gsl_complex *gc = (gsl_complex *)(&dc);
+        assert( &(dc.r) == &(gc->dat[0]) &&
+                &(dc.i) == &(gc->dat[1]) &&
+                sizeof(dc) == sizeof(*gc));
     }
 #else 
 #  error "no linear algebra library"

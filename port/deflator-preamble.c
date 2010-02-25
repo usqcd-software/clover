@@ -54,6 +54,7 @@ q(df_solve_in_eigenspace)(
 #endif
 
     lat_lm_dot_zv(d->usize, cur_U, d->zwork, lv_x);
+
     return 0;
 }
 
@@ -69,6 +70,15 @@ q(df_preamble)(
             NULL != x &&
             NULL != b);
 
+    if (d->frozen)
+        return 0;
+
+    if (d->vsize != 0) {
+        q(set_error)(s, 0, "df_preamble: deflator in non-initial state");
+        return 1;
+    }
+
+
     latvec_c lv_x   = latvec_c_view(d->dim, x);
     latvec_c lv_b   = latvec_c_view(d->dim, b);
 
@@ -81,7 +91,7 @@ q(df_preamble)(
         if (q(df_solve_in_eigenspace)(s, d, x, b))
             return 1;
         /* compute residual */
-        latvec_c_linop(cur_r, lv_x, cur_r_aux);
+        latvec_c_linop(s, cur_r, lv_x, cur_r_aux);
         /* FIXME optimize the code below with a special primitive;
            cur_r <- lv_b - cur_r */
         lat_c_axpy_d(-1., lv_b, cur_r);
@@ -99,6 +109,7 @@ q(df_preamble)(
 
     /* init stopping threshold */
     d->resid_norm_sq_min = d->eps * d->eps * rnorm * rnorm;
+    d->vsize = 1;
     
     return 0;
 }

@@ -130,7 +130,7 @@ void lat_lm_dot_zv(int n,
 
 
 /* lin. operator tie-back */
-void latvec_c_linop(latvec_c y, latvec_c x, latvec_c aux);
+void latvec_c_linop(struct Q(State) *s, latvec_c y, latvec_c x, latvec_c aux);
 //void latvec_z_linop();
 
 #endif/*DEFLATOR_LA_H_hbq6DwyKpy5jzcxzbemt*/

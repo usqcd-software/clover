@@ -293,6 +293,9 @@ int q(df_update1)(struct Q(State)          *state,
                    struct FermionF    *A_rho);
 int q(df_postamble)(struct Q(State)           *state,
                     struct Q(Deflator)        *deflator);
+void q(df_reset)(struct Q(Deflator) *deflator);
+void q(df_stop)(struct Q(Deflator) *deflator);
+void q(df_resume)(struct Q(Deflator) *deflator);
 
 /* Timing */
 #define BEGIN_TIMING(s) do { gettimeofday(&((s)->t0), NULL); } while (0)
