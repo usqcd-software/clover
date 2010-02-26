@@ -1,0 +1,39 @@
+(verbose [(c99 bgl/xlc) "/* $Id$ */"])
+
+(include "types.qa0")
+
+(procedure do-fvH-dot-f ([stem "do_fvH_dot_f"]
+                          prec&color
+                          count-flops)
+           ([size      int     "size"      "int"                      ]
+            [ptr-c     pointer "c"         "double *"                 ]
+            [F         pointer "F"         "const struct vFermion *"  ]
+            [fv-size   int     "fv_size"   "int"                      ]
+            [fv-begin  int     "fv_begin"  "int"                      ]
+            [fv-len    int     "fv_len"    "int"                      ]
+            [G         pointer "G"         "const struct Fermion *"   ])
+   (op int-mul () (fv-start) ([reg fv-begin] [const (size-of Fermion)]))
+   (op int-mul () (fv-stride) ([reg fv-size] [const (size-of Fermion)]))
+   (op pointer-add () (F) ([reg F] [reg fv-start]))
+   (loop () (i [const 0] [reg size])
+       (load qcd-fermion () vg ([reg G]))
+       (op pointer-move () (c-j) ([reg ptr-c]))
+       (op pointer-add () (G) ([reg G] [const (size-of Fermion)]))
+       (op pointer-move () (F-j) ([reg F]))
+       (loop () (j [const 0] [reg fv-len])
+           (load qcd-fermion () vf-j ([reg F-j]))
+           (op pointer-add () (F-j) ([reg F-j] [const (size-of Fermion)]))
+           (op qcd-fdot-init () (fvf) ())
+           (op qcd-fdot-add () (fvf) ([reg fvf] [reg vf-j] [reg vg]))
+           (op qcd-fdot-fini () (z) ([reg fvf]))
+           (load double () s-r ([reg c-j]))
+           (load double () s-i ([reg c-j] [const (size-of double)]))
+           (op complex () (zz) ([reg s-r] [reg s-i]))
+           (op complex-add () (zz) ([reg zz] [reg z]))
+           (op complex-real () (s-r) ([reg zz]))
+           (op complex-imag () (s-i) ([reg zz]))
+           (store double () ([reg c-j]) [reg s-r])
+           (store double () ([reg c-j] [const (size-of double)]) [reg s-i])
+           (op pointer-add () (c-j) ([reg c-j]
+                                     [const (* 2 (size-of double))])))
+       (op pointer-add () (F) ([reg F] [reg fv-stride]))))

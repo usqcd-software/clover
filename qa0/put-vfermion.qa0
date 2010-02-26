@@ -1,0 +1,29 @@
+(verbose [(c99 bgl/xlc) "/* $Id$ */"])
+
+(include "types.qa0")
+
+;; F memory order:
+;;   0-th index: vector of fermions
+;;   1-st index: lattice index
+;;  fv[0][0]
+;;  fv[1][0]
+;;  ....
+;;  fv[fv-size][0]
+;;  ....
+;;
+(procedure put-vfermion ([stem "fv_put"]
+                         prec&color
+                         count-flops)
+           ([size      int     "size"      "int"                    ]
+            [F         pointer "F"         "struct vFermion *"      ]
+            [fv-size   int     "fv_size"   "int"                    ]
+            [fv-idx    int     "fv_idx"    "int"                    ]
+            [X         pointer "X"         "const struct Fermion *" ])
+   (op int-mul () (fv-step) ([reg fv-size] [const (size-of Fermion)]))
+   (op int-mul () (fv-start) ([reg fv-idx] [const (size-of Fermion)]))
+   (op pointer-add () (F-i) ([reg F] [reg fv-start]))
+   (loop () (i [const 0] [reg size])
+     (load qcd-fermion () x-v ([reg X]))
+     (op pointer-add () (X) ([reg X] [const (size-of Fermion)]))
+     (store qcd-fermion () ([reg F-i]) [reg x-v])
+     (op pointer-add () (F-i) ([reg F-i] [reg fv-step]))))

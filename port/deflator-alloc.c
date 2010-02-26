@@ -1,12 +1,13 @@
 #include <clover.h>
 
 int
-q(df_create)(struct Q(Deflator) **deflator_ptr,
+Q(create_deflator)(struct Q(Deflator) **deflator_ptr,
                    struct Q(State) *s,
-                   int dim, int vmax, int nev, 
+                   int vmax, int nev, 
                    double eps, int umax)
 {
     struct Q(Deflator) *d;
+    int dim;
 
     if (s == NULL || s->error_latched)
         return 1;
@@ -14,6 +15,7 @@ q(df_create)(struct Q(Deflator) **deflator_ptr,
     if (deflator_ptr == NULL)
         return q(set_error)(s, 0, "create_deflator(): NULL pointer");
   
+    dim = s->even.full_size;
     *deflator_ptr = NULL;
     d = q(malloc)(s, sizeof (struct Q(Deflator)));
     if (d == 0)
@@ -182,7 +184,7 @@ q(df_create)(struct Q(Deflator) **deflator_ptr,
             q(latvec_c_is_null)(&(d->work_c_2))    ||
             q(latvec_c_is_null)(&(d->work_c_3))
     ) {
-        q(df_free)(&d);
+        Q(free_deflator)(&d);
         return q(set_error)(s, 0, "allocate_deflator(): not enough memory");
     }
 

@@ -1,0 +1,47 @@
+(verbose [(c99 bgl/xlc) "/* $Id$ */"])
+
+(include "types.qa0")
+
+(procedure fv-mul-zm ([stem "fv_dot_zm"]
+                   prec&color
+                   count-flops)
+           ([size      int     "size"      "int"                     ]
+            [G         pointer "G"         "struct vFermion *"       ]
+            [gv-size   int     "fg_size"   "int"                     ]
+            [gv-begin  int     "fg_begin"  "int"                     ]
+            [gv-len    int     "fg_len"    "int"                     ]
+            [F         pointer "F"         "const struct vFermion *" ]
+            [fv-size   int     "fv_size"   "int"                     ]
+            [fv-begin  int     "fv_begin"  "int"                     ]
+            [fv-len    int     "fv_len"    "int"                     ]
+            [V         pointer "V"         "const double *"          ]
+            [v-lda     int     "v_lda"     "int"                     ])
+   (op int-mul () (fv-start) ([reg fv-begin] [const (size-of Fermion)]))
+   (op int-mul () (fv-stride) ([reg fv-size] [const (size-of Fermion)]))
+   (op pointer-add () (F) ([reg F] [reg fv-start]))
+   (op int-mul () (gv-start) ([reg gv-begin] [const (size-of Fermion)]))
+   (op int-mul () (gv-stride) ([reg gv-size] [const (size-of Fermion)]))
+   (op pointer-add () (G) ([reg G] [reg gv-start]))
+   (op int-mul () (v-stride) ([reg v-lda] [const (* 2 (size-of double))]))
+   (loop () (i [const 0] [reg size])
+     (op pointer-move () (V-j) ([reg V]))
+     (op pointer-move () (G-j) ([reg G]))
+     (loop () (j [const 0] [reg gv-len])
+         (op qcd-zerof () (x) ())
+         (op pointer-move () (F-k) ([reg F]))
+         (op qcd-zerof () (x) ())
+         (op pointer-move () (V-k) ([reg V-j]))
+         (loop () (k [const 0] [reg fv-len])
+             (load double () vv-r ([reg V-k]))
+             (load double () vv-i ([reg V-k] [const (size-of double)]))
+             (op complex () (vv-kj) ([reg vv-r] [reg vv-i]))
+             (op pointer-add () (V-k) ([reg V-k]
+                                       [const (* 2 (size-of double))]))
+             (load qcd-fermion () vf-k ([reg F-k]))
+             (op pointer-add () (F-k) ([reg F-k] [const (size-of Fermion)]))
+             (op qcd-cmaddf () (x) ([reg x] [reg vv-kj] [reg vf-k])))
+         (op pointer-add () (V-j) ([reg V-j] [reg v-stride]))
+         (store qcd-fermion () ([reg G-j]) [reg x])
+         (op pointer-add () (G-j) ([reg G-j] [const (size-of Fermion)])))
+     (op pointer-add () (G) ([reg G] [reg gv-stride]))
+     (op pointer-add () (F) ([reg F] [reg fv-stride]))))

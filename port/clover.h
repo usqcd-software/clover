@@ -174,8 +174,8 @@ struct Q(Deflator) {
     gsl_matrix_complex  *gsl_Q_unpack;
     gsl_matrix_complex  *gsl_tmp_MxS;
     gsl_vector_complex  *gsl_tau;
-    int                 *hevals_select1;
-    int                 *hevals_select2;
+    size_t              *hevals_select1;
+    size_t              *hevals_select2;
 #else
 #  error "no linear algebra library"
 #endif
@@ -269,7 +269,6 @@ int q(df_create)(
         struct Q(State) *s,
         int dim, int vmax, int nev,
         double eps, int umax);
-void q(df_free)(struct Q(Deflator) **deflator_ptr);
 int q(df_preamble)(struct Q(State)           *state,
                    struct Q(Deflator)        *deflator,
                    struct FermionF           *psi_e,
@@ -495,6 +494,7 @@ void qx(boundary)(struct eo_lattice *xy,
 int qx(sizeof_fermion)(int volume);
 int qx(sizeof_gauge)(int volume);
 int qx(sizeof_clover)(int volume);
+int qx(sizeof_vfermion)(int volume, int count);
 
 /* qa0 level data access routines */
 void qx(put_fermion)(struct Fermion *data, int pos, const double r[]);
@@ -544,7 +544,7 @@ unsigned int qx(f_diff_norm)(double *s,
 /* fv[fv_begin + (0 .. len-1)] = gv[gv_begin + (0 .. len-1)]
 */
 unsigned int qx(fv_copy)(
-        int dim, int len,
+        int size, int len,
         struct vFermion *fv, int fv_size, int fv_begin,
         const struct vFermion *gv, int gv_size, int gv_begin
         );
@@ -552,7 +552,7 @@ unsigned int qx(fv_copy)(
  * set fv[idx] = x
 */
 unsigned int qx(fv_put)(
-        int dim,
+        int size,
         struct vFermion *fv, int fv_size, int fv_idx,
         const struct Fermion *x
         );
@@ -561,7 +561,7 @@ unsigned int qx(fv_put)(
  * read x = fv[idx]
 */
 unsigned int qx(fv_get)(
-        int dim,
+        int size,
         struct Fermion *x,
         const struct vFermion *fv, int fv_size, int fv_idx
         );
@@ -571,7 +571,7 @@ unsigned int qx(fv_get)(
 *   v is a complex vector [fv_len] indexed as [re:0/im:1 + 2 * i]
 */
 unsigned int qx(fv_dot_zv)(
-        int dim,
+        int size,
         struct Fermion *g,
         const struct vFermion *fv, int fv_size, int fv_begin, int fv_len,
         const double *v
@@ -582,7 +582,7 @@ unsigned int qx(fv_dot_zv)(
 *   m is a complex matrix [fv_len*gv_len] indexed as [re:0/im:1 + 2 * (row + ldm * col) ]
 */
 unsigned int qx(fv_dot_zm)(
-        int dim,
+        int size,
         struct vFermion *gv, int gv_row_size, int gv_begin, int gv_len,
         const struct vFermion *fv, int fv_row_size, int fv_begin, int fv_len,
         const double *m, int ldm
@@ -594,12 +594,18 @@ unsigned int qx(fv_dot_zm)(
  *  c is complex vector as [re:0/im:1 + 2 * i]
  */
 unsigned int qx(fvH_dot_f)(
-        int dim,
+        int size,
         double *c,
         const struct vFermion *fv, int fv_size, int fv_begin, int fv_len,
         const struct Fermion *g
         );
-//This is a local op, see port/fermion-dot.c for computing the global norm
+
+/* Local part of the above */
+unsigned int qx(do_fvH_dot_f)(
+        int size,
+        double *c,
+        const struct vFermion *fv, int fv_size, int fv_begin, int fv_len,
+        const struct Fermion *g);
 
 /* XXX this includes global reduction
  * c[i,j] = herm(fv[fv_begin + i]) . g[gv_begin+j] 
@@ -608,12 +614,18 @@ unsigned int qx(fvH_dot_f)(
  * c is a complex matrix as [re:0/im:1 + 2 * (i + ldc * j)]
  */
 unsigned int qx(fvH_dot_fv)(
-        int dim,
+        int size,
         double *c, int ldc,
         const struct vFermion *fv, int fv_size, int fv_begin, int fv_len,
         const struct vFermion *gv, int gv_size, int gv_begin, int gv_len
         );
 
+/* local part of the above */
+unsigned int qx(do_fvH_dot_fv)(
+        int size,
+        double *c, int ldc,
+        const struct vFermion *fv, int fv_size, int fv_begin, int fv_len,
+        const struct vFermion *gv, int gv_size, int gv_begin, int gv_len);
 
 /* basic matrices */
 unsigned int qx(op_norm2)(double *global_norm,

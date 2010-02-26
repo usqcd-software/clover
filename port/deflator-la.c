@@ -1,4 +1,5 @@
 #include <assert.h>
+#define QOP_CLOVER_DEFAULT_PRECISION 'F'
 #include <clover.h>
 
 

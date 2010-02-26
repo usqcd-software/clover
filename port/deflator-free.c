@@ -1,7 +1,7 @@
 #include <clover.h>
 
 void
-q(df_free)(struct Q(Deflator) **deflator_ptr)
+Q(free_deflator)(struct Q(Deflator) **deflator_ptr)
 {
     struct Q(State) *s;
 

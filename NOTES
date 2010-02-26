@@ -1,85 +1,138 @@
+
+
 /* Allocate count "fermions":
    returns pointer for qx(free)(),
    and a pointer to fermion vector in fv.
    If not memory, returns NULL
  */
-void *qx(allocate_fv)(struct Q(State) *state,
-                      int size,
-                      struct vFermion **fv,
-                      int count);
+void *qx(allocate_fv)(
+        struct Q(State) *state,
+        int dim,
+        struct vFermion **fv, int fv_size
+        );
 
-void qx(free_fv)( 
+void qx(free_fv)();
 
 /*
  * set fv[idx] = x
 */
-unsigned int qx(fv_put)(struct vFermion *fv, int size, int count, int idx,
-                const struct Fermion *x);
+unsigned int qx(fv_put)(
+        int dim,
+        struct vFermion *fv, int fv_size, int fv_idx,
+        const struct Fermion *x
+        );
 
 /*
  * read x = fv[idx]
 */
-unsigned int qx(fv_get)(struct Fermion *x, int size, int count,
-                const struct Fermion *fv, int idx);
+unsigned int qx(fv_get)(
+        int dim,
+        struct Fermion *x,
+        const struct vFermion *fv, int fv_size, int fv_idx
+        );
 
-/* fv[a..a+b-1] = gv[c..c+b-1]
+/* fv[fv_begin + (0 .. len-1)] = gv[gv_begin + (0 .. len-1)]
 */
-unsigned int qx(fv_copy)(struct vFermion *fv, int size, int a, int b,
-                         const struct vFermion *gv, int c);
+unsigned int qx(fv_copy)(
+        int dim, int len,
+        struct vFermion *fv, int fv_size, int fv_begin,
+        const struct vFermion *gv, int gv_size, int gv_begin
+        );
 
 /*
-*   gv[0..g_count-1] = m fv[start..start + f_len - 1]
-*   m is g_count * f_len of doubles
+*   g = fv[fv_begin + (0 .. f_vlen-1)] . v
+*   v is a complex vector [fv_len] indexed as [re:0/im:1 + 2 * i]
 */
-unsigned int qx(fv_rmmul)(struct vFermion *gv, int size, int g_count,
-                  const double *m,
-                  const struct vFermion *fv, int f_count, int start, int f_len);
+unsigned int qx(fv_dot_zv)(
+        int dim,
+        struct Fermion *g,
+        const struct vFermion *fv, int fv_size, int fv_begin, int fv_len,
+        const double *v
+        );
 
 /*
-*   gv[0..g_count-1] = m fv[start..start + f_len - 1]
-*   m is g_count * f_len * 2 of doubles as complex
+*   gv[gv_begin + (0 .. gv_len-1)] = m[gv_len*fv_len] . fv[fv_begin + (0 .. f_len - 1)]
+*   m is a double matrix [fv_len*gv_len] indexed as [ row + ldm * col ]
 */
-unsigned int qx(fv_cmmul)(struct vFermion *gv, int size, int g_count,
-                  const double *m,
-                  const struct vFermion *fv, int f_count, int start, int f_len);
+unsigned int qx(fv_dot_dm)(
+        int dim, 
+        struct vFermion *gv, int gv_row_size, int gv_begin, int gv_len,
+        const struct vFermion *fv, int fv_row_size, int fv_begin, int fv_len,
+        const double *m, int ldm
+        );
 
-/* c[i] = herm(fv[i]) * g for all i
- * c is double[f_count * 2]
+/*
+*   gv[gv_begin + (0 .. gv_len-1)] = fv[fv_begin + (0 .. f_len - 1)] . m
+*   m is a complex matrix [fv_len*gv_len] indexed as [re:0/im:1 + 2 * (row + ldm * col) ]
+*/
+unsigned int qx(fv_dot_zm)(
+        int dim,
+        struct vFermion *gv, int gv_row_size, int gv_begin, int gv_len,
+        const struct vFermion *fv, int fv_row_size, int fv_begin, int fv_len,
+        const double *m, int ldm
+        );
+
+/*  XXX this includes global reduction
+ *  c[i] = herm(fv[fv_begin+i]) * g 
+ *      for all i = (0 .. fv_len-1)
+ *  c is complex vector as [re:0/im:1 + 2 * i]
  */
-unsigned int qx(fv_dot_f)(double *c, int size, int f_count,
-                  const struct vFermion *fv,
-                  const struct Fermion *g);
-This is a local op, see port/fermion-dot.c for computing the global norm
+unsigned int qx(fvH_dot_f)(
+        int dim,
+        double *c,
+        const struct vFermion *fv, int fv_size, int fv_begin, int fv_len,
+        const struct Fermion *g
+        );
+//This is a local op, see port/fermion-dot.c for computing the global norm
 
-/* c[i,j] = herm(fv[i]) * g[j] for all i, j
- * c is double[f_count * g_count * 2]
+/* XXX this includes global reduction
+ * c[i,j] = herm(fv[fv_begin + i]) . g[gv_begin+j] 
+ *      for all i = (0 .. fv_len-1), 
+ *              j = (0 .. gv_len-1),
+ * c is a complex matrix as [re:0/im:1 + 2 * (i + ldc * j)]
  */
-unsigned int qx(fv_dot_fv)(double *c, int size,
-                   const struct vFermion *fv, int f_count,
-                   const struct vFermion *gv, int g_count);
-This is a local op, see port/fermion-dot.c for computing the global norm
-/*
-*   g = v fv[start..start + f_len - 1]
-*   v is  f_len * 2 of doubles as complex
-*/
-unsigned int qx(fv_cvmul)(struct Fermion *g, int size,
-                  const double *v,
-                  const struct vFermion *fv, int f_count, int start, int f_len);
+unsigned int qx(fvH_dot_fv)(
+        int dim,
+        double *c, int ldc,
+        const struct vFermion *fv, int fv_size, int fv_begin, int fv_len,
+        const struct vFermion *gv, int gv_size, int gv_begin, int gv_len
+        );
+//This is a local op, see port/fermion-dot.c for computing the global norm
 
 
-EXIST:
-unsigned int qx(f_norm)(double *s,
-                        int size,
-                        const struct Fermion *a);
 
-/* r += s * b */
+
+/* ADDED BY SNS (I believe there are equivalents; just rename any occurrence in the code): */
+/* copy single-prec vector  f <- f_src */
+unsigned int qx(f_copy_cc)(
+        int dim,
+        struct FermionF *f, const struct FermionF *f_src);
+/* f <-  f * alpha */
+unsigned int qx(f_scal_cd)(
+        int dim,
+        struct FermionF *f, double alpha);
+/*  */
+
+
+//EXIST:
+//unsigned int qx(f_norm)(double *s,
+//                        int size,
+//                        const struct Fermion *a);
+unsigned int qop_f3_clover_f_norm(double *s,
+                                  int size,
+                                  const struct FermionF *a);
+unsigned int qop_d3_clover_f_norm(double *s,
+                                  int size,
+                                  const struct FermionD *a);
+
+/* r = a + s * b */
 unsigned int qx(f_add3)(struct Fermion *r,
                         int size,
                         const struct Fermion *a,
                         double s,
                         const struct Fermion *b);
 
-/* r = a + s * b */
+/* r += s * b */
 unsigned int qx(f_add2)(struct Fermion *r,
                         int size,
                         double s,
@@ -89,5 +142,5 @@ unsigned int qx(f_add2)(struct Fermion *r,
 void *q(malloc)(struct Q(State) *state, size_t bytes);
 void q(free)(struct Q(State) *state, void *ptr, size_t bytes);
 
-This is a local op, see port/cg-solver.c for computing the global norm,
-but use QMP_sum_double_array() instead.
+//This is a local op, see port/cg-solver.c for computing the global norm,
+//but use QMP_sum_double_array() instead.

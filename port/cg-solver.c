@@ -10,9 +10,8 @@
         } } } while (0)
 #define DF_UPDATE0(a1,b1,a0,b0,r,rho)           \
     q(df_update0)(state, deflator, a1, b1, a0, b0, r, rho)
-#define DF_UPDATE1(a1,b1,a0,b0,r,rho,A_rho) do { \
-    q(df_update1)(state, deflator, a1, b1, a0, b0, r, rho, A_rho); \
-    } while (0)
+#define DF_UPDATE1(a1,b1,a0,b0,r,rho,A_rho) \
+    q(df_update1)(state, deflator, a1, b1, a0, b0, r, rho, A_rho)
 #define DF_POSTAMBLE() \
     do { q(df_postamble)(state, deflator); } while (0)
 #else
@@ -20,7 +19,7 @@
         qx(f_zero)(psi_e, e_size);\
     } while (0)
 #define DF_UPDATE0(a1,b1,a0,b0,r,rho)  0
-#define DF_UPDATE1(a1,b1,a0,b0,r,rho,A_rho)  do {} while(0)
+#define DF_UPDATE1(a1,b1,a0,b0,r,rho,A_rho)  0
 #define DF_POSTAMBLE()  do {} while (0)
 #endif
 
@@ -53,7 +52,7 @@ qx(cg_solver)(struct Fermion            *psi_e,
     double a, b, g, r, norm_omega;
     int i;
 
-    DF_PREAMBLE(psi_e, chi_e);
+    DF_PREAMBLE(psi_e, (struct Fermion *) chi_e);
     qx(op_even_M)(t0_e, state, gauge, psi_e,
                   flops, sent, received,
                   t0_o);

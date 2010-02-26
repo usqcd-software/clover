@@ -9,6 +9,7 @@ ldflags="-L@libdir@ @qmp_ldflags@ @ldflags@"
 libs="-lqop-clover @qmp_libs@ @libs@"
 qdp="@qdp@"
 qmp="@qmp@"
+gsl="@gsl"
 target="@target@"
 
 # usage status
@@ -24,6 +25,7 @@ usage() {
        --libs
        --qdp
        --qmp
+       --gsl
        --target
 EOF
 }
@@ -38,6 +40,7 @@ case "$1" in
    --libs)     echo "$libs" ;;
    --qdp)      echo "$qdp" ;;
    --qmp)      echo "$qmp" ;;
+   --gsl)      echo "$gsl" ;;
    --target)   echo "$target" ;;
    *) usage 1 1>&2 ;;
 esac
