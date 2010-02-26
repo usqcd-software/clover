@@ -1,7 +1,10 @@
 #include <clover.h>
 
 void
-Q(deflator_resume)(struct Q(Deflator) *deflator_ptr)
+q(df_resume)(struct Q(Deflator) *d)
 {
-    /* XXX resume the deflator */
+    if (NULL == d)
+        return;
+    if (d->usize < d->umax)
+        d->frozen = 0;
 }
