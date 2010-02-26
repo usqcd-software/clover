@@ -20,14 +20,14 @@ q(df_solve_in_eigenspace)(
             NULL != d &&
             NULL != x &&
             NULL != b);
-    latvec_c lv_x   = latvec_c_view(d->dim, x);
+    latvec_c lv_x   = q(latvec_c_view)(d->dim, x);
     if (d->usize <= 0) {
-        latvec_c_zero(lv_x);
+        q(latvec_c_zero)(lv_x);
         return 0;
     }    
-    latvec_c lv_b   = latvec_c_view(d->dim, b);
-    latmat_c cur_U  = latmat_c_submat_col(d->U, 0, d->usize);
-    lat_lmH_dot_lv(d->usize, cur_U, lv_b, d->zwork);
+    latvec_c lv_b   = q(latvec_c_view)(d->dim, b);
+    latmat_c cur_U  = q(latmat_c_submat_col)(d->U, 0, d->usize);
+    q(lat_lmH_dot_lv)(d->usize, cur_U, lv_b, d->zwork);
 
 #if defined(HAVE_LAPACK)
     long int usize  = d->usize,
@@ -53,7 +53,7 @@ q(df_solve_in_eigenspace)(
 #  error "no linear algebra library"
 #endif
 
-    lat_lm_dot_zv(d->usize, cur_U, d->zwork, lv_x);
+    q(lat_lm_dot_zv)(d->usize, cur_U, d->zwork, lv_x);
 
     return 0;
 }
@@ -79,29 +79,29 @@ q(df_preamble)(
     }
 
 
-    latvec_c lv_x   = latvec_c_view(d->dim, x);
-    latvec_c lv_b   = latvec_c_view(d->dim, b);
+    latvec_c lv_x   = q(latvec_c_view)(d->dim, x);
+    latvec_c lv_b   = q(latvec_c_view)(d->dim, b);
 
 #define cur_r       (d->work_c_1)
 #define cur_r_aux   (d->work_c_2)
     if (d->usize <= 0) {
-        latvec_c_zero(lv_x);
-        latvec_c_copy(lv_b, cur_r);
+        q(latvec_c_zero)(lv_x);
+        q(latvec_c_copy)(lv_b, cur_r);
     } else {
         if (q(df_solve_in_eigenspace)(s, d, x, b))
             return 1;
         /* compute residual */
-        latvec_c_linop(s, cur_r, lv_x, cur_r_aux);
+        q(latvec_c_linop)(s, cur_r, lv_x, cur_r_aux);
         /* FIXME optimize the code below with a special primitive;
            cur_r <- lv_b - cur_r */
-        lat_c_axpy_d(-1., lv_b, cur_r);
-        lat_c_scal_d(-1., cur_r);   
+        q(lat_c_axpy_d)(-1., lv_b, cur_r);
+        q(lat_c_scal_d)(-1., cur_r);   
     }
-    double rnorm = sqrt(lat_c_nrm2(cur_r));
-    lat_c_scal_d(1. / rnorm, cur_r);
+    double rnorm = sqrt(q(lat_c_nrm2)(cur_r));
+    q(lat_c_scal_d)(1. / rnorm, cur_r);
     
     /* save normalized residual as the first vector */
-    latmat_c_insert_col(d->V, 0, cur_r);
+    q(latmat_c_insert_col)(d->V, 0, cur_r);
     
     /* init eigenvalue search: vsize, T, V */
     d->vsize = 0;

@@ -10,9 +10,23 @@
 #  include <gsl/gsl_blas.h>
 #  include <gsl/gsl_complex_math.h>
 #  include <gsl/gsl_sort_double.h>
+#  include <gsl/gsl_sort_vector_double.h>
 #else
 #  error "no linear algebra library"
 #endif
+
+#include <stdio.h>
+#define PRINT_EVALS 10
+static void
+print_dvec(FILE *fo, const char *title,
+        int size, double *dvec)
+{
+    fprintf(stdout, "%s: ", title);
+    int i;
+    for (i = 0; i < size; i++)
+        fprintf(stdout, "%13.6e\t", dvec[i]);
+    fprintf(stdout, "\n");
+}
 
 int
 q(df_update1)(
@@ -27,6 +41,8 @@ q(df_update1)(
         struct FermionF *A_resid
         )
 {
+    int i, j;
+
     if (NULL == d || 
             NULL == s ||
             d->frozen)
@@ -66,6 +82,7 @@ q(df_update1)(
            d->hevals, d->zwork, &(d->lwork), 
            d->rwork, &info, 1, 1);
     assert(0 == info);
+    /**/print_dvec(stdout, "T0", PRINT_EVALS, d->hevals);
 
     /* diagonalize T:(vmax-1)*(vmax-1) matrix
        requires zwork size = lwork >= 2*vmax-1 */
@@ -80,7 +97,7 @@ q(df_update1)(
     memcpy(d->hevecs1 + d->nev * vmax, d->hevecs2, 
            d->nev * vmax * sizeof(d->hevecs1[0]));
     /* fill [vmax-1, nev:2*nev] with zeros */
-    for (int i = d->nev; i < 2 * d->nev; i++) {
+    for (i = d->nev; i < 2 * d->nev; i++) {
         doublecomplex *p = d->hevecs1 + (i + 1) * vmax - 1;
         p->r = 0.0;
         p->i = 0.0;
@@ -115,9 +132,9 @@ q(df_update1)(
     assert(0 == info);
 
     /* fill Z[2nev:vmax, 0:2nev] with zeros */
-    for (int j = 0; j < vsize; j++) {
+    for (j = 0; j < vsize; j++) {
         doublecomplex *p = d->hevecs2 + j * vmax;
-        for (int i = vsize ; i < vmax; i++)
+        for (i = vsize ; i < vmax; i++)
             p[i].r = p[i].i = 0.0;
     }
     /* compute hevecs2 <- Q Z */
@@ -144,6 +161,11 @@ q(df_update1)(
     CHECK_GSL_STATUS(gsl_sort_smallest_index(d->hevals_select1, d->nev, 
             gsl_vector_const_ptr(d->gsl_hevals1, 0), 1, vmax));
 
+//    /**/gsl_sort_vector(d->gsl_hevals1);
+//    /**/print_dvec(stdout, "T0", PRINT_EVALS, gsl_vector_ptr(d->gsl_hevals1, 0));
+    /**/for (i = 0; i < PRINT_EVALS; i++) d->hevals[i] = gsl_vector_get(d->gsl_hevals1, d->hevals_select1[i]);
+    /**/print_dvec(stdout, "T0", PRINT_EVALS, d->hevals);
+
     /* eigenpairs of T[:-1, :-1] */
     gsl_matrix_complex_view gsl_T_m1 = gsl_matrix_complex_submatrix(
             &gsl_T.matrix, 
@@ -151,9 +173,8 @@ q(df_update1)(
     CHECK_GSL_STATUS(gsl_matrix_complex_memcpy(
                 d->gsl_T_m1, 
                 &gsl_T_m1.matrix));
-
     CHECK_GSL_STATUS(gsl_eigen_hermv(
-            &gsl_T_m1.matrix, 
+            d->gsl_T_m1, 
             d->gsl_hevals2,
             d->gsl_hevecs2,
             d->gsl_wkspace2));
@@ -161,15 +182,15 @@ q(df_update1)(
             gsl_vector_const_ptr(d->gsl_hevals2, 0), 1, vmax-1));
 
     /* construct Q = (Y[:nev], Y1[:nev]) */
-    for (int j = 0; j < d->nev; j++) {
+    for (j = 0; j < d->nev; j++) {
         int j1 = d->hevals_select1[j];
-        for (int i = 0; i < vmax; i++)
+        for (i = 0; i < vmax; i++)
             gsl_matrix_complex_set(d->gsl_QR, i, j,
                     gsl_matrix_complex_get(d->gsl_hevecs1, i, j1));
     }
-    for (int j = 0; j < d->nev; j++) {
+    for (j = 0; j < d->nev; j++) {
         int j2 = d->hevals_select2[j];
-        for (int i = 0; i < vmax-1; i++)
+        for (i = 0; i < vmax-1; i++)
             gsl_matrix_complex_set(d->gsl_QR, i, d->nev + j,
                     gsl_matrix_complex_get(d->gsl_hevecs2, i, j2));
         gsl_matrix_complex_set(d->gsl_QR, vmax-1, d->nev + j,
@@ -219,12 +240,12 @@ q(df_update1)(
 
 
     /* rotate V[:, 0:vmax] space with (Q Z) */
-    latmat_c tmp_V = latmat_c_submat_col(d->tmp_V, 0, vsize);
-    lat_lm_dot_zm(vsize, vmax, 
+    latmat_c tmp_V = q(latmat_c_submat_col)(d->tmp_V, 0, vsize);
+    q(lat_lm_dot_zm)(vsize, vmax, 
                   d->V,
                   d->hevecs2, vmax, 
                   tmp_V);
-    latmat_c_copy(tmp_V, latmat_c_submat_col(d->V, 0, vsize));
+    q(latmat_c_copy)(tmp_V, q(latmat_c_submat_col)(d->V, 0, vsize));
     
     /* check eig convergence */
     if (resid_norm_sq < d->resid_norm_sq_min)
@@ -233,11 +254,11 @@ q(df_update1)(
     
     /* compute new T */
     memset(d->T, 0, vmax * vmax * sizeof(d->T[0]));
-    lat_lmH_dot_lv(vsize, 
+    q(lat_lmH_dot_lv)(vsize, 
                    tmp_V, 
-                   latvec_c_view(d->dim, A_resid), 
+                   q(latvec_c_view)(d->dim, A_resid), 
                    d->T + vsize * vmax);
-    for (int i = 0 ; i < vsize ; i++) {
+    for (i = 0 ; i < vsize ; i++) {
         d->T[i * (vmax + 1)].r      = d->hevals[i];
         d->T[i * (vmax + 1)].i      = 0.0;
 
@@ -251,10 +272,10 @@ q(df_update1)(
 
     /* remember the vector ||resid|| */
 #define cur_r   (d->work_c_1)
-    latvec_c_copy(latvec_c_view(d->dim, resid), 
+    q(latvec_c_copy)(q(latvec_c_view)(d->dim, resid), 
                   cur_r);
-    lat_c_scal_d(1. / resid_norm, cur_r);
-    latmat_c_insert_col(d->V, d->vsize, cur_r);
+    q(lat_c_scal_d)(1. / resid_norm, cur_r);
+    q(latmat_c_insert_col)(d->V, d->vsize, cur_r);
 
     d->vsize += 1;
     

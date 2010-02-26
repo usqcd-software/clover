@@ -264,7 +264,7 @@ int q(mixed_cg)(struct Q(State)             *state,
                 unsigned int                 options);
 
 /* handling eig deflator */
-int q(df_alloc)(
+int q(df_create)(
         struct Q(Deflator) **deflator_ptr,
         struct Q(State) *s,
         int dim, int vmax, int nev,

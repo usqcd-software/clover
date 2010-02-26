@@ -50,10 +50,10 @@ q(df_update0)(
 
     /* remember the vector ||resid|| */
 #define cur_r   (d->work_c_1)
-    latvec_c_copy(latvec_c_view(d->dim, resid), 
+    q(latvec_c_copy)(q(latvec_c_view)(d->dim, resid), 
                   cur_r);
-    lat_c_scal_d(1. / resid_norm, cur_r);
-    latmat_c_insert_col(d->V, d->vsize, cur_r);
+    q(lat_c_scal_d)(1. / resid_norm, cur_r);
+    q(latmat_c_insert_col)(d->V, d->vsize, cur_r);
 #undef cur_r
 
     d->vsize += 1;

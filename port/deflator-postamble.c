@@ -14,6 +14,8 @@ q(df_postamble)(
         struct Q(State)         *s,
         struct Q(Deflator)      *d)
 {
+    int i;
+
     assert(NULL != s &&
             NULL != d);
     if (NULL == s ||
@@ -35,38 +37,39 @@ q(df_postamble)(
 #define cur_v       (d->work_c_1)
 #define cur_Av      (d->work_c_2)
 #define cur_aux     (d->work_c_3)
-        latmat_c_get_col(d->V, i_v, cur_v);
+        q(latmat_c_get_col)(d->V, i_v, cur_v);
         
         if (0 < d->usize) {
-            for (int i_reortho = n_reortho; i_reortho--; ) {
-                latmat_c cur_U = latmat_c_submat_col(d->U, 0, d->usize);
-                lat_lmH_dot_lv(d->usize, 
+            int i_reortho;
+            for (i_reortho = n_reortho; i_reortho--; ) {
+                latmat_c cur_U = q(latmat_c_submat_col)(d->U, 0, d->usize);
+                q(lat_lmH_dot_lv)(d->usize, 
                                cur_U, 
                                cur_v, 
                                d->zwork);
-                lat_lm_dot_zv(d->usize, 
+                q(lat_lm_dot_zv)(d->usize, 
                               cur_U, 
                               d->zwork, 
                               cur_Av);
                 /* FIXME optimize with a special primitive 
                    cur_v <- cur_v - cur_Av */
-                lat_c_axpy_d(-1., cur_Av, cur_v);
+                q(lat_c_axpy_d)(-1., cur_Av, cur_v);
             }
         }
-        double v_norm2 = lat_c_nrm2(cur_v);
+        double v_norm2 = q(lat_c_nrm2)(cur_v);
         if (v_norm2 < v_norm2_min) {    /* skip */
             i_v++;
             continue;
         }
-        lat_c_scal_d(1 / sqrt(v_norm2), cur_v);
-        latmat_c_insert_col(d->U, d->usize, cur_v);
+        q(lat_c_scal_d)(1 / sqrt(v_norm2), cur_v);
+        q(latmat_c_insert_col)(d->U, d->usize, cur_v);
 
         /*  XXX requires(?) double precision operator */
 //        latvec_cz_copy(cur_v, cur_z_v);
-        latvec_c_linop(s, cur_Av, cur_v, cur_aux);
-        latmat_c cur_U = latmat_c_submat_col(d->U, 0, d->usize + 1);
-        lat_lmH_dot_lv(d->usize + 1, cur_U, cur_Av, d->H + d->usize * d->umax);
-        for (int i = 0; i < d->usize; i++) {
+        q(latvec_c_linop)(s, cur_Av, cur_v, cur_aux);
+        latmat_c cur_U = q(latmat_c_submat_col)(d->U, 0, d->usize + 1);
+        q(lat_lmH_dot_lv)(d->usize + 1, cur_U, cur_Av, d->H + d->usize * d->umax);
+        for (i = 0; i < d->usize; i++) {
             doublecomplex *p1 = d->H + i + d->usize * d->umax,
                           *p2 = d->H + d->usize + i * d->umax;
             p2->r =  p1->r;

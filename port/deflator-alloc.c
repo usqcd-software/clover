@@ -1,7 +1,7 @@
 #include <clover.h>
 
 int
-q(df_alloc)(struct Q(Deflator) **deflator_ptr,
+q(df_create)(struct Q(Deflator) **deflator_ptr,
                    struct Q(State) *s,
                    int dim, int vmax, int nev, 
                    double eps, int umax)
@@ -44,10 +44,10 @@ q(df_alloc)(struct Q(Deflator) **deflator_ptr,
 
 
     /* first, set all to null */
-    latmat_c_null(&(d->V));
+    q(latmat_c_null)(&(d->V));
     d->T                = NULL;
 
-    latmat_c_null(&(d->U));
+    q(latmat_c_null)(&(d->U));
     d->H                = NULL;
     d->C                = NULL;
     
@@ -83,20 +83,20 @@ q(df_alloc)(struct Q(Deflator) **deflator_ptr,
 #endif
 
 
-    latmat_c_null(&(d->tmp_V));
-    latvec_c_null(&(d->work_c_1));
-    latvec_c_null(&(d->work_c_2));
-    latvec_c_null(&(d->work_c_3));
+    q(latmat_c_null)(&(d->tmp_V));
+    q(latvec_c_null)(&(d->work_c_1));
+    q(latvec_c_null)(&(d->work_c_2));
+    q(latvec_c_null)(&(d->work_c_3));
 
 
 
     /* allocate */
 #define ds      sizeof(double)
 #define zs      sizeof(doublecomplex)
-    d->V                = latmat_c_alloc(s, dim, vmax);
+    d->V                = q(latmat_c_alloc)(s, dim, vmax);
     d->T                = q(malloc)(s, vmax * vmax * zs);
 
-    d->U                = latmat_c_alloc(s, dim, umax);
+    d->U                = q(latmat_c_alloc)(s, dim, umax);
     d->H                = q(malloc)(s, umax * umax * zs);
     d->C                = q(malloc)(s, umax * umax * zs);
 
@@ -133,17 +133,17 @@ q(df_alloc)(struct Q(Deflator) **deflator_ptr,
 #  error "no linear algebra library"
 #endif
 
-    d->tmp_V            = latmat_c_alloc(s, dim, 2*nev);
-    d->work_c_1         = latvec_c_alloc(s, dim);
-    d->work_c_2         = latvec_c_alloc(s, dim);
-    d->work_c_3         = latvec_c_alloc(s, dim);
+    d->tmp_V            = q(latmat_c_alloc)(s, dim, 2*nev);
+    d->work_c_1         = q(latvec_c_alloc)(s, dim);
+    d->work_c_2         = q(latvec_c_alloc)(s, dim);
+    d->work_c_3         = q(latvec_c_alloc)(s, dim);
 
     /* check allocation */
     if (
-            latmat_c_is_null(&(d->V))           ||
+            q(latmat_c_is_null)(&(d->V))           ||
             NULL == d->T                        ||
 
-            latmat_c_is_null(&(d->U))           ||
+            q(latmat_c_is_null)(&(d->U))           ||
             NULL == d->H                        ||
             NULL == d->C                        ||
                     
@@ -177,10 +177,10 @@ q(df_alloc)(struct Q(Deflator) **deflator_ptr,
 #else
 #  error "no linear algebra library"
 #endif
-            latmat_c_is_null(&(d->tmp_V))       ||
-            latvec_c_is_null(&(d->work_c_1))    ||
-            latvec_c_is_null(&(d->work_c_2))    ||
-            latvec_c_is_null(&(d->work_c_3))
+            q(latmat_c_is_null)(&(d->tmp_V))       ||
+            q(latvec_c_is_null)(&(d->work_c_1))    ||
+            q(latvec_c_is_null)(&(d->work_c_2))    ||
+            q(latvec_c_is_null)(&(d->work_c_3))
     ) {
         q(df_free)(&d);
         return q(set_error)(s, 0, "allocate_deflator(): not enough memory");
