@@ -13,8 +13,8 @@ int
 q(df_solve_in_eigenspace)(
         struct Q(State)         *s,
         struct Q(Deflator)      *d,
-        struct Fermion          *x,
-        struct Fermion          *b)
+        struct FermionF         *x,
+        struct FermionF         *b)
 {
     assert(NULL != s &&
             NULL != d &&
@@ -61,8 +61,8 @@ int
 q(df_preamble)(
         struct Q(State)         *s,
         struct Q(Deflator)      *d,
-        struct Fermion          *x,
-        struct Fermion          *b)
+        struct FermionF         *x,
+        struct FermionF         *b)
 {
     assert(NULL != s &&
             NULL != d &&

@@ -73,6 +73,15 @@ x.sources = f-dot.qa0 \
             f-add2-norm.qa0 \
             f-copy.qa0 \
             f-diff-norm.qa0 \
+            sizeof-vfermion.qa0 \
+            fv-zero.qa0 \
+            fv-copy.qa0 \
+            put-vfermion.qa0 \
+            get-vfermion.qa0 \
+            fv-mul-zv.qa0 \
+            fv-mul-zm.qa0 \
+            do-fvH-dot-f.qa0 \
+            do-fvH-dot-fv.qa0
 
 # Who include defs-A.qa0
 A.sources = do-A.qa0 \

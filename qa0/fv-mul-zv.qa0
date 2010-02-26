@@ -1,0 +1,33 @@
+(verbose [(c99 bgl/xlc) "/* $Id$ */"])
+
+(include "types.qa0")
+
+(procedure fv-mul-zv ([stem "fv_dot_zv"]
+                   prec&color
+                   count-flops)
+           ([size      int     "size"      "int"                     ]
+            [G         pointer "G"         "struct Fermion *"        ]
+            [F         pointer "F"         "const struct vFermion *" ]
+            [fv-size   int     "fv_size"   "int"                     ]
+            [fv-begin  int     "fv_begin"  "int"                     ]
+            [fv-len    int     "fv_len"    "int"                     ]
+            [V         pointer "V"         "const double *"          ])
+   (op int-mul () (fv-start) ([reg fv-begin] [const (size-of Fermion)]))
+   (op int-mul () (fv-step) ([reg fv-size] [const (size-of Fermion)]))
+   (op pointer-add () (F) ([reg F] [reg fv-start]))
+   (loop () (i [const 0] [reg size])
+     (op qcd-zerof () (x) ())
+     (op pointer-move () (V-j) ([reg V]))
+     (op pointer-move () (F-j) ([reg F]))
+     (loop () (j [const 0] [reg fv-len])
+         (load double () r-r ([reg V-j]))
+         (load double () r-i ([reg V-j] [const (size-of double)]))
+         (op complex () (r-v) ([reg r-r] [reg r-i]))
+         (op pointer-add () (V-j) ([reg V-j] [const (* 2 (size-of double))]))
+         (load qcd-fermion () r-f ([reg F-j]))
+         (op pointer-add () (F-j) ([reg F-j] [const (size-of Fermion)]))
+         (op qcd-cmaddf () (x) ([reg x] [reg r-v] [reg r-f])))
+     (store qcd-fermion () ([reg G]) [reg x])
+     (op pointer-add () (G) ([reg G] [const (size-of Fermion)]))
+     (op pointer-add () (F) ([reg F] [reg fv-step]))))
+

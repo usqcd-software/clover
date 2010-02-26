@@ -29,6 +29,9 @@ q(df_postamble)(
     int unew = 0,
         i_v = 0;
     long int usize_old = d->usize;
+    int i_reortho;
+    int i;
+
     while ((d->usize < d->umax) && (i_v < d->nev)) {
         /* reorthogonalize n_reortho times */
 /* macros to reuse workspace */
@@ -38,7 +41,7 @@ q(df_postamble)(
         latmat_c_get_col(d->V, i_v, cur_v);
         
         if (0 < d->usize) {
-            for (int i_reortho = n_reortho; i_reortho--; ) {
+            for (i_reortho = n_reortho; i_reortho--; ) {
                 latmat_c cur_U = latmat_c_submat_col(d->U, 0, d->usize);
                 lat_lmH_dot_lv(d->usize, 
                                cur_U, 
@@ -66,7 +69,7 @@ q(df_postamble)(
         latvec_c_linop(cur_Av, cur_v, cur_aux);
         latmat_c cur_U = latmat_c_submat_col(d->U, 0, d->usize + 1);
         lat_lmH_dot_lv(d->usize + 1, cur_U, cur_Av, d->H + d->usize * d->umax);
-        for (int i = 0; i < d->usize; i++) {
+        for (i = 0; i < d->usize; i++) {
             doublecomplex *p1 = d->H + i + d->usize * d->umax,
                           *p2 = d->H + d->usize + i * d->umax;
             p2->r =  p1->r;

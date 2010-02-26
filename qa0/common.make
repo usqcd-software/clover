@@ -2,7 +2,6 @@
 TOP        = ..
 V          = 0
 LIBRARY    = libqop-clover.a
-QMP_CFLAGS = $(shell $(QMP_TOP:%=%/bin/qmp-config) --cflags)
 
 include $(TOP)/config/$(CONFIG)
 
@@ -66,6 +65,15 @@ x.sources = f-norm \
             f-add2-norm \
             f-copy \
             f-diff-norm \
+            sizeof-vfermion \
+            fv-zero \
+            fv-copy \
+            put-vfermion \
+            get-vfermion \
+            fv-mul-zv \
+            fv-mul-zm \
+            do-fvH-dot-f \
+            do-fvH-dot-fv
 
 sources = $(i.sources) \
           $(x.sources:%=%f.c) \

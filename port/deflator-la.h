@@ -1,5 +1,5 @@
-#ifndef DEFLATOR_LA_H_hbq6DwyKpy5jzcxzbemt
-#define DEFLATOR_LA_H_hbq6DwyKpy5jzcxzbemt
+#ifndef MARK_9C829801_86C1_4CF3_8488_D30802F36B8D
+#define MARK_9C829801_86C1_4CF3_8488_D30802F36B8D
 
 #include <assert.h>
 #define NOT_IMPLEMENTED     assert(NULL == "implement me first!")
@@ -19,6 +19,29 @@
 #  error "no linear algebra library"
 #endif 
 
+
+/* hide internal clover names in qop_clover */
+#define lat_c_axpy_d q(lat_c_axpy_d)
+#define lat_c_dotu q(lat_c_dotu)
+#define lat_c_nrm2 q(lat_c_nrm2)
+#define lat_c_scal_d q(lat_c_scal_d)
+#define lat_lmH_dot_lm q(lat_lmH_dot_lm)
+#define lat_lmH_dot_lv q(lat_lmH_dot_lv)
+#define lat_lm_dot_zm q(lat_lm_dot_zm)
+#define lat_lm_dot_zv q(lat_lm_dot_zv)
+#define latmat_c_alloc q(latmat_c_alloc)
+#define latmat_c_copy q(latmat_c_copy)
+#define latmat_c_free q(latmat_c_free)
+#define latmat_c_get_col q(latmat_c_get_col)
+#define latmat_c_insert_col q(latmat_c_insert_col)
+#define latmat_c_submat_col q(latmat_c_submat_col)
+#define latmat_c_view q(latmat_c_view)
+#define latvec_c_alloc q(latvec_c_alloc)
+#define latvec_c_copy q(latvec_c_copy)
+#define latvec_c_free q(latvec_c_free)
+#define latvec_c_linop q(latvec_c_linop)
+#define latvec_c_view q(latvec_c_view)
+#define latvec_c_zero q(latvec_c_zero)
 
 /***************************/
 /*  latvector definitions  */
@@ -133,4 +156,4 @@ void lat_lm_dot_zv(int n,
 void latvec_c_linop(latvec_c y, latvec_c x, latvec_c aux);
 //void latvec_z_linop();
 
-#endif/*DEFLATOR_LA_H_hbq6DwyKpy5jzcxzbemt*/
+#endif /* !defined(MARK_9C829801_86C1_4CF3_8488_D30802F36B8D) */

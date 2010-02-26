@@ -48,6 +48,7 @@ q(df_update1)(
     d->vsize = 2 * d->nev;
     long int vmax = d->vmax;
     long int vsize = d->vsize;
+    int i, j;
 #if defined(HAVE_LAPACK)
     char cV = 'V',
          cU = 'U',
@@ -57,7 +58,6 @@ q(df_update1)(
          cN = 'N';
     long int info = 0;
     long int tmp_i;
-
 
     /* diagonalize T:vmax*vmax matrix 
        requires zwork size = lwork >= 2*vmax-1, rwork size >=3*vmax-2 */
@@ -80,7 +80,7 @@ q(df_update1)(
     memcpy(d->hevecs1 + d->nev * vmax, d->hevecs2, 
            d->nev * vmax * sizeof(d->hevecs1[0]));
     /* fill [vmax-1, nev:2*nev] with zeros */
-    for (int i = d->nev; i < 2 * d->nev; i++) {
+    for (i = d->nev; i < 2 * d->nev; i++) {
         doublecomplex *p = d->hevecs1 + (i + 1) * vmax - 1;
         p->r = 0.0;
         p->i = 0.0;
@@ -115,9 +115,9 @@ q(df_update1)(
     assert(0 == info);
 
     /* fill Z[2nev:vmax, 0:2nev] with zeros */
-    for (int j = 0; j < vsize; j++) {
+    for (j = 0; j < vsize; j++) {
         doublecomplex *p = d->hevecs2 + j * vmax;
-        for (int i = vsize ; i < vmax; i++)
+        for (i = vsize ; i < vmax; i++)
             p[i].r = p[i].i = 0.0;
     }
     /* compute hevecs2 <- Q Z */
@@ -161,15 +161,15 @@ q(df_update1)(
             gsl_vector_const_ptr(d->gsl_hevals2, 0), 1, vmax-1));
 
     /* construct Q = (Y[:nev], Y1[:nev]) */
-    for (int j = 0; j < d->nev; j++) {
+    for (j = 0; j < d->nev; j++) {
         int j1 = d->hevals_select1[j];
-        for (int i = 0; i < vmax; i++)
+        for (i = 0; i < vmax; i++)
             gsl_matrix_complex_set(d->gsl_QR, i, j,
                     gsl_matrix_complex_get(d->gsl_hevecs1, i, j1));
     }
-    for (int j = 0; j < d->nev; j++) {
+    for (j = 0; j < d->nev; j++) {
         int j2 = d->hevals_select2[j];
-        for (int i = 0; i < vmax-1; i++)
+        for (i = 0; i < vmax-1; i++)
             gsl_matrix_complex_set(d->gsl_QR, i, d->nev + j,
                     gsl_matrix_complex_get(d->gsl_hevecs2, i, j2));
         gsl_matrix_complex_set(d->gsl_QR, vmax-1, d->nev + j,
@@ -237,7 +237,7 @@ q(df_update1)(
                    tmp_V, 
                    latvec_c_view(d->dim, A_resid), 
                    d->T + vsize * vmax);
-    for (int i = 0 ; i < vsize ; i++) {
+    for (i = 0 ; i < vsize ; i++) {
         d->T[i * (vmax + 1)].r      = d->hevals[i];
         d->T[i * (vmax + 1)].i      = 0.0;
 

@@ -37,6 +37,11 @@ x.sources = version.c \
             deflator-stop.c \
             deflator-resume.c \
             deflator-eigen.c \
+            deflator-preamble.c \
+            deflator-postamble.c \
+            deflator-update0.c \
+            deflator-update1.c \
+            deflator-la.c \
             cg-mixed.c \
             solver-dirac-mixed.c \
             solver-dirac-deflated-mixed.c
@@ -86,6 +91,8 @@ p.sources = fermion-dot.c \
             op-a.c \
             step-even.c \
             step-odd.c \
+            fvH_dot_f.c \
+            fvH_dot_fv.c
 
 x.objects = $(x.sources:%.c=$(LIMPDIR)/%.o)
 
@@ -95,6 +102,7 @@ p.objects = $(p.sources:%.c=$(LIMPDIR)/%f.o) \
 objects = $(x.objects) $(p.objects)
 
 headers = clover.h \
+          deflator-la.h \
           $(HDR)
 
 
