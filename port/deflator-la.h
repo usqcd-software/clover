@@ -131,6 +131,6 @@ void q(lat_lm_dot_zv)(int n,
 
 /* lin. operator tie-back */
 void q(latvec_c_linop)(struct Q(State) *s, latvec_c y, latvec_c x, latvec_c aux);
-//void q(latvec_z_linop)();
+//void q(latvec_z_linop)(struct Q(State) *s, latvec_z y, latvec_z x, latvec_z aux);
 
 #endif/*DEFLATOR_LA_H_hbq6DwyKpy5jzcxzbemt*/

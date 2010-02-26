@@ -15,6 +15,7 @@
 #  error "no linear algebra library"
 #endif
 
+#if 0
 #include <stdio.h>
 #define PRINT_EVALS 10
 static void
@@ -27,6 +28,7 @@ print_dvec(FILE *fo, const char *title,
         fprintf(stdout, "%13.6e\t", dvec[i]);
     fprintf(stdout, "\n");
 }
+#endif
 
 int
 q(df_update1)(
@@ -82,7 +84,7 @@ q(df_update1)(
            d->hevals, d->zwork, &(d->lwork), 
            d->rwork, &info, 1, 1);
     assert(0 == info);
-    /**/print_dvec(stdout, "T0", PRINT_EVALS, d->hevals);
+//    /**/print_dvec(stdout, "T0", PRINT_EVALS, d->hevals);
 
     /* diagonalize T:(vmax-1)*(vmax-1) matrix
        requires zwork size = lwork >= 2*vmax-1 */
@@ -161,10 +163,8 @@ q(df_update1)(
     CHECK_GSL_STATUS(gsl_sort_smallest_index(d->hevals_select1, d->nev, 
             gsl_vector_const_ptr(d->gsl_hevals1, 0), 1, vmax));
 
-//    /**/gsl_sort_vector(d->gsl_hevals1);
-//    /**/print_dvec(stdout, "T0", PRINT_EVALS, gsl_vector_ptr(d->gsl_hevals1, 0));
-    /**/for (i = 0; i < PRINT_EVALS; i++) d->hevals[i] = gsl_vector_get(d->gsl_hevals1, d->hevals_select1[i]);
-    /**/print_dvec(stdout, "T0", PRINT_EVALS, d->hevals);
+//    /**/for (i = 0; i < PRINT_EVALS; i++) d->hevals[i] = gsl_vector_get(d->gsl_hevals1, d->hevals_select1[i]);
+//    /**/print_dvec(stdout, "T0", PRINT_EVALS, d->hevals);
 
     /* eigenpairs of T[:-1, :-1] */
     gsl_matrix_complex_view gsl_T_m1 = gsl_matrix_complex_submatrix(
@@ -223,6 +223,8 @@ q(df_update1)(
             &gsl_hevals.vector,
             d->gsl_hevecs3,
             d->gsl_wkspace3));
+    /**/CHECK_GSL_STATUS(gsl_eigen_hermv_sort(
+                &gsl_hevals.vector, d->gsl_hevecs3, GSL_EIGEN_SORT_VAL_ASC));
     CHECK_GSL_STATUS(gsl_blas_zgemm(CblasNoTrans, CblasNoTrans,
             GSL_COMPLEX_ONE, &gsl_Q.matrix, d->gsl_hevecs3,
             GSL_COMPLEX_ZERO, d->gsl_tmp_MxS));

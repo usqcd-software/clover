@@ -41,14 +41,11 @@ q(df_solve_in_eigenspace)(
 
     gsl_matrix_complex_view gsl_C = gsl_matrix_complex_view_array_with_tda(
             (double *)d->C, d->usize, d->usize, d->umax);
-    gsl_vector_complex_view gsl_pb = gsl_vector_complex_view_array(
+    gsl_vector_complex_view gsl_zwork = gsl_vector_complex_view_array(
             (double *)d->zwork, d->usize);
-    gsl_vector_complex_view gsl_px = gsl_vector_complex_view_array(
-            (double *)d->zwork2, d->usize);
-    CHECK_GSL_STATUS(gsl_linalg_complex_cholesky_solve(
+    CHECK_GSL_STATUS(gsl_linalg_complex_cholesky_svx(
             &gsl_C.matrix, 
-            &gsl_pb.vector, 
-            &gsl_px.vector));
+            &gsl_zwork.vector));
 #else
 #  error "no linear algebra library"
 #endif
