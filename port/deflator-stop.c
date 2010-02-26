@@ -1,7 +1,7 @@
 #include <clover.h>
 
 void
-Q(deflator_stop)(struct Q(Deflator) *deflator_ptr)
+Q(deflator_stop)(struct Q(Deflator) *d)
 {
     if (NULL == d)
         return;

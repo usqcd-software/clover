@@ -943,7 +943,7 @@ The deflators are created with given capacity, size and precision:
 <<Interface functions>>=
 int `QOP_CLOVER_create_deflator(struct QOP_CLOVER_Deflator **defl_ptr,
                                struct QOP_CLOVER_State *state,
-                               int nev, int vsize, double eps);
+                               int nev, int vsize, double eps, int umax);
 @
 
 Once done, the deflators must be freed with the following functions:

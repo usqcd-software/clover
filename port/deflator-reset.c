@@ -2,7 +2,7 @@
 #include <string.h>
 
 void
-Q(deflator_reset)(struct Q(Deflator) *deflator_ptr)
+Q(deflator_reset)(struct Q(Deflator) *d)
 {
     if (NULL == d)
         return;

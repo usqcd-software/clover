@@ -390,7 +390,7 @@ q(lat_lm_dot_zv)(int n,
 }
 
 void
-q(latvec_c_linop)(latvec_c y, latvec_c x, latvec_c aux)
+q(latvec_c_linop)(struct Q(State) *s, latvec_c y, latvec_c x, latvec_c aux)
 {
     /* TODO apply M^dag M to x:
        aux <- M x
