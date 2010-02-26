@@ -88,7 +88,7 @@ typedef struct {
     struct vFermion *fv;
 } latmat_c;
 
-#define latmat_c_null(p) { (p)->fv = NULL; }
+#define latmat_c_null(p) do { (p)->fv = NULL; } while (0)
 #define latmat_c_is_null(p) (NULL == (p)->fv)
 
 latmat_c q(latmat_c_alloc)(struct Q(State) *state, int dim, int ncol);

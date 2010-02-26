@@ -26,14 +26,14 @@ void
 q(latvec_c_copy)(latvec_c x, latvec_c y)
 {
     assert(x.dim == y.dim);
-    assert(!q(latvec_c_is_null)(&x) &&
-            !q(latvec_c_is_null)(&y));
+    assert(!latvec_c_is_null(&x) &&
+            !latvec_c_is_null(&y));
     /* TODO copy fermion y <- x (note order!) */NOT_IMPLEMENTED;
 }
 void
 q(latvec_c_zero)(latvec_c x)
 {
-    assert(!q(latvec_c_is_null)(&x));
+    assert(!latvec_c_is_null(&x));
     /* TODO x <- zero */NOT_IMPLEMENTED;
 }
 void
@@ -50,8 +50,8 @@ doublecomplex
 q(lat_c_dotu)(latvec_c x, latvec_c y)
 {
     assert(x.dim == y.dim);
-    assert(!q(latvec_c_is_null)(&x) &&
-            !q(latvec_c_is_null)(&y));
+    assert(!latvec_c_is_null(&x) &&
+            !latvec_c_is_null(&y));
 
     doublecomplex res = { 0., 0. };
     /* TODO return x^H . y */NOT_IMPLEMENTED;
@@ -61,7 +61,7 @@ q(lat_c_dotu)(latvec_c x, latvec_c y)
 void 
 q(lat_c_scal_d)(double alpha, latvec_c x)
 {
-    assert(!q(latvec_c_is_null)(&x));
+    assert(!latvec_c_is_null(&x));
     /* TODO implement x <- alpha * x */NOT_IMPLEMENTED;
 }
 
@@ -69,15 +69,15 @@ void
 q(lat_c_axpy_d)(double alpha, latvec_c x, latvec_c y)
 {
     assert(x.dim == y.dim);
-    assert(!q(latvec_c_is_null)(&x) &&
-            !q(latvec_c_is_null)(&y));
+    assert(!latvec_c_is_null(&x) &&
+            !latvec_c_is_null(&y));
 
     qx(f_add2)(y.f, y.dim, alpha, x.f);
 }
 double 
 q(lat_c_nrm2)(latvec_c x) 
 {
-    assert(!q(latvec_c_is_null)(&x));
+    assert(!latvec_c_is_null(&x));
     
     double res = 0.;
     /* TODO check that all is correct */NOT_IMPLEMENTED;
@@ -109,8 +109,8 @@ void
 q(latvec_z_copy)(latvec_z x, latvec_z y)
 {
     assert(x.dim == y.dim);
-    assert(!q(latvec_z_is_null)(&x) &&
-            !q(latvec_z_is_null)(&y));
+    assert(!latvec_z_is_null(&x) &&
+            !latvec_z_is_null(&y));
     /* TODO copy fermion y <- x (note order!) */NOT_IMPLEMENTED;
 }
 void
@@ -126,16 +126,16 @@ void
 q(latvec_zc_copy)(latvec_z x, latvec_c y)
 {
     assert(x.dim == y.dim);
-    assert(!q(latvec_z_is_null)(&x) &&
-            !q(latvec_c_is_null)(&y));
+    assert(!latvec_z_is_null(&x) &&
+            !latvec_c_is_null(&y));
     /* TODO copy fermion y <- x (note order!) */NOT_IMPLEMENTED;
 }
 void 
 q(latvec_cz_copy)(latvec_c x, latvec_z y)
 {
     assert(x.dim == y.dim);
-    assert(!q(latvec_c_is_null)(&x) &&
-            !q(latvec_z_is_null)(&y));
+    assert(!latvec_c_is_null(&x) &&
+            !latvec_z_is_null(&y));
     /* TODO copy fermion y <- x (note order!) */NOT_IMPLEMENTED;
 }
 
@@ -144,8 +144,8 @@ doublecomplex
 q(lat_cz_dotu)(latvec_c x, latvec_z y)
 {
     assert(x.dim == y.dim);
-    assert(!q(latvec_c_is_null)(&x) &&
-            !q(latvec_z_is_null)(&y));
+    assert(!latvec_c_is_null(&x) &&
+            !latvec_z_is_null(&y));
 
     doublecomplex res = { 0., 0. };
     /* TODO return x^H . y */NOT_IMPLEMENTED;
@@ -156,8 +156,8 @@ doublecomplex
 q(lat_z_dotu)(latvec_z x, latvec_z y)
 {
     assert(x.dim == y.dim);
-    assert(!q(latvec_z_is_null)(&x) &&
-            !q(latvec_z_is_null)(&y));
+    assert(!latvec_z_is_null(&x) &&
+            !latvec_z_is_null(&y));
 
     doublecomplex res = { 0., 0. };
     /* TODO return x^H . y */NOT_IMPLEMENTED;
@@ -168,7 +168,7 @@ q(lat_z_dotu)(latvec_z x, latvec_z y)
 double 
 q(lat_z_nrm2)(latvec_z x) 
 {
-    assert(!q(latvec_z_is_null)(&x));
+    assert(!latvec_z_is_null(&x));
     double res = 0.;
     
     /* TODO check that all is correct */NOT_IMPLEMENTED;
@@ -182,15 +182,15 @@ q(lat_z_nrm2)(latvec_z x)
 void 
 q(lat_c_scal)(doublecomplex alpha, latvec_c x)
 {
-    assert(!q(latvec_c_is_null)(&x));
+    assert(!latvec_c_is_null(&x));
     /* TODO implement x <- alpha * x */NOT_IMPLEMENTED;
 }
 void 
 q(lat_c_axpy)(doublecomplex alpha, latvec_c x, latvec_c y)
 {
     assert(x.dim == y.dim);
-    assert(!q(latvec_c_is_null)(&x) &&
-            !q(latvec_c_is_null)(&y));
+    assert(!latvec_c_is_null(&x) &&
+            !latvec_c_is_null(&y));
 
     qx(f_add2)(y.f, y.dim, alpha, x.f);
 }
@@ -198,32 +198,32 @@ void
 q(lat_cz_axpy)(doublecomplex alpha, latvec_c x, latvec_z y)
 {
     assert(x.dim == y.dim);
-    assert(!q(latvec_c_is_null)(&x) &&
-            !q(latvec_z_is_null)(&y));
+    assert(!latvec_c_is_null(&x) &&
+            !latvec_z_is_null(&y));
     /* TODO implement y <- y + alpha * x */NOT_IMPLEMENTED;
 }
 void 
 q(lat_z_axpy)(doublecomplex alpha, latvec_z x, latvec_z y)
 {
     assert(x.dim == y.dim);
-    assert(!q(latvec_z_is_null)(&x) &&
-            !q(latvec_z_is_null)(&y));
+    assert(!latvec_z_is_null(&x) &&
+            !latvec_z_is_null(&y));
     /* TODO implement y <- y + alpha * x */NOT_IMPLEMENTED;
 }
 void 
 q(lat_cz_axpy_d)(double alpha, latvec_c x, latvec_z y)
 {
     assert(x.dim == y.dim);
-    assert(!q(latvec_c_is_null)(&x) &&
-            !q(latvec_z_is_null)(&y));
+    assert(!latvec_c_is_null(&x) &&
+            !latvec_z_is_null(&y));
     /* TODO implement y <- y + alpha * x */NOT_IMPLEMENTED;
 }
 void 
 q(lat_z_axpy_d)(double alpha, latvec_z x, latvec_z y)
 {
     assert(x.dim == y.dim);
-    assert(!q(latvec_z_is_null)(&x) &&
-            !q(latvec_z_is_null)(&y));
+    assert(!latvec_z_is_null(&x) &&
+            !latvec_z_is_null(&y));
     /* TODO implement y <- y + alpha * x */NOT_IMPLEMENTED;
 }
 
@@ -267,8 +267,8 @@ void
 q(latmat_c_copy)(latmat_c m1, latmat_c m2)
 {
     assert(m1.len == m2.len && m1.dim == m2.dim);
-    assert(!q(latmat_c_is_null)(&m1) && 
-            !q(latmat_c_is_null)(&m2));
+    assert(!latmat_c_is_null(&m1) && 
+            !latmat_c_is_null(&m2));
     
     qx(fv_copy)(m1.dim, m1.len, 
                 m2.fv, m2.size, m2.begin,
@@ -281,7 +281,7 @@ q(latmat_c_submat_col)(latmat_c m, int col, int ncol)
             0 < ncol &&
             col < m.len && 
             col + ncol <= m.len);
-    assert(!q(latmat_c_is_null)(&(m)));
+    assert(!latmat_c_is_null(&(m)));
     latmat_c res;
     res.dim     = m.dim;
     res.size    = m.size;
@@ -295,8 +295,8 @@ void
 q(latmat_c_insert_col)(latmat_c m, int col, latvec_c v)
 {
     assert(col < m.len && v.dim == m.dim);
-    assert(!q(latmat_c_is_null)(&m) &&
-            !q(latvec_c_is_null)(&v));
+    assert(!latmat_c_is_null(&m) &&
+            !latvec_c_is_null(&v));
 
     qx(fv_put)(m.dim,
                m.fv, m.size, col,
@@ -306,8 +306,8 @@ void
 q(latmat_c_get_col)(latmat_c m, int col, latvec_c v)
 {
     assert(col < m.len && v.dim == m.dim);
-    assert(!q(latmat_c_is_null)(&m) &&
-            !q(latvec_c_is_null)(&v));
+    assert(!latmat_c_is_null(&m) &&
+            !latvec_c_is_null(&v));
 
     qx(fv_get)(m.dim,
                v.f,
@@ -326,8 +326,8 @@ q(lat_lmH_dot_lm)(int m, int n,
             a.len == m &&
             b.len == n &&
             m <= ldc);
-    assert(!q(latmat_c_is_null)(&a) &&
-            !q(latmat_c_is_null)(&b));
+    assert(!latmat_c_is_null(&a) &&
+            !latmat_c_is_null(&b));
     
     qx(fvH_dot_fv)(a.dim,
                    (double *)c, ldc,
@@ -344,8 +344,8 @@ q(lat_lmH_dot_lv)(int m,
 {
     assert(a.dim == x.dim &&
             a.len == m);
-    assert(!q(latmat_c_is_null)(&a) &&
-            !q(latvec_c_is_null)(&x));
+    assert(!latmat_c_is_null(&a) &&
+            !latvec_c_is_null(&x));
 
     qx(fvH_dot_f)(a.dim,
                   (double *)y, 
@@ -363,8 +363,8 @@ q(lat_lm_dot_zm)(int n, int k,
             a.len == k &&
             c.len == n &&
             k <= ldb);
-    assert(!q(latmat_c_is_null)(&a) && 
-            !q(latmat_c_is_null)(&c));
+    assert(!latmat_c_is_null(&a) && 
+            !latmat_c_is_null(&c));
 
     qx(fv_dot_zm)(a.dim,
                   c.fv, c.size, c.begin, c.len,
@@ -380,8 +380,8 @@ q(lat_lm_dot_zv)(int n,
 {
     assert(a.dim == y.dim &&
             a.len == n);
-    assert(!q(latmat_c_is_null)(&a) &&
-            !q(latvec_c_is_null)(&y));
+    assert(!latmat_c_is_null(&a) &&
+            !latvec_c_is_null(&y));
 
     qx(fv_dot_zv)(a.dim,
                   y.f,

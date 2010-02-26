@@ -46,10 +46,10 @@ Q(create_deflator)(struct Q(Deflator) **deflator_ptr,
 
 
     /* first, set all to null */
-    q(latmat_c_null)(&(d->V));
+    latmat_c_null(&(d->V));
     d->T                = NULL;
 
-    q(latmat_c_null)(&(d->U));
+    latmat_c_null(&(d->U));
     d->H                = NULL;
     d->C                = NULL;
     
@@ -85,10 +85,10 @@ Q(create_deflator)(struct Q(Deflator) **deflator_ptr,
 #endif
 
 
-    q(latmat_c_null)(&(d->tmp_V));
-    q(latvec_c_null)(&(d->work_c_1));
-    q(latvec_c_null)(&(d->work_c_2));
-    q(latvec_c_null)(&(d->work_c_3));
+    latmat_c_null(&(d->tmp_V));
+    latvec_c_null(&(d->work_c_1));
+    latvec_c_null(&(d->work_c_2));
+    latvec_c_null(&(d->work_c_3));
 
 
 
@@ -142,10 +142,10 @@ Q(create_deflator)(struct Q(Deflator) **deflator_ptr,
 
     /* check allocation */
     if (
-            q(latmat_c_is_null)(&(d->V))           ||
+            latmat_c_is_null(&(d->V))           ||
             NULL == d->T                        ||
 
-            q(latmat_c_is_null)(&(d->U))           ||
+            latmat_c_is_null(&(d->U))           ||
             NULL == d->H                        ||
             NULL == d->C                        ||
                     
@@ -179,10 +179,10 @@ Q(create_deflator)(struct Q(Deflator) **deflator_ptr,
 #else
 #  error "no linear algebra library"
 #endif
-            q(latmat_c_is_null)(&(d->tmp_V))       ||
-            q(latvec_c_is_null)(&(d->work_c_1))    ||
-            q(latvec_c_is_null)(&(d->work_c_2))    ||
-            q(latvec_c_is_null)(&(d->work_c_3))
+            latmat_c_is_null(&(d->tmp_V))       ||
+            latvec_c_is_null(&(d->work_c_1))    ||
+            latvec_c_is_null(&(d->work_c_2))    ||
+            latvec_c_is_null(&(d->work_c_3))
     ) {
         Q(free_deflator)(&d);
         return q(set_error)(s, 0, "allocate_deflator(): not enough memory");

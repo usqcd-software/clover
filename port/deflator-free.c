@@ -18,10 +18,10 @@ Q(free_deflator)(struct Q(Deflator) **deflator_ptr)
     int umax    = d->umax;
 #define ds      sizeof(double)
 #define zs      sizeof(doublecomplex)
-    if (!q(latmat_c_is_null)(&(d->V))) q(latmat_c_free)(s, &(d->V));
+    if (!latmat_c_is_null(&(d->V))) q(latmat_c_free)(s, &(d->V));
     if (NULL != d->T)               q(free)(s, d->T, vmax * vmax * zs);
 
-    if (!q(latmat_c_is_null)(&(d->U))) q(latmat_c_free)(s, &(d->U));
+    if (!latmat_c_is_null(&(d->U))) q(latmat_c_free)(s, &(d->U));
     if (NULL != d->H)               q(free)(s, d->H, umax * umax * zs);
     if (NULL != d->C)               q(free)(s, d->C, umax * umax * zs);
 
@@ -56,10 +56,10 @@ Q(free_deflator)(struct Q(Deflator) **deflator_ptr)
 #  error "no linear algebra library"
 #endif
 
-    if (!q(latmat_c_is_null)(&(d->tmp_V)))     q(latmat_c_free)(s, &(d->tmp_V));
-    if (!q(latvec_c_is_null)(&(d->work_c_1)))  q(latvec_c_free)(s, &(d->work_c_1));
-    if (!q(latvec_c_is_null)(&(d->work_c_2)))  q(latvec_c_free)(s, &(d->work_c_2));
-    if (!q(latvec_c_is_null)(&(d->work_c_3)))  q(latvec_c_free)(s, &(d->work_c_3));
+    if (!latmat_c_is_null(&(d->tmp_V)))     q(latmat_c_free)(s, &(d->tmp_V));
+    if (!latvec_c_is_null(&(d->work_c_1)))  q(latvec_c_free)(s, &(d->work_c_1));
+    if (!latvec_c_is_null(&(d->work_c_2)))  q(latvec_c_free)(s, &(d->work_c_2));
+    if (!latvec_c_is_null(&(d->work_c_3)))  q(latvec_c_free)(s, &(d->work_c_3));
 
 
     END_TIMING(s, 0, 0, 0);
