@@ -33,6 +33,8 @@ struct FermionF;
 struct FermionD;
 struct ProjectedFermionF;
 struct ProjectedFermionD;
+struct MxM_workspaceF;
+struct MxM_workspaceD;
 
 /* Internal types */
 struct local {
@@ -283,9 +285,7 @@ int q(df_preamble)(struct Q(State)           *state,
                    struct FermionF           *rho_e,
                    double                    *rho_norm2,
                    struct FermionF           *chi_e, /* const ! */
-                   const struct Q(Gauge)     *gauge,
-                   struct FermionF           *tmp_e,
-                   struct FermionF           *tmp_o,
+                   struct MxM_workspaceF     *ws,
                    int                        e_size);
 int q(df_update0)(struct Q(State)          *state,
                   struct Q(Deflator)       *deflator,
@@ -306,9 +306,7 @@ int q(df_update1)(struct Q(State)          *state,
                    struct FermionF          *A_rho);
 int q(df_postamble)(struct Q(State)           *state,
                     struct Q(Deflator)        *deflator,
-                    const struct Q(Gauge)     *gauge,
-                    struct FermionF           *t0_e,
-                    struct FermionF           *t0_o);
+                    struct MxM_workspaceF     *ws);
 void q(df_reset)(struct Q(Deflator) *deflator);
 void q(df_stop)(struct Q(Deflator) *deflator);
 void q(df_resume)(struct Q(Deflator) *deflator);
@@ -341,6 +339,7 @@ void q(df_resume)(struct Q(Deflator) *deflator);
 # undef Clover
 # undef Fermion
 # undef ProjectedFermion
+# undef MxM_workspace
 # if QOP_CLOVER_DEFAULT_PRECISION=='D'
 #  define qx(x) qop_d3_clover_##x
 #  define QX(x) QOP_D3_CLOVER_##x
@@ -349,6 +348,7 @@ void q(df_resume)(struct Q(Deflator) *deflator);
 #  define Clover CloverD
 #  define Fermion FermionD
 #  define ProjectedFermion ProjectedFermionD
+#  define MxM_workspace MxM_workspaceD
 # endif
 # if QOP_CLOVER_DEFAULT_PRECISION=='F'
 #  define qx(x) qop_f3_clover_##x
@@ -358,6 +358,7 @@ void q(df_resume)(struct Q(Deflator) *deflator);
 #  define Clover CloverF
 #  define Fermion FermionF
 #  define ProjectedFermion ProjectedFermionF
+#  define MxM_workspace MxM_workspaceF
 # endif
 
 /* CLOVER types */
@@ -871,16 +872,21 @@ void qx(cg_log)(double cg_res, const char *source, int iter,
                 struct Fermion *t1_e,
                 struct Fermion *t0_o,
                 struct Fermion *t1_o);
-void qx(cg_operator)(struct Q(State)         *state,
-                     struct Fermion          *res_e,
-                     const struct QX(Gauge)  *gauge,
-                     const struct Fermion    *psi_e,
-                     struct Fermion          *tmp_e,
-                     struct Fermion          *tmp_o,
-                     long long               *flops,
-                     long long               *sent,
-                     long long               *received);
-/* CG exit status */
+
+struct MxM_workspace {
+    struct Q(State)        *state;
+    const struct QX(Gauge) *gauge;
+    struct Fermion         *tmp_e;
+    struct Fermion         *tmp_o;
+    long long              *flops;
+    long long              *sent;
+    long long              *received;
+};
+
+void qx(cg_operator)(struct Fermion            *res_e,
+                     const struct Fermion      *psi_e,
+                     struct MxM_workspace      *ws);
+
 CG_STATUS qx(cg_solver)(struct Fermion *psi_e,
                         const char *source,
                         int *out_iter,

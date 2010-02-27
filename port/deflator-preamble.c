@@ -65,9 +65,7 @@ q(df_preamble)(
         struct FermionF           *r,
         double                    *r_norm2,
         struct FermionF           *b,  /* const! */
-        const struct Q(Gauge)     *gauge,
-        struct FermionF           *tmp_e,
-        struct FermionF           *tmp_o,
+        struct MxM_workspace      *ws,
         int                        e_size)
 {
     assert(NULL != s &&
@@ -102,7 +100,7 @@ q(df_preamble)(
         if (q(df_solve_in_eigenspace)(s, d, x, b))
             return 1;
         /* compute residual */
-        q(latvec_c_linop)(s, cur_r, lv_x, gauge, tmp_e, tmp_o);
+        latvec_c_linop(cur_r, lv_x, ws);
         /* FIXME optimize the code below with a special primitive;
            cur_r <- lv_b - cur_r */
         q(lat_c_axpy_d)(-1., lv_b, cur_r);

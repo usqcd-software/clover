@@ -407,20 +407,3 @@ q(lat_lm_dot_zv)(int n,
                   a.fv, a.size, a.begin, a.len,
                   (double *)x);
 }
-
-void
-q(latvec_c_linop)(struct Q(State)         *s,
-                  latvec_c                 y,
-                  latvec_c                 x,
-                  const struct Q(Gauge)   *g,
-                  struct FermionF         *tmp_e,    
-                  struct FermionF         *tmp_o)
-{
-    long long flops = 0;
-    long long sent = 0;
-    long long received = 0;
-
-    /* XXX keep track of flops */
-    qx(cg_operator)(s, y.f, g, x.f, tmp_e, tmp_o,
-                    &flops, &sent, &received);
-}
