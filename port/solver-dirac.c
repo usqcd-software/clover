@@ -32,6 +32,7 @@ QX(D_CG)(struct QX(Fermion)          *psi,
     void *temps = 0;
     CG_STATUS cg_status;
     int status;
+    int e_size;
     struct Fermion *chi_e = 0;
     struct Fermion *rho_e = 0;
     struct Fermion *pi_e = 0;
@@ -49,6 +50,7 @@ QX(D_CG)(struct QX(Fermion)          *psi,
     CHECK_ARGn(gauge, "D_CG");
     CHECK_ARGn(eta, "D_CG");
 
+    e_size = state->even.full_size;
     /* setup communication */
     if (q(setup_comm)(state, sizeof (REAL))) {
         return q(set_error)(state, 0, "DDW_CG(): communication setup failed");
@@ -116,10 +118,11 @@ QX(D_CG)(struct QX(Fermion)          *psi,
     }
 
     /* inflate */
+    qx(f_add2)(psi->even, e_size, 1.0, psi_0->even);
     qx(cg_inflate)(psi->odd,
                    state, gauge, eta->odd, psi->even,
                    &flops, &sent, &received,
-                   t0_o);    
+                   t0_o);
 
     if (options & Q(FINAL_DIRAC_RESIDUAL)) {
         dirac_residual = qx(cg_dirac_error)(psi->even, psi->odd,

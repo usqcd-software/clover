@@ -82,6 +82,8 @@ q(df_preamble)(
         return 0;
     }
 
+    Q(deflator_reset)(d);
+
     if (d->vsize != 0) {
         q(set_error)(s, 0, "df_preamble: deflator in non-initial state");
         return 1;

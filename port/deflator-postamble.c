@@ -19,8 +19,6 @@ q(df_postamble)(
 {
     int i;
 
-    assert(NULL != s &&
-            NULL != d);
     if (NULL == s ||
             NULL == d ||
             d->frozen || 
