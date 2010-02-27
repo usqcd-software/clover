@@ -28,6 +28,8 @@ struct FermionF;
 typedef struct {
     int dim;
     struct FermionF *f;
+    void *mem_ptr;
+    size_t mem_size;
 } latvec_c;
 
 #define latvec_c_null(p) { (p)->f = NULL; }
@@ -86,6 +88,8 @@ typedef struct {
     int begin;
     int len;
     struct vFermion *fv;
+    void *mem_ptr;
+    size_t mem_size;
 } latmat_c;
 
 #define latmat_c_null(p) do { (p)->fv = NULL; } while (0)
@@ -130,7 +134,12 @@ void q(lat_lm_dot_zv)(int n,
 
 
 /* lin. operator tie-back */
-void q(latvec_c_linop)(struct Q(State) *s, latvec_c y, latvec_c x, latvec_c aux);
+void q(latvec_c_linop)(struct Q(State) *s,
+                       latvec_c y,
+                       latvec_c x,
+                       const struct Q(Gauge) *gauge,
+                       struct FermionF *tmp_e,
+                       struct FermionF *tmp_o);
 //void q(latvec_z_linop)(struct Q(State) *s, latvec_z y, latvec_z x, latvec_z aux);
 
 #endif /* !defined(MARK_9C829801_86C1_4CF3_8488_D30802F36B8D) */

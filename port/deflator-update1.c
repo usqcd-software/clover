@@ -235,7 +235,6 @@ q(df_update1)(
                 &gsl_QZ_transp.matrix, d->gsl_tmp_MxS));
 
 
-//    /* TODO thorough review of the code above */NOT_IMPLEMENTED;
 #else
 #  error "no linear algebra library"
 #endif

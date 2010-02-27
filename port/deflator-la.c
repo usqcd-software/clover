@@ -1,6 +1,7 @@
 #include <assert.h>
 #define QOP_CLOVER_DEFAULT_PRECISION 'F'
 #include <clover.h>
+#include <qmp.h>
 
 
 /* allocate & free */
@@ -9,9 +10,10 @@ q(latvec_c_alloc)(struct Q(State) *state, int dim)
 {
     latvec_c res;
     res.dim     = dim;
-    res.f       = NULL;
-    /* TODO allocate fermion with all the icing needed */NOT_IMPLEMENTED;
-
+    res.mem_ptr = qx(allocate_eo)(state, &res.mem_size,
+                                  (void *)&res.f, 0, 1, 0);
+    if (res.mem_ptr == NULL)
+        res.f = NULL;
     return res;
 }
 latvec_c 
@@ -20,6 +22,8 @@ q(latvec_c_view)(int dim, struct FermionF *f)
     latvec_c res;
     res.dim     = dim;
     res.f       = f;
+    res.mem_ptr = NULL;
+    res.mem_size = 0;
     return res;
 }
 void 
@@ -28,19 +32,20 @@ q(latvec_c_copy)(latvec_c x, latvec_c y)
     assert(x.dim == y.dim);
     assert(!latvec_c_is_null(&x) &&
             !latvec_c_is_null(&y));
-    /* TODO copy fermion y <- x (note order!) */NOT_IMPLEMENTED;
+    qx(f_copy)(y.f, y.dim, x.f);
 }
 void
 q(latvec_c_zero)(latvec_c x)
 {
     assert(!latvec_c_is_null(&x));
-    /* TODO x <- zero */NOT_IMPLEMENTED;
+    qx(f_zero)(x.f, x.dim);
 }
 void
 q(latvec_c_free)(struct Q(State) *state, latvec_c *v)
 {
-    if (NULL != v && NULL != v->f) {
-        /* TODO free fermion */NOT_IMPLEMENTED;
+    if (NULL != v && NULL != v->mem_ptr && NULL != v->f) {
+        q(free)(state, v->mem_ptr, v->mem_size);
+        v->mem_ptr = NULL;
         v->f = NULL;
     }
 }
@@ -54,7 +59,12 @@ q(lat_c_dotu)(latvec_c x, latvec_c y)
             !latvec_c_is_null(&y));
 
     doublecomplex res = { 0., 0. };
-    /* TODO return x^H . y */NOT_IMPLEMENTED;
+    double s[2];
+
+    qx(f_dot)(&s[0], &s[1], x.dim, x.f, y.f);
+    QMP_sum_double_array(s, 2);
+    res.r = s[0];
+    res.i = s[1];
     
     return res;
 }
@@ -62,7 +72,7 @@ void
 q(lat_c_scal_d)(double alpha, latvec_c x)
 {
     assert(!latvec_c_is_null(&x));
-    /* TODO implement x <- alpha * x */NOT_IMPLEMENTED;
+    qx(f_rmul1)(x.f, x.dim, alpha);
 }
 
 void 
@@ -80,9 +90,8 @@ q(lat_c_nrm2)(latvec_c x)
     assert(!latvec_c_is_null(&x));
     
     double res = 0.;
-    /* TODO check that all is correct */NOT_IMPLEMENTED;
     qx(f_norm)(&res, x.dim, x.f);
-    res = res * res;
+    QMP_sum_double(&res);
     
     return res;
 }
@@ -94,7 +103,7 @@ q(latvec_z_alloc)(struct Q(State) *state, int dim)
     latvec_z res;
     res.dim     = dim;
     res.f       = NULL;
-    /* TODO allocate f */NOT_IMPLEMENTED;
+    /* TODO LATER allocate f */NOT_IMPLEMENTED;
     return res;
 }
 latvec_z
@@ -111,13 +120,13 @@ q(latvec_z_copy)(latvec_z x, latvec_z y)
     assert(x.dim == y.dim);
     assert(!latvec_z_is_null(&x) &&
             !latvec_z_is_null(&y));
-    /* TODO copy fermion y <- x (note order!) */NOT_IMPLEMENTED;
+    /* TODO LATER copy fermion y <- x (note order!) */NOT_IMPLEMENTED;
 }
 void
 q(latvec_z_free)(struct Q(State) *state, latvec_z *v)
 {
     if (NULL != v && NULL != v->f) {
-        /* free fermion */NOT_IMPLEMENTED;
+        /* TODO LATER free fermion */NOT_IMPLEMENTED;
         v->f = NULL;
     }
 }
@@ -128,7 +137,7 @@ q(latvec_zc_copy)(latvec_z x, latvec_c y)
     assert(x.dim == y.dim);
     assert(!latvec_z_is_null(&x) &&
             !latvec_c_is_null(&y));
-    /* TODO copy fermion y <- x (note order!) */NOT_IMPLEMENTED;
+    /* TODO LATER copy fermion y <- x (note order!) */NOT_IMPLEMENTED;
 }
 void 
 q(latvec_cz_copy)(latvec_c x, latvec_z y)
@@ -136,7 +145,7 @@ q(latvec_cz_copy)(latvec_c x, latvec_z y)
     assert(x.dim == y.dim);
     assert(!latvec_c_is_null(&x) &&
             !latvec_z_is_null(&y));
-    /* TODO copy fermion y <- x (note order!) */NOT_IMPLEMENTED;
+    /* TODO LATER copy fermion y <- x (note order!) */NOT_IMPLEMENTED;
 }
 
 
@@ -148,7 +157,7 @@ q(lat_cz_dotu)(latvec_c x, latvec_z y)
             !latvec_z_is_null(&y));
 
     doublecomplex res = { 0., 0. };
-    /* TODO return x^H . y */NOT_IMPLEMENTED;
+    /* TODO LATER return x^H . y */NOT_IMPLEMENTED;
     
     return res;
 }
@@ -160,7 +169,7 @@ q(lat_z_dotu)(latvec_z x, latvec_z y)
             !latvec_z_is_null(&y));
 
     doublecomplex res = { 0., 0. };
-    /* TODO return x^H . y */NOT_IMPLEMENTED;
+    /* TODO LATER return x^H . y */NOT_IMPLEMENTED;
     
     return res;
 }
@@ -171,7 +180,7 @@ q(lat_z_nrm2)(latvec_z x)
     assert(!latvec_z_is_null(&x));
     double res = 0.;
     
-    /* TODO check that all is correct */NOT_IMPLEMENTED;
+    /* TODO LATER check that all is correct */NOT_IMPLEMENTED;
     qop_d3_clover_f_norm(&res, x.dim, x.f);
     res = res * res;
     
@@ -183,7 +192,7 @@ void
 q(lat_c_scal)(doublecomplex alpha, latvec_c x)
 {
     assert(!latvec_c_is_null(&x));
-    /* TODO implement x <- alpha * x */NOT_IMPLEMENTED;
+    /* TODO LATER implement x <- alpha * x */NOT_IMPLEMENTED;
 }
 void 
 q(lat_c_axpy)(doublecomplex alpha, latvec_c x, latvec_c y)
@@ -200,7 +209,7 @@ q(lat_cz_axpy)(doublecomplex alpha, latvec_c x, latvec_z y)
     assert(x.dim == y.dim);
     assert(!latvec_c_is_null(&x) &&
             !latvec_z_is_null(&y));
-    /* TODO implement y <- y + alpha * x */NOT_IMPLEMENTED;
+    /* TODO LATER implement y <- y + alpha * x */NOT_IMPLEMENTED;
 }
 void 
 q(lat_z_axpy)(doublecomplex alpha, latvec_z x, latvec_z y)
@@ -208,7 +217,7 @@ q(lat_z_axpy)(doublecomplex alpha, latvec_z x, latvec_z y)
     assert(x.dim == y.dim);
     assert(!latvec_z_is_null(&x) &&
             !latvec_z_is_null(&y));
-    /* TODO implement y <- y + alpha * x */NOT_IMPLEMENTED;
+    /* TODO LATER implement y <- y + alpha * x */NOT_IMPLEMENTED;
 }
 void 
 q(lat_cz_axpy_d)(double alpha, latvec_c x, latvec_z y)
@@ -216,7 +225,7 @@ q(lat_cz_axpy_d)(double alpha, latvec_c x, latvec_z y)
     assert(x.dim == y.dim);
     assert(!latvec_c_is_null(&x) &&
             !latvec_z_is_null(&y));
-    /* TODO implement y <- y + alpha * x */NOT_IMPLEMENTED;
+    /* TODO LATER implement y <- y + alpha * x */NOT_IMPLEMENTED;
 }
 void 
 q(lat_z_axpy_d)(double alpha, latvec_z x, latvec_z y)
@@ -224,7 +233,7 @@ q(lat_z_axpy_d)(double alpha, latvec_z x, latvec_z y)
     assert(x.dim == y.dim);
     assert(!latvec_z_is_null(&x) &&
             !latvec_z_is_null(&y));
-    /* TODO implement y <- y + alpha * x */NOT_IMPLEMENTED;
+    /* TODO LATER implement y <- y + alpha * x */NOT_IMPLEMENTED;
 }
 
 #endif
@@ -239,7 +248,11 @@ q(latmat_c_alloc)(struct Q(State) *state, int dim, int ncol)
     res.begin   = 0;
     res.len     = ncol;
     res.fv      = NULL;
-    /* TODO allocate fermion "matrix" */NOT_IMPLEMENTED;
+    res.mem_ptr = q(allocate_aligned)(state, &res.mem_size, (void *)&res.fv, 0,
+                                      qx(sizeof_vfermion(dim, ncol)));
+    if (res.mem_ptr == NULL)
+        res.fv = NULL;
+
     return res;
 }
 latmat_c 
@@ -251,15 +264,19 @@ q(latmat_c_view)(int dim, int size, struct vFermion *fv)
     res.begin   = 0;
     res.len     = size;
     res.fv       = fv;
+    res.mem_ptr = NULL;
+    res.mem_size = 0;
     return res;
 }
 void
 q(latmat_c_free)(struct Q(State) *state, latmat_c *m) 
 {
-    if (NULL != m && NULL != m->fv) {
+    if (NULL != m && NULL != m->mem_ptr && NULL != m->fv) {
         assert(0 == m->begin &&     
-            m->size == m->len); /* at least some chance that this is not a sub-matrix */
-        /* TODO free matrix */NOT_IMPLEMENTED;
+            m->size == m->len);
+        /* at least some chance that this is not a sub-matrix */
+        q(free)(state, m->mem_ptr, m->mem_size);
+        m->mem_ptr = 0;
         m->fv = NULL;
     }
 }
@@ -288,6 +305,8 @@ q(latmat_c_submat_col)(latmat_c m, int col, int ncol)
     res.begin   = m.begin + col;
     res.len     = ncol;
     res.fv      = m.fv;
+    res.mem_ptr = NULL;
+    res.mem_size = 0;
 
     return res;
 }
@@ -390,11 +409,18 @@ q(lat_lm_dot_zv)(int n,
 }
 
 void
-q(latvec_c_linop)(struct Q(State) *s, latvec_c y, latvec_c x, latvec_c aux)
+q(latvec_c_linop)(struct Q(State)         *s,
+                  latvec_c                 y,
+                  latvec_c                 x,
+                  const struct Q(Gauge)   *g,
+                  struct FermionF         *tmp_e,    
+                  struct FermionF         *tmp_o)
 {
-    /* TODO apply M^dag M to x:
-       aux <- M x
-       y <- M^dag aux
-       add parameters to the function call as needed, I will fix the rest
-       */NOT_IMPLEMENTED;
+    long long flops = 0;
+    long long sent = 0;
+    long long received = 0;
+
+    /* XXX keep track of flops */
+    qx(cg_operator)(s, y.f, g, x.f, tmp_e, tmp_o,
+                    &flops, &sent, &received);
 }

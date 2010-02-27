@@ -30,7 +30,8 @@ QX(D_CG)(struct QX(Fermion)          *psi,
     void *ptr = 0;
     size_t ptr_size = 0;
     void *temps = 0;
-    int status = 1;
+    CG_STATUS cg_status;
+    int status;
     struct Fermion *chi_e = 0;
     struct Fermion *rho_e = 0;
     struct Fermion *pi_e = 0;
@@ -97,14 +98,19 @@ QX(D_CG)(struct QX(Fermion)          *psi,
     qx(f_add2)(chi_e, state->even.full_size, -1.0, t0_e);
 
     /* solve */
-    status = qx(cg_solver)(psi->even, "DCL CG", out_iterations, out_epsilon,
-                           state, gauge, chi_e, NULL,
-                           max_iterations, min_epsilon * rhs_norm, options,
-                           &flops, &sent, &received,
-                           rho_e, pi_e, zeta_e,
-                           t0_e, t1_e, t0_o, t1_o);
+    cg_status = qx(cg_solver)(psi->even, "DCL CG", out_iterations, out_epsilon,
+                              state, gauge, chi_e, NULL,
+                              max_iterations, min_epsilon * rhs_norm, options,
+                              &flops, &sent, &received,
+                              rho_e, pi_e, zeta_e,
+                              t0_e, t1_e, t0_o, t1_o);
     /* handle zero mode properly */
-    if (status > 1) {
+    switch (cg_status) {
+    case CG_SUCCESS:
+        status = 0;
+        break;
+    default:
+        status = 1;
         END_TIMING(state, flops, sent, received);
         goto end;
     }

@@ -111,6 +111,14 @@ struct Q(State) {
   int               *v2lx;            /* Only for init */
 };
 
+typedef enum {
+    CG_SUCCESS,
+    CG_MAXITER,
+    CG_EIGCONV,
+    CG_ZEROMODE,
+    CG_NOEMEM
+} CG_STATUS;
+
 
 /* Deflator state */
 #include <deflator-la.h>
@@ -272,7 +280,13 @@ int q(df_create)(
 int q(df_preamble)(struct Q(State)           *state,
                    struct Q(Deflator)        *deflator,
                    struct FermionF           *psi_e,
-                   struct FermionF     *chi_e);
+                   struct FermionF           *rho_e,
+                   double                    *rho_norm2,
+                   struct FermionF           *chi_e, /* const ! */
+                   const struct Q(Gauge)     *gauge,
+                   struct FermionF           *tmp_e,
+                   struct FermionF           *tmp_o,
+                   int                        e_size);
 int q(df_update0)(struct Q(State)          *state,
                   struct Q(Deflator)       *deflator,
                   double                    a1,
@@ -280,7 +294,7 @@ int q(df_update0)(struct Q(State)          *state,
                   double                    a0,
                   double                    b0,
                   double                    r,
-                  struct FermionF    *rho);
+                  struct FermionF          *rho);
 int q(df_update1)(struct Q(State)          *state,
                    struct Q(Deflator)       *deflator,
                    double                    a1,
@@ -288,10 +302,13 @@ int q(df_update1)(struct Q(State)          *state,
                    double                    a0,
                    double                    b0,
                    double                    r,
-                   struct FermionF    *rho,
-                   struct FermionF    *A_rho);
+                   struct FermionF          *rho,
+                   struct FermionF          *A_rho);
 int q(df_postamble)(struct Q(State)           *state,
-                    struct Q(Deflator)        *deflator);
+                    struct Q(Deflator)        *deflator,
+                    const struct Q(Gauge)     *gauge,
+                    struct FermionF           *t0_e,
+                    struct FermionF           *t0_o);
 void q(df_reset)(struct Q(Deflator) *deflator);
 void q(df_stop)(struct Q(Deflator) *deflator);
 void q(df_resume)(struct Q(Deflator) *deflator);
@@ -527,6 +544,9 @@ unsigned int qx(f_add2_norm)(struct Fermion *r,
                              int size,
                              double s,
                              const struct Fermion *b);
+unsigned int qx(f_rmul1)(struct Fermion *r,
+                         int size,
+                         double s);
 unsigned int qx(f_add2x)(struct Fermion *r,
                          int size,
                          double s,
@@ -851,27 +871,37 @@ void qx(cg_log)(double cg_res, const char *source, int iter,
                 struct Fermion *t1_e,
                 struct Fermion *t0_o,
                 struct Fermion *t1_o);
-int qx(cg_solver)(struct Fermion *psi_e,
-                  const char *source,
-                  int *out_iter,
-                  double *out_epsilon,
-                  struct Q(State) *state,
-                  const struct QX(Gauge) *gauge,
-                  const struct Fermion *chi_e,
-                  struct Q(Deflator) *deflator,
-                  int max_iter,
-                  double epsilon,
-                  unsigned options,
-                  long long *flops,
-                  long long *sent,
-                  long long *received,
-                  struct Fermion *rho_e,
-                  struct Fermion *pi_e,
-                  struct Fermion *zeta_e,
-                  struct Fermion *t0_e,
-                  struct Fermion *t1_e,
-                  struct Fermion *t0_o,
-                  struct Fermion *t1_o);
+void qx(cg_operator)(struct Q(State)         *state,
+                     struct Fermion          *res_e,
+                     const struct QX(Gauge)  *gauge,
+                     const struct Fermion    *psi_e,
+                     struct Fermion          *tmp_e,
+                     struct Fermion          *tmp_o,
+                     long long               *flops,
+                     long long               *sent,
+                     long long               *received);
+/* CG exit status */
+CG_STATUS qx(cg_solver)(struct Fermion *psi_e,
+                        const char *source,
+                        int *out_iter,
+                        double *out_epsilon,
+                        struct Q(State) *state,
+                        const struct QX(Gauge) *gauge,
+                        const struct Fermion *chi_e,
+                        struct Q(Deflator) *deflator,
+                        int max_iter,
+                        double epsilon,
+                        unsigned options,
+                        long long *flops,
+                        long long *sent,
+                        long long *received,
+                        struct Fermion *rho_e,
+                        struct Fermion *pi_e,
+                        struct Fermion *zeta_e,
+                        struct Fermion *t0_e,
+                        struct Fermion *t1_e,
+                        struct Fermion *t0_o,
+                        struct Fermion *t1_o);
 
 /*
  *  compute x <- x + alpha p

@@ -74,6 +74,7 @@ q(mixed_cg)(struct Q(State)             *state,
     size_t ptr_size_d = 0;
     size_t ptr_size_f = 0;
     void *temps = 0;
+    CG_STATUS cg_status;
     int status = 1;
     struct FermionD *chi_e = 0;
     struct FermionD *t0_e = 0;
@@ -183,13 +184,13 @@ q(mixed_cg)(struct Q(State)             *state,
         if (q(setup_comm)(state, sizeof (float))) {
             CG_ERROR_T("DDW_CG(): communication setup failed");
         }
-        status = qf(cg_solver)(dx_Fe, name, &here_iter, out_epsilon,
-                               state, &gauge_F, delta_Fe, deflator,
-                               iter_left > f_iter ? f_iter : iter_left,
-                               ff_eps, options,
-                               &flops, &sent, &received,
-                               rho_Fe, pi_Fe, zeta_Fe, t0_Fe,
-                               t1_Fe, t0_Fo, t1_Fo);
+        cg_status = qf(cg_solver)(dx_Fe, name, &here_iter, out_epsilon,
+                                  state, &gauge_F, delta_Fe, deflator,
+                                  iter_left > f_iter ? f_iter : iter_left,
+                                  ff_eps, options,
+                                  &flops, &sent, &received,
+                                  rho_Fe, pi_Fe, zeta_Fe, t0_Fe,
+                                  t1_Fe, t0_Fo, t1_Fo);
 
         if (q(setup_comm)(state, sizeof (double))) {
             CG_ERROR_T("DDW_CG(): communication setup failed");
@@ -199,8 +200,16 @@ q(mixed_cg)(struct Q(State)             *state,
         iter_left -= here_iter;
         *out_iterations = max_iterations - iter_left;
         /* continue or not */
-        if (status != 0)
+        status = 1;
+        switch (cg_status) {
+        case CG_SUCCESS:
+        case CG_MAXITER:
+        case CG_EIGCONV:
+            status = 0;
+            break;
+        default:
             CG_ERROR_T(NULL);
+        }
         if (*out_epsilon < min_epsilon)
             break;
     }

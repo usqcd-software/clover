@@ -1,4 +1,6 @@
+#define QOP_CLOVER_DEFAULT_PRECISION 'F'
 #include <clover.h>
+#include <qmp.h>
 
 #include <math.h>
 #if defined(HAVE_LAPACK)
@@ -57,18 +59,28 @@ q(df_solve_in_eigenspace)(
 
 int
 q(df_preamble)(
-        struct Q(State)         *s,
-        struct Q(Deflator)      *d,
-        struct FermionF         *x,
-        struct FermionF         *b)
+        struct Q(State)           *s,
+        struct Q(Deflator)        *d,
+        struct FermionF           *x,
+        struct FermionF           *r,
+        double                    *r_norm2,
+        struct FermionF           *b,  /* const! */
+        const struct Q(Gauge)     *gauge,
+        struct FermionF           *tmp_e,
+        struct FermionF           *tmp_o,
+        int                        e_size)
 {
     assert(NULL != s &&
-            NULL != d &&
             NULL != x &&
             NULL != b);
 
-    if (d->frozen)
+    if (d == NULL || d->frozen) {
+        qx(f_zero)(x, e_size);
+        qx(f_copy)(r, e_size, b);
+        qx(f_norm)(r_norm2, e_size, r);
+        QMP_sum_double(r_norm2);
         return 0;
+    }
 
     if (d->vsize != 0) {
         q(set_error)(s, 0, "df_preamble: deflator in non-initial state");
@@ -88,14 +100,16 @@ q(df_preamble)(
         if (q(df_solve_in_eigenspace)(s, d, x, b))
             return 1;
         /* compute residual */
-        q(latvec_c_linop)(s, cur_r, lv_x, cur_r_aux);
+        q(latvec_c_linop)(s, cur_r, lv_x, gauge, tmp_e, tmp_o);
         /* FIXME optimize the code below with a special primitive;
            cur_r <- lv_b - cur_r */
         q(lat_c_axpy_d)(-1., lv_b, cur_r);
         q(lat_c_scal_d)(-1., cur_r);   
     }
-    double rnorm = sqrt(q(lat_c_nrm2)(cur_r));
-    q(lat_c_scal_d)(1. / rnorm, cur_r);
+    qx(f_copy)(r, e_size, cur_r.f);
+    qx(f_norm)(r_norm2, e_size, r);
+    QMP_sum_double(r_norm2);
+    q(lat_c_scal_d)(1. / sqrt(*r_norm2), cur_r);
     
     /* save normalized residual as the first vector */
     q(latmat_c_insert_col)(d->V, 0, cur_r);
@@ -105,7 +119,7 @@ q(df_preamble)(
     memset(d->T, 0, d->vmax * d->vmax * sizeof(d->T[0]));
 
     /* init stopping threshold */
-    d->resid_norm_sq_min = d->eps * d->eps * rnorm * rnorm;
+    d->resid_norm_sq_min = d->eps * d->eps * (*r_norm2);
     d->vsize = 1;
     
     return 0;

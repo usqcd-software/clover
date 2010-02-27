@@ -47,6 +47,7 @@ x.sources = f-dot.qa0 \
             f-add3.qa0 \
             f-norm.qa0 \
             f-zero.qa0 \
+            f-rmul.qa0 \
             get-fermion.qa0 \
             put-fermion.qa0 \
             sizeof-fermion.qa0 \

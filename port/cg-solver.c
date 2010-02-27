@@ -1,29 +1,50 @@
 #include <clover.h>
 
 #if QOP_CLOVER_DEFAULT_PRECISION == 'F'
-#define DF_PREAMBLE(psi_e, chi_e) do { \
-    if (NULL == deflator) qx(f_zero)(psi_e, e_size); \
-    else { \
-        if (q(df_preamble)(state, deflator, psi_e, chi_e)) { \
-            q(set_error)(state, 0, "cg_solver() not enough memory"); \
-            return 3; \
-        } } } while (0)
+#define DF_PREAMBLE(psi_e, rho_e, r, chi_e) do {             \
+        if (q(df_preamble)(state, deflator, psi_e, rho_e, r, chi_e,     \
+                           gauge, t0_e, t0_o, e_size)) {                \
+            q(set_error)(state, 0, "cg_solver() not enough memory");    \
+            return CG_NOEMEM;                                           \
+        } } while (0)
 #define DF_UPDATE0(a1,b1,a0,b0,r,rho)           \
     q(df_update0)(state, deflator, a1, b1, a0, b0, r, rho)
 #define DF_UPDATE1(a1,b1,a0,b0,r,rho,A_rho) \
     q(df_update1)(state, deflator, a1, b1, a0, b0, r, rho, A_rho)
 #define DF_POSTAMBLE() \
-    do { q(df_postamble)(state, deflator); } while (0)
+    do { q(df_postamble)(state, deflator, gauge, t0_e, t0_o); } while (0)
 #else
-#define DF_PREAMBLE(psi_e, chi_e) do { \
+#define DF_PREAMBLE(psi_e, rho_e, r, chi_e) do {        \
         qx(f_zero)(psi_e, e_size);\
+        qx(f_copy)(rho_e, e_size, chi_e);       \
+        qx(f_norm)(r, e_size, rho_e);           \
+        QMP_sum_double(r);                \
     } while (0)
 #define DF_UPDATE0(a1,b1,a0,b0,r,rho)  0
 #define DF_UPDATE1(a1,b1,a0,b0,r,rho,A_rho)  0
 #define DF_POSTAMBLE()  do {} while (0)
 #endif
 
-int
+void
+qx(cg_operator)(struct Q(State)         *state,
+                struct Fermion          *res_e,
+                const struct Q(Gauge)   *gauge,
+                const struct Fermion    *psi_e,
+                struct Fermion          *tmp_e,
+                struct Fermion          *tmp_o,
+                long long               *flops,
+                long long               *sent,
+                long long               *received)
+{
+    qx(op_even_M)(tmp_e, state, gauge, psi_e,
+                  flops, sent, received,
+                  tmp_o);
+    qx(op_even_Mx)(res_e, state, gauge, tmp_e,
+                   flops, sent, received,
+                   tmp_o);
+}
+
+CG_STATUS
 qx(cg_solver)(struct Fermion            *psi_e,
               const char                *name,
               int                       *out_iter,
@@ -52,16 +73,7 @@ qx(cg_solver)(struct Fermion            *psi_e,
     double a, b, g, r, norm_omega;
     int i;
 
-    DF_PREAMBLE(psi_e, (struct Fermion *) chi_e);
-    qx(op_even_M)(t0_e, state, gauge, psi_e,
-                  flops, sent, received,
-                  t0_o);
-    qx(op_even_Mx)(zeta_e, state, gauge, t0_e,
-                   flops, sent, received,
-                   t0_o);
-    qx(f_add3)(rho_e, e_size, chi_e, -1, zeta_e);
-    *flops += qx(f_norm)(&r, e_size, rho_e);
-    QMP_sum_double(&r);
+    DF_PREAMBLE(psi_e, rho_e, &r, (struct Fermion *) chi_e);
     qx(f_copy)(pi_e, e_size, rho_e);
     if (r < epsilon) {
         i = 0;
@@ -79,7 +91,7 @@ qx(cg_solver)(struct Fermion            *psi_e,
             *out_epsilon = r;
             q(set_error)(state, 0, "cg_solver() hit zero mode");
             DF_POSTAMBLE();
-            return 2;
+            return CG_ZEROMODE;
         }
         a = r / norm_omega;
         *flops += qx(f_add2_norm)(rho_e, &g, e_size, -a, zeta_e);
@@ -94,17 +106,13 @@ qx(cg_solver)(struct Fermion            *psi_e,
         qx(cg_xp)(psi_e, pi_e, e_size, a, b, rho_e);
         df_status = DF_UPDATE0(a, b, a0, b0, g, rho_e);
         if (-1 == df_status) {
-            qx(op_even_M)(t0_e, state, gauge, rho_e,
-                          flops, sent, received,
-                          t0_o);
-            qx(op_even_Mx)(zeta_e, state, gauge, t0_e,
-                           flops, sent, received,
-                           t0_o);
+            qx(cg_operator)(state, zeta_e, gauge, rho_e, t0_e, t0_o,
+                            flops, sent, received);
             df_status = DF_UPDATE1(a, b, a0, b0, g, rho_e, zeta_e);
         } 
-        if (3 == df_status) {
-            /* TODO: restart CG with new deflation */NOT_IMPLEMENTED;
-        }
+        if (3 == df_status)
+            return CG_EIGCONV;
+
         a0 = a;
         b0 = b;
         if (options)
@@ -119,6 +127,6 @@ end:
     *out_epsilon = r;
     DF_POSTAMBLE();
     if (i == max_iter)
-        return 1;
-    return 0;
+        return CG_MAXITER;
+    return CG_SUCCESS;
 }
