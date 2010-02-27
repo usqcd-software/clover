@@ -112,8 +112,12 @@ qx(cg_solver)(struct Fermion            *psi_e,
             qx(cg_operator)(zeta_e, rho_e, &ws);
             df_status = DF_UPDATE1(a, b, a0, b0, g, rho_e, zeta_e);
         } 
-        if (3 == df_status)
+        if (3 == df_status) {
+            *out_iter = i;
+            *out_epsilon = r;
+            DF_POSTAMBLE();
             return CG_EIGCONV;
+        }
 
         a0 = a;
         b0 = b;
