@@ -29,7 +29,6 @@
      (loop () (j [const 0] [reg gv-len])
          (op qcd-zerof () (x) ())
          (op pointer-move () (F-k) ([reg F]))
-         (op qcd-zerof () (x) ())
          (op pointer-move () (V-k) ([reg V-j]))
          (loop () (k [const 0] [reg fv-len])
              (load double () vv-r ([reg V-k]))

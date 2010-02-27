@@ -32,7 +32,7 @@
      (op pointer-move () (F-i) ([reg F-x]))
      (op pointer-add () (F-x) ([reg F-x] [reg fv-step]))
      (op pointer-move () (G-i) ([reg G-x]))
-     (op pointer-add () (G-x) ([reg G-x] [reg fv-step]))
+     (op pointer-add () (G-x) ([reg G-x] [reg gv-step]))
      (loop () (j [const 0] [reg len])
        (load qcd-fermion () x-v ([reg F-i]))
        (op pointer-add () (F-i) ([reg F-i] [const (size-of Fermion)]))
