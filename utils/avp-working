@@ -1,0 +1,6 @@
+./configure \
+   --prefix=/Users/avp/Sandbox/USQCD/clover/install-x \
+   --target=cee-32 \
+   --with-qdp=/Users/avp/Local/packages/qdp-1.8.1.memleak \
+   --with-qmp=/Users/avp/Local/packages/qmp-2.3.1 \
+   --with-gsl=/Users/avp/Local/packages/gsl-1.13-qr-complex

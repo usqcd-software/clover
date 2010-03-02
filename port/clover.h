@@ -540,6 +540,10 @@ unsigned int qx(f_add2)(struct Fermion *r,
                         int size,
                         double s,
                         const struct Fermion *b);
+unsigned int qx(f_cadd2)(struct Fermion *r,
+                         int size,
+                         double zr, double zi,
+                         const struct Fermion *b);
 unsigned int qx(f_add2_norm)(struct Fermion *r,
                              double *local_norm,
                              int size,
@@ -561,6 +565,9 @@ unsigned int qx(f_diff_norm)(double *s,
                              const struct Fermion *b);
 
 /* algebra for arrays of fermions */
+
+void qx(fv_zero)(struct Fermion *dst, 
+                 int size, int len);
 
 /* fv[fv_begin + (0 .. len-1)] = gv[gv_begin + (0 .. len-1)]
 */

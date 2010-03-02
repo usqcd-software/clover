@@ -1,5 +1,7 @@
 #include <clover.h>
 
+#define XXX_DEBUG
+
 #if QOP_CLOVER_DEFAULT_PRECISION == 'F'
 #define DF_PREAMBLE(psi_e, rho_e, r, chi_e) do {             \
         if (q(df_preamble)(state, deflator, psi_e, rho_e, r, chi_e,     \
@@ -77,6 +79,23 @@ qx(cg_solver)(struct Fermion            *psi_e,
     ws.received = received;
 
     DF_PREAMBLE(psi_e, rho_e, &r, (struct Fermion *) chi_e);
+#ifdef XXX_DEBUG
+    {
+        double r_chi, r_rho, r_psi;
+
+        qx(f_norm)(&r_chi, e_size, chi_e);
+        qx(f_norm)(&r_rho, e_size, rho_e);
+        qx(f_norm)(&r_psi, e_size, psi_e);
+
+        QMP_sum_double(&r_chi);
+        QMP_sum_double(&r_rho);
+        QMP_sum_double(&r_psi);
+
+        printf("\nCG entry: chi %15.7e  rho %15.7e  psi %15.7e\n",
+               r_chi, r_rho, r_psi);
+        printf("  preamble r2 %15.7e\n", r);
+    }
+#endif
     qx(f_copy)(pi_e, e_size, rho_e);
     if (r < epsilon) {
         i = 0;
@@ -94,6 +113,9 @@ qx(cg_solver)(struct Fermion            *psi_e,
             *out_epsilon = r;
             q(set_error)(state, 0, "cg_solver() hit zero mode");
             DF_POSTAMBLE();
+#ifdef XXX_DEBUG
+            printf("Zmode exit\n");
+#endif      
             return CG_ZEROMODE;
         }
         a = r / norm_omega;
@@ -110,12 +132,27 @@ qx(cg_solver)(struct Fermion            *psi_e,
         df_status = DF_UPDATE0(a, b, a0, b0, g, rho_e);
         if (-1 == df_status) {
             qx(cg_operator)(zeta_e, rho_e, &ws);
+#ifdef XXX_DEBUG
+            {
+                double zr[2];
+                double zp[2];
+                qx(f_dot)(&zr[0], &zr[1], e_size, zeta_e, rho_e);
+                QMP_sum_double_array(zr, 2);
+                qx(f_dot)(&zp[0], &zp[1], e_size, zeta_e, pi_e);
+                QMP_sum_double_array(zp, 2);
+                printf("cg %5d: update1  %15.7e %15.7e  %15.7e %15.7e\n",
+                       i, zr[0], zr[1], zp[0], zp[1]);
+            }
+#endif
             df_status = DF_UPDATE1(a, b, a0, b0, g, rho_e, zeta_e);
         } 
         if (3 == df_status) {
             *out_iter = i;
             *out_epsilon = r;
             DF_POSTAMBLE();
+#ifdef XXX_DEBUG
+            printf("EC exit\n");
+#endif
             return CG_EIGCONV;
         }
 
@@ -132,7 +169,14 @@ end:
     *out_iter = i;
     *out_epsilon = r;
     DF_POSTAMBLE();
-    if (i == max_iter)
+    if (i == max_iter) {
+#ifdef XXX_DEBUG
+        printf("EC exit\n");
+#endif
         return CG_MAXITER;
+    }
+#ifdef XXX_DEBUG
+    printf("OK exit\n");
+#endif
     return CG_SUCCESS;
 }

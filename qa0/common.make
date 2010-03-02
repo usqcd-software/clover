@@ -39,6 +39,7 @@ x.sources = f-norm \
             f-zero \
             f-add3 \
             f-rmul \
+            f-cadd2 \
             f-dot \
             get-fermion \
             put-fermion \

@@ -5,17 +5,9 @@ library = qop-clover
 CDEBUG = -g
 # PREC = D
 
-QMP_CFLAGS  = $(shell $(QMP_TOP:%=%/bin/qmp-config) --cflags)
-QMP_LDFLAGS = $(shell $(QMP_TOP:%=%/bin/qmp-config) --ldflags)
-QMP_LIBS    = $(shell $(QMP_TOP:%=%/bin/qmp-config) --libs)
-
-QDP_CFLAGS  = $(shell $(QDP_TOP:%=%/bin/qdp-config) --cflags)
-QDP_LDFLAGS = $(shell $(QDP_TOP:%=%/bin/qdp-config) --ldflags)
-QDP_LIBS    = $(shell $(QDP_TOP:%=%/bin/qdp-config) --libs)
-
-TCFLAGS  = $(CFLAGS) $(QMP_CFLAGS) $(QDP_CFLAGS)
-TLDFLAGS = $(LDFLAGS) $(QMP_LDFLAGS) $(QDP_LDFLAGS)
-TCLIBS   = $(QDP_LIBS) $(QMP_LIBS) $(CLIBS)
+TCFLAGS  = $(CFLAGS) -I../port -g
+TLDFLAGS = $(LDFLAGS)
+TCLIBS   = $(LIBS)
 
 include $(TOP)/config/$(CONFIG)
 
@@ -33,7 +25,13 @@ programs = get-gauge \
            check-gamma \
            check-clover \
            check-dxd \
-           check-cg
+           check-cg \
+           check-vfsize \
+           check-vgp \
+           check-vf-dot-f \
+           check-vf-dot-vf \
+           check-vf-dot-zv \
+           check-vf-dot-zm
 
 programs.f = $(programs:%=%F)
 programs.d = $(programs:%=%D)
@@ -42,9 +40,11 @@ programs.all = $(programs.f) $(programs.d) check_mcg
 
 utils = gauge.c \
         fermion.c \
-        clover.c
+        clover.c \
+        vfermion.c
 
 headers = clover-test.h \
+          vfermion-test.h \
           $(TOP)/$(LIMPDIR)/qop-clover.h
 
 sources = $(programs:%=%.c) $(utils)
@@ -66,7 +66,7 @@ realclean: clean
 dist: realclean
 
 thelib:
-	$(MAKE) -C $(TOP)/$(LIMPDIR)
+	$(MAKE) -C $(TOP)
 
 ###############################################################################
 

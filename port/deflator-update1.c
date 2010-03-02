@@ -15,7 +15,7 @@
 #  error "no linear algebra library"
 #endif
 
-#if 0
+#if 1
 #include <stdio.h>
 #define PRINT_EVALS 10
 static void
@@ -163,8 +163,8 @@ q(df_update1)(
     CHECK_GSL_STATUS(gsl_sort_smallest_index(d->hevals_select1, d->nev, 
             gsl_vector_const_ptr(d->gsl_hevals1, 0), 1, vmax));
 
-//    /**/for (i = 0; i < PRINT_EVALS; i++) d->hevals[i] = gsl_vector_get(d->gsl_hevals1, d->hevals_select1[i]);
-//    /**/print_dvec(stdout, "T0", PRINT_EVALS, d->hevals);
+    /**/for (i = 0; i < PRINT_EVALS; i++) d->hevals[i] = gsl_vector_get(d->gsl_hevals1, d->hevals_select1[i]);
+    /**/print_dvec(stdout, "T0", PRINT_EVALS, d->hevals);
 
     /* eigenpairs of T[:-1, :-1] */
     gsl_matrix_complex_view gsl_T_m1 = gsl_matrix_complex_submatrix(
