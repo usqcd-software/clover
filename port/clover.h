@@ -566,8 +566,8 @@ unsigned int qx(f_diff_norm)(double *s,
 
 /* algebra for arrays of fermions */
 
-void qx(fv_zero)(struct Fermion *dst, 
-                 int size, int len);
+unsigned int qx(fv_zero)(struct vFermion *dst, 
+                         int size, int len);
 
 /* fv[fv_begin + (0 .. len-1)] = gv[gv_begin + (0 .. len-1)]
 */
