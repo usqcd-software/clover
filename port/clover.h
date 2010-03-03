@@ -133,6 +133,8 @@ typedef enum {
 #else
 #  error "no linear algebra library"
 #endif
+
+#define DEFLATOR_VEC_SIZE(pstate) ((pstate)->even.full_size)
 struct Q(Deflator) {
     struct Q(State) *state;
 
@@ -274,19 +276,22 @@ int q(mixed_cg)(struct Q(State)             *state,
                 unsigned int                 options);
 
 /* handling eig deflator */
-int q(df_create)(
+int Q(deflator_create)(
         struct Q(Deflator) **deflator_ptr,
         struct Q(State) *s,
         int dim, int vmax, int nev,
         double eps, int umax);
+void Q(deflator_free)(struct Q(Deflator) **deflator_ptr);
+void Q(deflator_reset)(struct Q(Deflator) *deflator);
+void Q(deflator_stop)(struct Q(Deflator) *deflator);
+void Q(deflator_resume)(struct Q(Deflator) *deflator);
 int q(df_preamble)(struct Q(State)           *state,
                    struct Q(Deflator)        *deflator,
                    struct FermionF           *psi_e,
                    struct FermionF           *rho_e,
                    double                    *rho_norm2,
                    struct FermionF           *chi_e, /* const ! */
-                   struct MxM_workspaceF     *ws,
-                   int                        e_size);
+                   struct MxM_workspaceF     *ws);
 int q(df_update0)(struct Q(State)          *state,
                   struct Q(Deflator)       *deflator,
                   double                    a1,
@@ -307,9 +312,6 @@ int q(df_update1)(struct Q(State)          *state,
 int q(df_postamble)(struct Q(State)           *state,
                     struct Q(Deflator)        *deflator,
                     struct MxM_workspaceF     *ws);
-void q(df_reset)(struct Q(Deflator) *deflator);
-void q(df_stop)(struct Q(Deflator) *deflator);
-void q(df_resume)(struct Q(Deflator) *deflator);
 
 /* Timing */
 #define BEGIN_TIMING(s) do { gettimeofday(&((s)->t0), NULL); } while (0)

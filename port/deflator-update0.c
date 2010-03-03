@@ -26,7 +26,7 @@ q(df_update0)(
         return -1;      /* should never get here; 
                            otherwise, the preamble has not been called */
 
-#if 1 /* XXX */
+#if 0 /* XXX */
     printf("update0 %d\n", d->vsize);
 #endif
 

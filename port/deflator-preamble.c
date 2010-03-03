@@ -1,6 +1,5 @@
 #define QOP_CLOVER_DEFAULT_PRECISION 'F'
 #include <clover.h>
-#include <qmp.h>
 
 #include <math.h>
 #if defined(HAVE_LAPACK)
@@ -65,69 +64,64 @@ q(df_preamble)(
         struct FermionF           *r,
         double                    *r_norm2,
         struct FermionF           *b,  /* const! */
-        struct MxM_workspace      *ws,
-        int                        e_size)
+        struct MxM_workspaceF     *ws)
 {
     assert(NULL != s &&
             NULL != x &&
             NULL != b);
 
+    const int dim = DEFLATOR_VEC_SIZE(s);
+    latvec_c lv_x = q(latvec_c_view)(dim, x);
+    latvec_c lv_b = q(latvec_c_view)(dim, b);
+    latvec_c lv_r = q(latvec_c_view)(dim, r);
+
+
     if (d == NULL) {
-        qx(f_zero)(x, e_size);
-        qx(f_copy)(r, e_size, b);
-        qx(f_norm)(r_norm2, e_size, r);
-        QMP_sum_double(r_norm2);
+        q(latvec_c_zero)(lv_x);
+        q(latvec_c_copy)(lv_b, lv_r);
+        *r_norm2 = q(lat_c_nrm2)(lv_r);
         return 0;
     }
 
+    assert(dim == d->dim);
     Q(deflator_reset)(d);
 
     if (d->vsize != 0) {
         q(set_error)(s, 0, "df_preamble: deflator in non-initial state");
-        return 1;
+        return -1;
     }
 
-#if 1 /* XXX */
-    printf("preamble\n");
-#endif
-
-
-    latvec_c lv_x   = q(latvec_c_view)(d->dim, x);
-    latvec_c lv_b   = q(latvec_c_view)(d->dim, b);
-
 #define cur_r       (d->work_c_1)
-#define cur_r_aux   (d->work_c_2)
+#define cur_Ax      (d->work_c_2)
     if (d->usize <= 0) {
         q(latvec_c_zero)(lv_x);
-        q(latvec_c_copy)(lv_b, cur_r);
+        q(latvec_c_copy)(lv_b, lv_r);
     } else {
         if (q(df_solve_in_eigenspace)(s, d, x, b))
             return 1;
         /* compute residual */
-        latvec_c_linop(cur_r, lv_x, ws);
+        latvec_c_linop(cur_Ax, lv_x, ws);
         /* FIXME optimize the code below with a special primitive;
-           cur_r <- lv_b - cur_r */
-        q(lat_c_axpy_d)(-1., lv_b, cur_r);
-        q(lat_c_scal_d)(-1., cur_r);   
+           lv_r <- lv_b - cur_Ax */
+        q(latvec_c_copy)(lv_b, lv_r);
+        q(lat_c_axpy_d)(-1., cur_Ax, lv_r);
     }
-    if (d->frozen)
+
+    *r_norm2 = q(lat_c_nrm2)(lv_r);
+    if (d->frozen || *r_norm2 <= 0.)
         return 0;
 
-    qx(f_copy)(r, e_size, cur_r.f);
-    qx(f_norm)(r_norm2, e_size, r);
-    QMP_sum_double(r_norm2);
-    q(lat_c_scal_d)(1. / sqrt(*r_norm2), cur_r);
-    
     /* save normalized residual as the first vector */
+    q(latvec_c_copy)(lv_r, cur_r);
+    q(lat_c_scal_d)(1. / sqrt(*r_norm2), cur_r);
     q(latmat_c_insert_col)(d->V, 0, cur_r);
     
     /* init eigenvalue search: vsize, T, V */
-    d->vsize = 0;
     memset(d->T, 0, d->vmax * d->vmax * sizeof(d->T[0]));
+    d->vsize = 1;
 
     /* init stopping threshold */
     d->resid_norm_sq_min = d->eps * d->eps * (*r_norm2);
-    d->vsize = 1;
     
     return 0;
 }

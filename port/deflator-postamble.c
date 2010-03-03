@@ -25,28 +25,21 @@ q(df_postamble)(
             d->vsize < d->nev)
         return 0;
 
-#if 1 /* XXX */
-    printf("postamble\n");
-#endif
-
-
-
-#define eps_reortho 1e-7
-#define n_reortho   2
+#define eps_reortho 2e-8
+#define n_reortho   3
     double v_norm2_min = eps_reortho * eps_reortho;
     int unew = 0,
         i_v = 0;
     long int usize_old = d->usize;
     while ((d->usize < d->umax) && (i_v < d->nev)) {
-        /* reorthogonalize n_reortho times */
 /* macros to reuse workspace */
 #define cur_v       (d->work_c_1)
 #define cur_Av      (d->work_c_2)
-#define cur_aux     (d->work_c_3)
         q(latmat_c_get_col)(d->V, i_v, cur_v);
         
         if (0 < d->usize) {
             int i_reortho;
+            /* reorthogonalize n_reortho times */
             for (i_reortho = n_reortho; i_reortho--; ) {
                 latmat_c cur_U = q(latmat_c_submat_col)(d->U, 0, d->usize);
                 q(lat_lmH_dot_lv)(d->usize, 
@@ -91,7 +84,7 @@ q(df_postamble)(
 
     /* compute Cholesky decomposition */
     memcpy(d->C, d->H, d->usize * d->umax * sizeof(d->C[0]));
-#if 1 /* XXX */
+#if 0 /* XXX */
     {
         int i, j;
         printf("\n============= H & C usize %d umax %d\n", d->usize, d->umax);
