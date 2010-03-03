@@ -26,6 +26,10 @@ q(df_update0)(
         return -1;      /* should never get here; 
                            otherwise, the preamble has not been called */
 
+#if 1 /* XXX */
+    printf("update0 %d\n", d->vsize);
+#endif
+
     /* check eig convergence */
     if (resid_norm_sq < d->resid_norm_sq_min)
         return 3;   /* eig converged */

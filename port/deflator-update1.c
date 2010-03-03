@@ -56,16 +56,33 @@ q(df_update1)(
     assert(d->vmax == d->vsize && 
             1 < d->vsize);
 
+#if 1 /* XXX */
+    printf("update1\n");
+#endif
+
     /* [vsize-1, vsize-1] elem */
     doublecomplex *pT = d->T + (d->vsize - 1 ) * (1 + d->vmax);
     pT->r = 1. / alpha + beta_prev / alpha_prev;
     pT->i = 0.0;
 
-
     /* do restart */
     d->vsize = 2 * d->nev;
     long int vmax = d->vmax;
     long int vsize = d->vsize;
+#if 0 /* XXX */
+    {
+        int i, j;
+        printf("\n------------ T in\n");
+        for (i = 0; i < vmax; i++) {
+            for (j = 0; j < vmax; j++) {
+                double a =  d->T[i + vmax * j].r;
+                double b =  d->T[i + vmax * j].i;
+                if ((a != 0) || (b != 0))
+                    printf("T[%3d %3d] = %15.7e %15.7e\n", i, j, a, b);
+            }
+        }
+    }
+#endif
 #if defined(HAVE_LAPACK)
     char cV = 'V',
          cU = 'U',
@@ -269,7 +286,20 @@ q(df_update1)(
         d->T[vsize + i * vmax].r    =  d->T[i + vsize * vmax].r;
         d->T[vsize + i * vmax].i    = -d->T[i + vsize * vmax].i;
     }
-
+#if 0 /* XXX */
+    {
+        int i, j;
+        printf("\n------------ T out\n");
+        for (i = 0; i < vmax; i++) {
+            for (j = 0; j < vmax; j++) {
+                double a =  d->T[i + vmax * j].r;
+                double b =  d->T[i + vmax * j].i;
+                if ((a != 0) || (b != 0))
+                    printf("T[%3d %3d] = %15.7e %15.7e\n", i, j, a, b);
+            }
+        }
+    }
+#endif
 
     /* remember the vector ||resid|| */
 #define cur_r   (d->work_c_1)

@@ -25,6 +25,12 @@ q(df_postamble)(
             d->vsize < d->nev)
         return 0;
 
+#if 1 /* XXX */
+    printf("postamble\n");
+#endif
+
+
+
 #define eps_reortho 1e-7
 #define n_reortho   2
     double v_norm2_min = eps_reortho * eps_reortho;
@@ -85,6 +91,28 @@ q(df_postamble)(
 
     /* compute Cholesky decomposition */
     memcpy(d->C, d->H, d->usize * d->umax * sizeof(d->C[0]));
+#if 1 /* XXX */
+    {
+        int i, j;
+        printf("\n============= H & C usize %d umax %d\n", d->usize, d->umax);
+        for (i = 0; i < d->umax; i++) {
+            for (j = 0; j < d->umax; j++) {
+                double a = d->H[i + d->umax * j].r;
+                double b = d->H[i + d->umax * j].i;
+                if ((a != 0) || (b != 0)) {
+                    printf("HC[%2d, %2d] = %15.7e %15.7e  %15.7e %15.7e\n",
+                           i, j,
+                           a,
+                           b,
+                           d->C[i + d->umax * j].r,
+                           d->C[i + d->umax * j].i);
+                }
+            }
+        }
+        printf("==========\n");
+        fflush(stdout);
+    }
+#endif
 
 #if HAVE_LAPACK
     long int usize  = d->usize,

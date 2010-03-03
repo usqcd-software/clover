@@ -72,7 +72,7 @@ q(df_preamble)(
             NULL != x &&
             NULL != b);
 
-    if (d == NULL || d->frozen) {
+    if (d == NULL) {
         qx(f_zero)(x, e_size);
         qx(f_copy)(r, e_size, b);
         qx(f_norm)(r_norm2, e_size, r);
@@ -86,6 +86,10 @@ q(df_preamble)(
         q(set_error)(s, 0, "df_preamble: deflator in non-initial state");
         return 1;
     }
+
+#if 1 /* XXX */
+    printf("preamble\n");
+#endif
 
 
     latvec_c lv_x   = q(latvec_c_view)(d->dim, x);
@@ -106,6 +110,9 @@ q(df_preamble)(
         q(lat_c_axpy_d)(-1., lv_b, cur_r);
         q(lat_c_scal_d)(-1., cur_r);   
     }
+    if (d->frozen)
+        return 0;
+
     qx(f_copy)(r, e_size, cur_r.f);
     qx(f_norm)(r_norm2, e_size, r);
     QMP_sum_double(r_norm2);
