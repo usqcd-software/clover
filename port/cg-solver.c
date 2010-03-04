@@ -3,24 +3,24 @@
 #define XXX_DEBUG
 
 #if QOP_CLOVER_DEFAULT_PRECISION == 'F'
-#define DF_PREAMBLE(psi_e, rho_e, r, chi_e) do {             \
+#define DF_PREAMBLE(psi_e, rho_e, r, chi_e) do {                        \
         if (q(df_preamble)(state, deflator, psi_e, rho_e, r, chi_e,     \
-                           &ws, e_size)) {                              \
+                           &ws)) {                                      \
             q(set_error)(state, 0, "cg_solver() not enough memory");    \
             return CG_NOEMEM;                                           \
         } } while (0)
-#define DF_UPDATE0(a1,b1,a0,b0,r,rho)           \
+#define DF_UPDATE0(a1,b1,a0,b0,r,rho)                           \
     q(df_update0)(state, deflator, a1, b1, a0, b0, r, rho)
-#define DF_UPDATE1(a1,b1,a0,b0,r,rho,A_rho) \
+#define DF_UPDATE1(a1,b1,a0,b0,r,rho,A_rho)                             \
     q(df_update1)(state, deflator, a1, b1, a0, b0, r, rho, A_rho)
 #define DF_POSTAMBLE() \
     do { q(df_postamble)(state, deflator, &ws); } while (0)
 #else
 #define DF_PREAMBLE(psi_e, rho_e, r, chi_e) do {        \
-        qx(f_zero)(psi_e, e_size);\
-        qx(f_copy)(rho_e, e_size, chi_e);       \
-        qx(f_norm)(r, e_size, rho_e);           \
-        QMP_sum_double(r);                \
+        qx(f_zero)(psi_e, e_size);                      \
+        qx(f_copy)(rho_e, e_size, chi_e);               \
+        qx(f_norm)(r, e_size, rho_e);                   \
+        QMP_sum_double(r);                              \
     } while (0)
 #define DF_UPDATE0(a1,b1,a0,b0,r,rho)  0
 #define DF_UPDATE1(a1,b1,a0,b0,r,rho,A_rho)  0

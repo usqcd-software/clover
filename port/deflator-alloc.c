@@ -1,7 +1,7 @@
 #include <clover.h>
 
 int
-Q(deflator_create)(struct Q(Deflator) **deflator_ptr,
+Q(create_deflator)(struct Q(Deflator) **deflator_ptr,
                    struct Q(State) *s,
                    int vmax, int nev, 
                    double eps, int umax)
@@ -184,7 +184,7 @@ Q(deflator_create)(struct Q(Deflator) **deflator_ptr,
             latvec_c_is_null(&(d->work_c_2))    ||
             latvec_c_is_null(&(d->work_c_3))
     ) {
-        Q(deflator_free)(&d);
+        Q(free_deflator)(&d);
         return q(set_error)(s, 0, "allocate_deflator(): not enough memory");
     }
 

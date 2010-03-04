@@ -97,6 +97,8 @@ q(mixed_cg)(struct Q(State)             *state,
     double scaled_eps;
     int iter_left;
     char *cg_error = 0;
+    int df_stopped = Q(deflator_is_stopped)(deflator);
+
 #define CG_ERROR(msg) do { cg_error = msg; goto end; } while (0)
 #define CG_ERROR_T(msg) do { \
         END_TIMING(state, flops, sent, received); \
@@ -191,6 +193,7 @@ q(mixed_cg)(struct Q(State)             *state,
                                   &flops, &sent, &received,
                                   rho_Fe, pi_Fe, zeta_Fe, t0_Fe,
                                   t1_Fe, t0_Fo, t1_Fo);
+        Q(deflator_stop)(deflator);
 
         if (q(setup_comm)(state, sizeof (double))) {
             CG_ERROR_T("DDW_CG(): communication setup failed");
@@ -213,7 +216,8 @@ q(mixed_cg)(struct Q(State)             *state,
         if (*out_epsilon < min_epsilon)
             break;
     }
-
+    if ((df_stopped == 0) && deflator != 0)
+        Q(deflator_resume)(deflator);
     /* inflate */
     qd(cg_inflate)(psi->odd,
                    state, gauge, eta->odd, psi->even,

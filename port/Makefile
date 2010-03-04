@@ -41,6 +41,7 @@ x.sources = version.c \
             deflator-postamble.c \
             deflator-update0.c \
             deflator-update1.c \
+            deflator-is-stopped.c \
             deflator-la.c \
             cg-mixed.c \
             solver-dirac-mixed.c \

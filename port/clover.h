@@ -279,12 +279,13 @@ int q(mixed_cg)(struct Q(State)             *state,
 int Q(deflator_create)(
         struct Q(Deflator) **deflator_ptr,
         struct Q(State) *s,
-        int dim, int vmax, int nev,
+        int vmax, int nev,
         double eps, int umax);
 void Q(deflator_free)(struct Q(Deflator) **deflator_ptr);
 void Q(deflator_reset)(struct Q(Deflator) *deflator);
 void Q(deflator_stop)(struct Q(Deflator) *deflator);
 void Q(deflator_resume)(struct Q(Deflator) *deflator);
+int Q(deflator_is_stopped)(struct Q(Deflator) *deflator);
 int q(df_preamble)(struct Q(State)           *state,
                    struct Q(Deflator)        *deflator,
                    struct FermionF           *psi_e,
