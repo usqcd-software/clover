@@ -352,6 +352,9 @@ q(lat_lmH_dot_lm)(int m, int n,
                    (double *)c, ldc,
                    a.fv, a.size, a.begin, a.len,
                    b.fv, b.size, b.begin, b.len);
+    int i;
+    for (i = 0; i < n ; i++)
+        QMP_sum_double_array((double *)c, m);
 
 }
 /* y <- A^\dag x, A:lat*m, x:lat, y:m */
@@ -370,6 +373,7 @@ q(lat_lmH_dot_lv)(int m,
                   (double *)y, 
                   a.fv, a.size, a.begin, a.len,
                   x.f);
+    QMP_sum_double_array((double *)y, m);
 }
 /* C <- A * B, A:lat*k, B:k*n, C:lat*n */
 void 

@@ -59,6 +59,16 @@ q(df_update1)(
 #if 1 /* XXX */
     printf("update1\n");
 #endif
+#if 0
+    q(lat_lmH_dot_lm)(d->vmax, d->vmax, d->V, d->V, d->C, d->umax);
+    for (i = 0; i < d->vsize ; i++) {
+        printf("[%2d,*]\t\t\t", i);
+        for (j = 0; j <= i ; j++)
+            printf("%12e+I*%12e\t", 
+                    d->C[i + j * d->umax].r, d->C[i + j * d->umax].i);
+        printf("\n");
+    }
+#endif
 
     /* [vsize-1, vsize-1] elem */
     doublecomplex *pT = d->T + (d->vsize - 1 ) * (1 + d->vmax);

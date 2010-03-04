@@ -276,12 +276,12 @@ int q(mixed_cg)(struct Q(State)             *state,
                 unsigned int                 options);
 
 /* handling eig deflator */
-int Q(deflator_create)(
+int Q(create_deflator)(
         struct Q(Deflator) **deflator_ptr,
         struct Q(State) *s,
         int vmax, int nev,
         double eps, int umax);
-void Q(deflator_free)(struct Q(Deflator) **deflator_ptr);
+void Q(free_deflator)(struct Q(Deflator) **deflator_ptr);
 void Q(deflator_reset)(struct Q(Deflator) *deflator);
 void Q(deflator_stop)(struct Q(Deflator) *deflator);
 void Q(deflator_resume)(struct Q(Deflator) *deflator);
