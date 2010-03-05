@@ -112,6 +112,12 @@ Q(create_deflator)(struct Q(Deflator) **deflator_ptr,
     d->hevecs1          = q(malloc)(s, vmax * vmax * zs);
     d->tau              = q(malloc)(s, vmax * zs);
     d->rwork            = q(malloc)(s, 3 * vmax * ds);
+    
+    /**/d->debug_hevals     = q(malloc)(s, umax * ds);
+    /**/d->debug_lwork      = 2*umax;
+    /**/d->debug_zwork      = q(malloc)(s, d->debug_lwork * zs);
+    /**/d->debug_rwork      = q(malloc)(s, 3 * umax * ds);
+
 #elif defined(HAVE_GSL)
     d->zwork2           = q(malloc)(s, umax * zs);
     d->gsl_T_full       = gsl_matrix_complex_alloc(vmax, vmax);
@@ -131,6 +137,10 @@ Q(create_deflator)(struct Q(Deflator) **deflator_ptr,
     d->gsl_tau          = gsl_vector_complex_alloc(2*nev);
     d->hevals_select1   = q(malloc)(s, vmax * sizeof(d->hevals_select1[0]));
     d->hevals_select2   = q(malloc)(s, vmax * sizeof(d->hevals_select2[0]));
+    
+    /**/d->debug_gsl_wkspace = gsl_eigen_herm_alloc(umax);
+    /**/d->debug_gsl_hevals = gsl_vector_alloc(umax);
+
 #else
 #  error "no linear algebra library"
 #endif
@@ -139,6 +149,7 @@ Q(create_deflator)(struct Q(Deflator) **deflator_ptr,
     d->work_c_1         = q(latvec_c_alloc)(s, dim);
     d->work_c_2         = q(latvec_c_alloc)(s, dim);
     d->work_c_3         = q(latvec_c_alloc)(s, dim);
+
 
     /* check allocation */
     if (

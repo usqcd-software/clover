@@ -4,12 +4,13 @@
 #include <assert.h>
 #define NOT_IMPLEMENTED     assert(NULL == "implement me first!")
 
-
 #if defined(HAVE_LAPACK)
 #  include <f2c_types.h>
 #  include <lapack.h>
 #elif defined(HAVE_GSL)
-#  define CHECK_GSL_STATUS(func) do { int status__ = func; assert(0 == status__); } while(0)
+#  define CHECK_GSL_STATUS(func) do { int status__ = func; \
+    if (status__) fprintf(stderr,"%s:%d: %s\n", __FILE__, __LINE__, gsl_strerror(status__)); \
+    assert(0 == status__); } while(0)
 #  include <gsl/gsl_vector.h>
 #  include <gsl/gsl_matrix.h>
     typedef struct {

@@ -91,9 +91,9 @@ qx(cg_solver)(struct Fermion            *psi_e,
         QMP_sum_double(&r_rho);
         QMP_sum_double(&r_psi);
 
-        printf("\nCG entry: chi %15.7e  rho %15.7e  psi %15.7e\n",
+        LOG_PRINT("\nCG entry: chi %15.7e  rho %15.7e  psi %15.7e\n",
                r_chi, r_rho, r_psi);
-        printf("  preamble r2 %15.7e\n", r);
+        LOG_PRINT("  preamble r2 %15.7e\n", r);
     }
 #endif
     qx(f_copy)(pi_e, e_size, rho_e);
@@ -114,7 +114,7 @@ qx(cg_solver)(struct Fermion            *psi_e,
             q(set_error)(state, 0, "cg_solver() hit zero mode");
             DF_POSTAMBLE();
 #ifdef XXX_DEBUG
-            printf("Zmode exit\n");
+            LOG_PRINT("Zmode exit\n");
 #endif      
             return CG_ZEROMODE;
         }
@@ -140,7 +140,7 @@ qx(cg_solver)(struct Fermion            *psi_e,
                 QMP_sum_double_array(zr, 2);
                 qx(f_dot)(&zp[0], &zp[1], e_size, zeta_e, pi_e);
                 QMP_sum_double_array(zp, 2);
-                printf("cg %5d: update1  %15.7e %15.7e  %15.7e %15.7e\n",
+                LOG_PRINT("cg %5d: update1  %15.7e %15.7e  %15.7e %15.7e\n",
                        i, zr[0], zr[1], zp[0], zp[1]);
             }
 #endif
@@ -151,7 +151,7 @@ qx(cg_solver)(struct Fermion            *psi_e,
             *out_epsilon = r;
             DF_POSTAMBLE();
 #ifdef XXX_DEBUG
-            printf("EC exit\n");
+            LOG_PRINT("EC exit\n");
 #endif
             return CG_EIGCONV;
         }
@@ -171,12 +171,12 @@ end:
     DF_POSTAMBLE();
     if (i == max_iter) {
 #ifdef XXX_DEBUG
-        printf("EC exit\n");
+        LOG_PRINT("EC exit\n");
 #endif
         return CG_MAXITER;
     }
 #ifdef XXX_DEBUG
-    printf("OK exit\n");
+    LOG_PRINT("OK exit\n");
 #endif
     return CG_SUCCESS;
 }

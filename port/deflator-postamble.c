@@ -1,11 +1,15 @@
 #define QOP_CLOVER_DEFAULT_PRECISION 'F'
 #include <clover.h>
 #include <math.h>
+#include <stdio.h>
+#include <qmp.h>
 
 #if defined(HAVE_LAPACK)
 #  include <lapack.h>
 #elif defined(HAVE_GSL)
 #  include <gsl/gsl_linalg.h>
+#  include <gsl/gsl_sort_double.h>
+#  include <gsl/gsl_sort_vector_double.h>
 #else
 #  error "no linear algebra library"
 #endif
@@ -60,7 +64,8 @@ q(df_postamble)(
             i_v++;
             continue;
         }
-        q(lat_c_scal_d)(1 / sqrt(v_norm2), cur_v);
+
+        q(lat_c_scal_d)(1. / sqrt(v_norm2), cur_v);
         q(latmat_c_insert_col)(d->U, d->usize, cur_v);
 
         /*  XXX requires(?) double precision operator */
@@ -81,6 +86,46 @@ q(df_postamble)(
         i_v ++;
     }
     assert(usize_old + unew == d->usize);
+
+
+#if 1
+    memcpy(d->C, d->H, d->usize * d->umax * sizeof(d->C[0]));
+#if HAVE_LAPACK
+    {
+        long int usize  = d->usize,
+                 umax   = d->umax,
+                 info   = 0;
+        char cU = 'U',
+             cN = 'N';
+        zheev_(&cN, &cU, &usize, d->C, &umax, d->debug_hevals, 
+               d->debug_zwork, &(d->debug_lwork), d->debug_rwork, &info, 1, 1);
+        assert(0 == info);
+        LOG_PRINT("U:\t");
+        for (i = 0; i < usize; i++)
+            LOG_PRINT("%e\t", d->debug_hevals[i]);
+        LOG_PRINT("\n");
+        
+    }
+#elif HAVE_GSL
+    {
+        long int usize  = d->usize;
+        gsl_vector_view gsl_hevals = gsl_vector_subvector(
+                d->debug_gsl_hevals, 0, d->usize);
+        gsl_matrix_complex_view gsl_C = gsl_matrix_complex_view_array_with_tda(
+                (double *)d->C, d->usize, d->usize, d->umax);
+        CHECK_GSL_STATUS(gsl_matrix_complex_transpose(&gsl_C.matrix));
+        CHECK_GSL_STATUS(gsl_eigen_herm(
+                &gsl_C.matrix, &gsl_hevals.vector, d->debug_gsl_wkspace));
+        gsl_sort_vector(&gsl_hevals.vector);
+        LOG_PRINT("U:\t");
+        for (i = 0; i < usize; i++)
+            LOG_PRINT("%e\t", gsl_vector_get(&gsl_hevals.vector, i));
+        LOG_PRINT("\n");
+    }
+#else
+#  error "no linear algebra library"
+#endif
+#endif
 
     /* compute Cholesky decomposition */
     memcpy(d->C, d->H, d->usize * d->umax * sizeof(d->C[0]));
@@ -107,6 +152,7 @@ q(df_postamble)(
     }
 #endif
 
+
 #if HAVE_LAPACK
     long int usize  = d->usize,
              umax   = d->umax,
@@ -122,6 +168,15 @@ q(df_postamble)(
 #else
 #  error "no linear algebra library"
 #endif
+     
+    /* XXX broadcast Cholesky matrix from the master node
+       to keep deflation consistent
+       FIXME check how much these matrices are different on other nodes */
+    /* FIXME the matrix is broadcasted in a single bucket umax*uzise of 
+       doublecomplex; (umax-usize)*usize is garbage; is it more efficient to have 
+       usize broadcasts? */
+    for (i = 0 ; i < d->usize; i++)
+        QMP_broadcast((void *)(d->C + i * d->umax), d->usize * sizeof(d->C[0]));
 
     return unew;
 }

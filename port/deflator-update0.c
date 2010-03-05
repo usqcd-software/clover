@@ -26,9 +26,7 @@ q(df_update0)(
         return -1;      /* should never get here; 
                            otherwise, the preamble has not been called */
 
-#if 0 /* XXX */
-    printf("update0 %d\n", d->vsize);
-#endif
+//    LOG_PRINT("update0 %d\n", d->vsize);
 
     /* check eig convergence */
     if (resid_norm_sq < d->resid_norm_sq_min)

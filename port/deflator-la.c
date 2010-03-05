@@ -348,14 +348,25 @@ q(lat_lmH_dot_lm)(int m, int n,
     assert(!latmat_c_is_null(&a) &&
             !latmat_c_is_null(&b));
     
-    qx(fvH_dot_fv)(a.dim,
+    int j;
+    if (m == ldc) {
+        memset(c, 0, m * n * sizeof(c[0]));
+    } else {
+        for (j = 0; j < n; j++)
+            memset(c + ldc * j, 0, m * sizeof(c[0]));
+    }
+    
+    qx(do_fvH_dot_fv)(a.dim,
                    (double *)c, ldc,
                    a.fv, a.size, a.begin, a.len,
                    b.fv, b.size, b.begin, b.len);
-    int i;
-    for (i = 0; i < n ; i++)
-        QMP_sum_double_array((double *)(c + i * ldc), 2 * m);
 
+    if (m == ldc) {
+        QMP_sum_double_array((double *)c, 2 * m * n);
+    } else {
+        for (j = 0; j < n; j++)
+            QMP_sum_double_array((double *)(c + ldc * j), 2 * m);
+    }
 }
 /* y <- A^\dag x, A:lat*m, x:lat, y:m */
 void 
@@ -369,7 +380,8 @@ q(lat_lmH_dot_lv)(int m,
     assert(!latmat_c_is_null(&a) &&
             !latvec_c_is_null(&x));
 
-    qx(fvH_dot_f)(a.dim,
+    memset(y, 0, m * sizeof (y[0]));
+    qx(do_fvH_dot_f)(a.dim,
                   (double *)y, 
                   a.fv, a.size, a.begin, a.len,
                   x.f);

@@ -33,6 +33,11 @@ Q(free_deflator)(struct Q(Deflator) **deflator_ptr)
     if (NULL != d->hevecs1)         q(free)(s, d->hevecs1, vmax * vmax * zs);
     if (NULL != d->tau)             q(free)(s, d->tau, vmax * zs);
     if (NULL != d->rwork)           q(free)(s, d->rwork, 3 * vmax * ds);
+    
+    /**/if (NULL != d->debug_hevals)q(free)(s, d->debug_hevals, umax * ds);
+    /**/if (NULL != d->debug_zwork) q(free)(s, d->debug_zwork, d->debug_lwork * zs);
+    /**/if (NULL != d->debug_rwork) q(free)(s, d->debug_rwork, 3 * umax * ds);
+
 #elif defined(HAVE_GSL)
     if (NULL != d->zwork2)          q(free)(s, d->zwork2, umax * zs);
     if (NULL != d->gsl_T_full)      gsl_matrix_complex_free(d->gsl_T_full);
@@ -52,6 +57,9 @@ Q(free_deflator)(struct Q(Deflator) **deflator_ptr)
     if (NULL != d->gsl_tau)         gsl_vector_complex_free(d->gsl_tau);
     if (NULL != d->hevals_select1)  q(free)(s, d->hevals_select1, vmax * sizeof(d->hevals_select1[0]));
     if (NULL != d->hevals_select2)  q(free)(s, d->hevals_select2, vmax * sizeof(d->hevals_select2[0]));
+    
+    /**/if (NULL != d->debug_gsl_hevals)    gsl_vector_free(d->debug_gsl_hevals);
+    /**/if (NULL != d->debug_gsl_wkspace)   gsl_eigen_herm_free(d->debug_gsl_wkspace);
 #else
 #  error "no linear algebra library"
 #endif

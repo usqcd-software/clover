@@ -1,5 +1,6 @@
 #include <clover.h>
 #include <math.h>
+#include <qmp.h>
 
 #if defined(HAVE_LAPACK)
 #  include <blas.h>
@@ -20,13 +21,14 @@
 #define PRINT_EVALS 10
 static void
 print_dvec(FILE *fo, const char *title,
-        int size, double *dvec)
+           double *dvec, int size, int stride)
 {
-    fprintf(stdout, "%s: ", title);
+    LOG_PRINT("%s:\t", title);
     int i;
-    for (i = 0; i < size; i++)
-        fprintf(stdout, "%13.6e\t", dvec[i]);
-    fprintf(stdout, "\n");
+    double *p = dvec;
+    for (i = 0; i < size; i++, p += stride)
+        LOG_PRINT("%13.6e\t", *p);
+    LOG_PRINT("\n");
 }
 #endif
 
@@ -56,19 +58,7 @@ q(df_update1)(
     assert(d->vmax == d->vsize && 
             1 < d->vsize);
 
-#if 1 /* XXX */
-    printf("update1\n");
-#endif
-#if 0
-    q(lat_lmH_dot_lm)(d->vmax, d->vmax, d->V, d->V, d->C, d->umax);
-    for (i = 0; i < d->vsize ; i++) {
-        printf("[%2d,*]\t\t\t", i);
-        for (j = 0; j <= i ; j++)
-            printf("%12e+I*%12e\t", 
-                    d->C[i + j * d->umax].r, d->C[i + j * d->umax].i);
-        printf("\n");
-    }
-#endif
+    LOG_PRINT("update1\n");
 
     /* [vsize-1, vsize-1] elem */
     doublecomplex *pT = d->T + (d->vsize - 1 ) * (1 + d->vmax);
@@ -79,20 +69,7 @@ q(df_update1)(
     d->vsize = 2 * d->nev;
     long int vmax = d->vmax;
     long int vsize = d->vsize;
-#if 0 /* XXX */
-    {
-        int i, j;
-        printf("\n------------ T in\n");
-        for (i = 0; i < vmax; i++) {
-            for (j = 0; j < vmax; j++) {
-                double a =  d->T[i + vmax * j].r;
-                double b =  d->T[i + vmax * j].i;
-                if ((a != 0) || (b != 0))
-                    printf("T[%3d %3d] = %15.7e %15.7e\n", i, j, a, b);
-            }
-        }
-    }
-#endif
+
 #if defined(HAVE_LAPACK)
     char cV = 'V',
          cU = 'U',
@@ -111,7 +88,7 @@ q(df_update1)(
            d->hevals, d->zwork, &(d->lwork), 
            d->rwork, &info, 1, 1);
     assert(0 == info);
-//    /**/print_dvec(stdout, "T0", PRINT_EVALS, d->hevals);
+    /**/print_dvec(stdout, "T0", d->hevals, PRINT_EVALS, 1);
 
     /* diagonalize T:(vmax-1)*(vmax-1) matrix
        requires zwork size = lwork >= 2*vmax-1 */
@@ -191,7 +168,7 @@ q(df_update1)(
             gsl_vector_const_ptr(d->gsl_hevals1, 0), 1, vmax));
 
     /**/for (i = 0; i < PRINT_EVALS; i++) d->hevals[i] = gsl_vector_get(d->gsl_hevals1, d->hevals_select1[i]);
-    /**/print_dvec(stdout, "T0", PRINT_EVALS, d->hevals);
+    /**/print_dvec(stdout, "T0", d->hevals, PRINT_EVALS, 1);
 
     /* eigenpairs of T[:-1, :-1] */
     gsl_matrix_complex_view gsl_T_m1 = gsl_matrix_complex_submatrix(
@@ -265,7 +242,13 @@ q(df_update1)(
 #else
 #  error "no linear algebra library"
 #endif
-
+    
+    /* XXX broadcast rotation matrix and eigenvalues from the master node
+       the rotation matrix may differ by reflection: 
+       V -> V\times diag{.. \pm 1 .. } */
+    QMP_broadcast((void *)(d->hevecs2), vsize * vmax * sizeof(d->hevecs2[0]));
+    /* FIXME eigenvalues should be the same, and they are not used later; omit? */
+    QMP_broadcast((void *)(d->hevals), vsize * sizeof(d->hevals[0]));
 
     /* rotate V[:, 0:vmax] space with (Q Z) */
     latmat_c tmp_V = q(latmat_c_submat_col)(d->tmp_V, 0, vsize);
@@ -296,20 +279,6 @@ q(df_update1)(
         d->T[vsize + i * vmax].r    =  d->T[i + vsize * vmax].r;
         d->T[vsize + i * vmax].i    = -d->T[i + vsize * vmax].i;
     }
-#if 0 /* XXX */
-    {
-        int i, j;
-        printf("\n------------ T out\n");
-        for (i = 0; i < vmax; i++) {
-            for (j = 0; j < vmax; j++) {
-                double a =  d->T[i + vmax * j].r;
-                double b =  d->T[i + vmax * j].i;
-                if ((a != 0) || (b != 0))
-                    printf("T[%3d %3d] = %15.7e %15.7e\n", i, j, a, b);
-            }
-        }
-    }
-#endif
 
     /* remember the vector ||resid|| */
 #define cur_r   (d->work_c_1)
@@ -319,6 +288,6 @@ q(df_update1)(
     q(latmat_c_insert_col)(d->V, d->vsize, cur_r);
 
     d->vsize += 1;
-    
+
     return 0; /* normal */
 }

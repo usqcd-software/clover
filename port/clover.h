@@ -122,6 +122,37 @@ typedef enum {
 } CG_STATUS;
 
 
+
+/* debug printing */
+extern int QDP_this_node;
+extern int QDP_is_initialized(void);
+
+#define XXX_DEBUG
+
+#if defined(XXX_DEBUG)
+#  define LOG_PRINT(...)      do { \
+    if (!QDP_is_initialized() || 0 == QDP_this_node) \
+        printf(__VA_ARGS__); \
+} while (0)
+#  define LOG_FPRINT(fp, ...) do { \
+    if (!QDP_is_initialized() || 0 == QDP_this_node) \
+        fprintf(fp, __VA_ARGS__);\
+} while (0)
+#  define LOG_ECHO(fp,...)    do { \
+    printf("%s[%d]: ", __func__, QDP_this_node); \
+    printf(__VA_ARGS__); \
+} while (0)
+#  define LOG_FECHO(fp,...)   do { \
+    fprintf(fp, "%s[%d]: ", __func__, QDP_this_node); \
+    fprintf(fp, __VA_ARGS__); \
+} while (0)
+#else
+#  define LOG_PRINT(...)        do {} while (0)
+#  define LOG_FPRINT(fp, ...)   do {} while (0)
+#  define LOG_ECHO(fp,...)      do {} while (0)
+#  define LOG_FECHO(fp,...)     do {} while (0)
+#endif
+
 /* Deflator state */
 #include <deflator-la.h>
 
@@ -169,6 +200,12 @@ struct Q(Deflator) {
     doublecomplex       *hevecs1;
     doublecomplex       *tau;
     double              *rwork;
+    
+    double              *debug_hevals;
+    long int            debug_lwork;
+    doublecomplex       *debug_zwork;
+    double              *debug_rwork;
+
 #elif defined(HAVE_GSL)
     doublecomplex       *zwork2;
     gsl_matrix_complex  *gsl_T_full;
@@ -188,6 +225,10 @@ struct Q(Deflator) {
     gsl_vector_complex  *gsl_tau;
     size_t              *hevals_select1;
     size_t              *hevals_select2;
+
+    gsl_vector          *debug_gsl_hevals;
+    gsl_eigen_herm_workspace *debug_gsl_wkspace;
+
 #else
 #  error "no linear algebra library"
 #endif
