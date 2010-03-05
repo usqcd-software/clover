@@ -91,9 +91,7 @@ p.sources = fermion-dot.c \
             op-cmb.c \
             op-a.c \
             step-even.c \
-            step-odd.c \
-            fvH_dot_f.c \
-            fvH_dot_fv.c
+            step-odd.c 
 
 x.objects = $(x.sources:%.c=$(LIMPDIR)/%.o)
 
