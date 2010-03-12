@@ -127,32 +127,6 @@ typedef enum {
 extern int QDP_this_node;
 extern int QDP_is_initialized(void);
 
-#define XXX_DEBUG
-
-#if defined(XXX_DEBUG)
-#  define LOG_PRINT(...)      do { \
-    if (!QDP_is_initialized() || 0 == QDP_this_node) \
-        printf(__VA_ARGS__); \
-} while (0)
-#  define LOG_FPRINT(fp, ...) do { \
-    if (!QDP_is_initialized() || 0 == QDP_this_node) \
-        fprintf(fp, __VA_ARGS__);\
-} while (0)
-#  define LOG_ECHO(fp,...)    do { \
-    printf("%s[%d]: ", __func__, QDP_this_node); \
-    printf(__VA_ARGS__); \
-} while (0)
-#  define LOG_FECHO(fp,...)   do { \
-    fprintf(fp, "%s[%d]: ", __func__, QDP_this_node); \
-    fprintf(fp, __VA_ARGS__); \
-} while (0)
-#else
-#  define LOG_PRINT(...)        do {} while (0)
-#  define LOG_FPRINT(fp, ...)   do {} while (0)
-#  define LOG_ECHO(fp,...)      do {} while (0)
-#  define LOG_FECHO(fp,...)     do {} while (0)
-#endif
-
 /* Deflator state */
 #include <deflator-la.h>
 
@@ -333,7 +307,8 @@ int q(df_preamble)(struct Q(State)           *state,
                    struct FermionF           *rho_e,
                    double                    *rho_norm2,
                    struct FermionF           *chi_e, /* const ! */
-                   struct MxM_workspaceF     *ws);
+                   struct MxM_workspaceF     *ws,
+                   unsigned int              options);
 int q(df_update0)(struct Q(State)          *state,
                   struct Q(Deflator)       *deflator,
                   double                    a1,
@@ -341,19 +316,22 @@ int q(df_update0)(struct Q(State)          *state,
                   double                    a0,
                   double                    b0,
                   double                    r,
-                  struct FermionF          *rho);
+                  struct FermionF          *rho,
+                  unsigned int              options);
 int q(df_update1)(struct Q(State)          *state,
-                   struct Q(Deflator)       *deflator,
-                   double                    a1,
-                   double                    b1,
-                   double                    a0,
-                   double                    b0,
-                   double                    r,
-                   struct FermionF          *rho,
-                   struct FermionF          *A_rho);
+                  struct Q(Deflator)       *deflator,
+                  double                    a1,
+                  double                    b1,
+                  double                    a0,
+                  double                    b0,
+                  double                    r,
+                  struct FermionF          *rho,
+                  struct FermionF          *A_rho,
+                  unsigned int              options);
 int q(df_postamble)(struct Q(State)           *state,
                     struct Q(Deflator)        *deflator,
-                    struct MxM_workspaceF     *ws);
+                    struct MxM_workspaceF     *ws,
+                    unsigned int               options);
 
 /* Timing */
 #define BEGIN_TIMING(s) do { gettimeofday(&((s)->t0), NULL); } while (0)

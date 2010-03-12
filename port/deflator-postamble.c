@@ -18,7 +18,8 @@ int
 q(df_postamble)(
         struct Q(State)       *s,
         struct Q(Deflator)    *d,
-        struct MxM_workspaceF *ws)
+        struct MxM_workspaceF *ws,
+        unsigned int           options)
 {
     int i;
 
@@ -88,70 +89,46 @@ q(df_postamble)(
     assert(usize_old + unew == d->usize);
 
 
-#if 1
-    memcpy(d->C, d->H, d->usize * d->umax * sizeof(d->C[0]));
+    if (options & QOP_CLOVER_LOG_EIG_POSTAMBLE) {
+        memcpy(d->C, d->H, d->usize * d->umax * sizeof(d->C[0]));
 #if HAVE_LAPACK
-    {
-        long int usize  = d->usize,
-                 umax   = d->umax,
-                 info   = 0;
-        char cU = 'U',
-             cN = 'N';
-        zheev_(&cN, &cU, &usize, d->C, &umax, d->debug_hevals, 
-               d->debug_zwork, &(d->debug_lwork), d->debug_rwork, &info, 1, 1);
-        assert(0 == info);
-        LOG_PRINT("U:\t");
-        for (i = 0; i < usize; i++)
-            LOG_PRINT("%e\t", d->debug_hevals[i]);
-        LOG_PRINT("\n");
-        
-    }
+        {
+            long int usize  = d->usize,
+                     umax   = d->umax,
+                     info   = 0;
+            char cU = 'U',
+                cN = 'N';
+            zheev_(&cN, &cU, &usize, d->C, &umax, d->debug_hevals, 
+                   d->debug_zwork, &(d->debug_lwork), d->debug_rwork,
+                   &info, 1, 1);
+            assert(0 == info);
+            for (i = 0; i < usize; i++)
+                qf(zprint)(s, "postamble", "U %4d %17.9e",
+                           i, d->debug_hevals[i]);
+        }
 #elif HAVE_GSL
-    {
-        long int usize  = d->usize;
-        gsl_vector_view gsl_hevals = gsl_vector_subvector(
+        {
+            long int usize  = d->usize;
+            gsl_vector_view gsl_hevals = gsl_vector_subvector(
                 d->debug_gsl_hevals, 0, d->usize);
-        gsl_matrix_complex_view gsl_C = gsl_matrix_complex_view_array_with_tda(
-                (double *)d->C, d->usize, d->usize, d->umax);
-        CHECK_GSL_STATUS(gsl_matrix_complex_transpose(&gsl_C.matrix));
-        CHECK_GSL_STATUS(gsl_eigen_herm(
-                &gsl_C.matrix, &gsl_hevals.vector, d->debug_gsl_wkspace));
-        gsl_sort_vector(&gsl_hevals.vector);
-        LOG_PRINT("U:\t");
-        for (i = 0; i < usize; i++)
-            LOG_PRINT("%e\t", gsl_vector_get(&gsl_hevals.vector, i));
-        LOG_PRINT("\n");
-    }
+            gsl_matrix_complex_view gsl_C =
+                gsl_matrix_complex_view_array_with_tda(
+                    (double *)d->C, d->usize, d->usize, d->umax);
+            CHECK_GSL_STATUS(gsl_matrix_complex_transpose(&gsl_C.matrix));
+            CHECK_GSL_STATUS(gsl_eigen_herm(&gsl_C.matrix, &gsl_hevals.vector,
+                                            d->debug_gsl_wkspace));
+            gsl_sort_vector(&gsl_hevals.vector);
+            for (i = 0; i < usize; i++)
+                qf(zprint)(s, "postamble", "U %4d %17.9e", i,
+                           gsl_vector_get(&gsl_hevals.vector, i));
+        }
 #else
 #  error "no linear algebra library"
 #endif
-#endif
+    }
 
     /* compute Cholesky decomposition */
     memcpy(d->C, d->H, d->usize * d->umax * sizeof(d->C[0]));
-#if 0 /* XXX */
-    {
-        int i, j;
-        printf("\n============= H & C usize %d umax %d\n", d->usize, d->umax);
-        for (i = 0; i < d->umax; i++) {
-            for (j = 0; j < d->umax; j++) {
-                double a = d->H[i + d->umax * j].r;
-                double b = d->H[i + d->umax * j].i;
-                if ((a != 0) || (b != 0)) {
-                    printf("HC[%2d, %2d] = %15.7e %15.7e  %15.7e %15.7e\n",
-                           i, j,
-                           a,
-                           b,
-                           d->C[i + d->umax * j].r,
-                           d->C[i + d->umax * j].i);
-                }
-            }
-        }
-        printf("==========\n");
-        fflush(stdout);
-    }
-#endif
-
 
 #if HAVE_LAPACK
     long int usize  = d->usize,

@@ -14,7 +14,9 @@
 #define MAX_OPTIONS (Q(LOG_CG_RESIDUAL)     | \
                      Q(LOG_TRUE_RESIDUAL)   | \
                      Q(FINAL_CG_RESIDUAL)   | \
-                     Q(FINAL_DIRAC_RESIDUAL))
+                     Q(FINAL_DIRAC_RESIDUAL) | \
+                     Q(LOG_EIG_UPDATE1) | \
+                     Q(LOG_EIG_POSTAMBLE))
 
 static void *
 allocate_fgauge(struct Q(State) *state,

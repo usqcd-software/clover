@@ -1,3 +1,4 @@
+#define QOP_CLOVER_DEFAULT_PRECISION 'F'
 #include <clover.h>
 #include <math.h>
 #include <qmp.h>
@@ -16,34 +17,18 @@
 #  error "no linear algebra library"
 #endif
 
-#if 1
-#include <stdio.h>
-#define PRINT_EVALS 10
-static void
-print_dvec(FILE *fo, const char *title,
-           double *dvec, int size, int stride)
-{
-    LOG_PRINT("%s:\t", title);
-    int i;
-    double *p = dvec;
-    for (i = 0; i < size; i++, p += stride)
-        LOG_PRINT("%13.6e\t", *p);
-    LOG_PRINT("\n");
-}
-#endif
-
 int
 q(df_update1)(
         struct Q(State)         *s,
         struct Q(Deflator)      *d,
-        double alpha, 
-        double beta, 
-        double alpha_prev, 
-        double beta_prev, 
-        double resid_norm_sq, 
-        struct FermionF *resid,
-        struct FermionF *A_resid
-        )
+        double                   alpha, 
+        double                   beta, 
+        double                   alpha_prev, 
+        double                   beta_prev, 
+        double                   resid_norm_sq, 
+        struct FermionF         *resid,
+        struct FermionF         *A_resid,
+        unsigned int             options)
 {
     int i, j;
 
@@ -57,8 +42,6 @@ q(df_update1)(
 
     assert(d->vmax == d->vsize && 
             1 < d->vsize);
-
-    LOG_PRINT("update1\n");
 
     /* [vsize-1, vsize-1] elem */
     doublecomplex *pT = d->T + (d->vsize - 1 ) * (1 + d->vmax);
@@ -88,7 +71,12 @@ q(df_update1)(
            d->hevals, d->zwork, &(d->lwork), 
            d->rwork, &info, 1, 1);
     assert(0 == info);
-    /**/print_dvec(stdout, "T0", d->hevals, PRINT_EVALS, 1);
+    if (options & QOP_CLOVER_LOG_EIG_UPDATE1) {
+        int i;
+        for (i = 0; i < vmax; i++)
+            qf(zprint)(s, "update1", "T0 %4d %17.9e", i, d->hevals[i]);
+                       
+    }
 
     /* diagonalize T:(vmax-1)*(vmax-1) matrix
        requires zwork size = lwork >= 2*vmax-1 */
@@ -167,8 +155,15 @@ q(df_update1)(
     CHECK_GSL_STATUS(gsl_sort_smallest_index(d->hevals_select1, d->nev, 
             gsl_vector_const_ptr(d->gsl_hevals1, 0), 1, vmax));
 
-    /**/for (i = 0; i < PRINT_EVALS; i++) d->hevals[i] = gsl_vector_get(d->gsl_hevals1, d->hevals_select1[i]);
-    /**/print_dvec(stdout, "T0", d->hevals, PRINT_EVALS, 1);
+    if (options & QOP_CLOVER_LOG_EIG_UPDATE1) {
+        int i, j;
+        
+        for (i = 0; i < d->nev; i++) {
+            j = d->hevals_select1[i];
+            qf(zprint)(s, "update1", "T0 %4d %17.9e", j,
+                       gsl_vector_get(d->gsl_hevals1, j));
+        }
+    }
 
     /* eigenpairs of T[:-1, :-1] */
     gsl_matrix_complex_view gsl_T_m1 = gsl_matrix_complex_submatrix(

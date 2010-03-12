@@ -983,12 +983,14 @@ should not assume particular values of the constants except that
 [[QOP_CLOVER_LOG_NONE]] is zero.
 <<Interface types>>=
 enum {
-   `QOP_CLOVER_LOG_NONE = 0,
-   `QOP_CLOVER_LOG_CG_RESIDUAL = 1,
-   `QOP_CLOVER_LOG_TRUE_RESIDUAL = 2,
-   `QOP_CLOVER_FINAL_CG_RESIDUAL = 4,
-   `QOP_CLOVER_FINAL_DIRAC_RESIDUAL = 8,
-   `QOP_CLOVER_LOG_EVERYTHING = 15
+   `QOP_CLOVER_LOG_NONE              = 0x00,
+   `QOP_CLOVER_LOG_CG_RESIDUAL       = 0x01,
+   `QOP_CLOVER_LOG_TRUE_RESIDUAL     = 0x02,
+   `QOP_CLOVER_FINAL_CG_RESIDUAL     = 0x04,
+   `QOP_CLOVER_FINAL_DIRAC_RESIDUAL  = 0x08,
+   `QOP_CLOVER_LOG_EIG_UPDATE1       = 0x10,
+   `QOP_CLOVER_LOG_EIG_POSTAMBLE     = 0x20,
+   `QOP_CLOVER_LOG_EVERYTHING        = 0x3f
 };
 @
 

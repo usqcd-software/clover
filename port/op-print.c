@@ -7,13 +7,17 @@ qx(zprint)(struct Q(State) *state,
            const char *fmt,
            ...)
 {
-    char buffer[4096];
-    va_list va;
-
     if (state->master_p) {
+        va_list va;
+        char buffer[4096];
+        int len;
+
+        snprintf(buffer, sizeof (buffer) - 1, "CLOVER: %s(%c): ",
+                 source, Q(DEFAULT_PRECISION));
+        len = strlen(buffer);
         va_start(va, fmt);
-        vsnprintf(buffer, sizeof (buffer) - 1, fmt, va);
+        vsnprintf(buffer + len, sizeof (buffer) - len - 1, fmt, va);
         va_end(va);
-        QMP_printf("CLOVER: %s(%c): %s\n", source, Q(DEFAULT_PRECISION), buffer);
+        printf("%s\n", buffer);
     }
 }

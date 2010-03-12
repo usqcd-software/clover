@@ -5,13 +5,13 @@ int
 q(df_update0)(
         struct Q(State)         *s,
         struct Q(Deflator)      *d,
-        double alpha, 
-        double beta, 
-        double alpha_prev, 
-        double beta_prev, 
-        double resid_norm_sq, 
-        struct FermionF *resid
-        )
+        double                   alpha, 
+        double                   beta, 
+        double                   alpha_prev, 
+        double                   beta_prev, 
+        double                   resid_norm_sq, 
+        struct FermionF         *resid,
+        unsigned int             options)
 {
     if (NULL == d || 
             NULL == s ||
@@ -25,8 +25,6 @@ q(df_update0)(
     if (0 == d->vsize) 
         return -1;      /* should never get here; 
                            otherwise, the preamble has not been called */
-
-//    LOG_PRINT("update0 %d\n", d->vsize);
 
     /* check eig convergence */
     if (resid_norm_sq < d->resid_norm_sq_min)

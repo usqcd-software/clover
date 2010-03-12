@@ -3,16 +3,16 @@
 #if QOP_CLOVER_DEFAULT_PRECISION == 'F'
 #define DF_PREAMBLE(psi_e, rho_e, r, chi_e) do {                        \
         if (q(df_preamble)(state, deflator, psi_e, rho_e, r, chi_e,     \
-                           &ws)) {                                      \
+                           &ws, options)) {                             \
             q(set_error)(state, 0, "cg_solver() not enough memory");    \
             return CG_NOEMEM;                                           \
         } } while (0)
 #define DF_UPDATE0(a1,b1,a0,b0,r,rho)                           \
-    q(df_update0)(state, deflator, a1, b1, a0, b0, r, rho)
+    q(df_update0)(state, deflator, a1, b1, a0, b0, r, rho, options)
 #define DF_UPDATE1(a1,b1,a0,b0,r,rho,A_rho)                             \
-    q(df_update1)(state, deflator, a1, b1, a0, b0, r, rho, A_rho)
+    q(df_update1)(state, deflator, a1, b1, a0, b0, r, rho, A_rho, options)
 #define DF_POSTAMBLE() \
-    do { q(df_postamble)(state, deflator, &ws); } while (0)
+    do { q(df_postamble)(state, deflator, &ws, options); } while (0)
 #else
 #define DF_PREAMBLE(psi_e, rho_e, r, chi_e) do {        \
         qx(f_zero)(psi_e, e_size);                      \
@@ -77,21 +77,6 @@ qx(cg_solver)(struct Fermion            *psi_e,
     ws.received = received;
 
     DF_PREAMBLE(psi_e, rho_e, &r, (struct Fermion *) chi_e);
-    {
-        double r_chi, r_rho, r_psi;
-
-        qx(f_norm)(&r_chi, e_size, chi_e);
-        qx(f_norm)(&r_rho, e_size, rho_e);
-        qx(f_norm)(&r_psi, e_size, psi_e);
-
-        QMP_sum_double(&r_chi);
-        QMP_sum_double(&r_rho);
-        QMP_sum_double(&r_psi);
-
-        LOG_PRINT("\nCG entry: chi %15.7e  rho %15.7e  psi %15.7e\n",
-               r_chi, r_rho, r_psi);
-        LOG_PRINT("  preamble r2 %15.7e\n", r);
-    }
     qx(f_copy)(pi_e, e_size, rho_e);
     if (r < epsilon) {
         i = 0;
@@ -109,7 +94,6 @@ qx(cg_solver)(struct Fermion            *psi_e,
             *out_epsilon = r;
             q(set_error)(state, 0, "cg_solver() hit zero mode");
             DF_POSTAMBLE();
-            LOG_PRINT("Zmode exit\n");
             return CG_ZEROMODE;
         }
         a = r / norm_omega;
@@ -126,23 +110,12 @@ qx(cg_solver)(struct Fermion            *psi_e,
         df_status = DF_UPDATE0(a, b, a0, b0, g, rho_e);
         if (-1 == df_status) {
             qx(cg_operator)(zeta_e, rho_e, &ws);
-            {
-                double zr[2];
-                double zp[2];
-                qx(f_dot)(&zr[0], &zr[1], e_size, zeta_e, rho_e);
-                QMP_sum_double_array(zr, 2);
-                qx(f_dot)(&zp[0], &zp[1], e_size, zeta_e, pi_e);
-                QMP_sum_double_array(zp, 2);
-                LOG_PRINT("cg %5d: update1  %15.7e %15.7e  %15.7e %15.7e\n",
-                       i, zr[0], zr[1], zp[0], zp[1]);
-            }
             df_status = DF_UPDATE1(a, b, a0, b0, g, rho_e, zeta_e);
         } 
         if (3 == df_status) {
             *out_iter = i;
             *out_epsilon = r;
             DF_POSTAMBLE();
-            LOG_PRINT("EC exit\n");
             return CG_EIGCONV;
         }
 
@@ -160,9 +133,7 @@ end:
     *out_epsilon = r;
     DF_POSTAMBLE();
     if (i == max_iter) {
-        LOG_PRINT("EC exit\n");
         return CG_MAXITER;
     }
-    LOG_PRINT("OK exit\n");
     return CG_SUCCESS;
 }

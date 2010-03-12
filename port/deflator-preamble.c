@@ -64,7 +64,8 @@ q(df_preamble)(
         struct FermionF           *r,
         double                    *r_norm2,
         struct FermionF           *b,  /* const! */
-        struct MxM_workspaceF     *ws)
+        struct MxM_workspaceF     *ws,
+        unsigned int               options)
 {
     assert(NULL != s &&
             NULL != x &&
