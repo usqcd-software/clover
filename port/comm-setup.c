@@ -38,7 +38,9 @@ eo_comm(struct eo_lattice *eo, struct Q(State) *state, int real_size)
             if (eo->mh[k] == NULL)
                 return 1;
             eo->mh_count = k + 1;
-            eo->th[k] = QMP_declare_send_relative(eo->mh[k], d, +1, 0);
+            eo->th[k] = QMP_declare_send_to(eo->mh[k],            /* [d] +1 */
+                                            state->neighbor_up[d],
+                                            0);
             if (eo->th[k] == NULL)
                 return 1;
             eo->th_count = k + 1;
@@ -60,7 +62,9 @@ eo_comm(struct eo_lattice *eo, struct Q(State) *state, int real_size)
             if (eo->mh[k] == NULL)
                 return 1;
             eo->mh_count = k + 1;
-            eo->th[k] = QMP_declare_receive_relative(eo->mh[k], d, -1, 0);
+            eo->th[k] = QMP_declare_receive_from(eo->mh[k],      /* [d] -1 */
+                                                 state->neighbor_down[d],
+                                                 0);
             if (eo->th[k] == NULL)
                 return 1;
             eo->th_count = k + 1;
@@ -79,7 +83,9 @@ eo_comm(struct eo_lattice *eo, struct Q(State) *state, int real_size)
             if (eo->mh[k] == NULL)
                 return 1;
             eo->mh_count = k + 1;
-            eo->th[k] = QMP_declare_send_relative(eo->mh[k], d, +1, 0);
+            eo->th[k] = QMP_declare_send_to(eo->mh[k],           /* [d] +1 */
+                                            state->neighbor_up[d],
+                                            0);
             if (eo->th[k] == NULL)
                 return 1;
             eo->th_count = k + 1;
@@ -98,7 +104,9 @@ eo_comm(struct eo_lattice *eo, struct Q(State) *state, int real_size)
             if (eo->mh[k] == NULL)
                 return 1;
             eo->mh_count = k + 1;
-            eo->th[k] = QMP_declare_send_relative(eo->mh[k], d, -1, 0);
+            eo->th[k] = QMP_declare_send_to(eo->mh[k], /* [d] -1 */
+                                            state->neighbor_down[d],
+                                            0);
             if (eo->th[k] == NULL)
                 return 1;
             eo->th_count = k + 1;
@@ -117,7 +125,9 @@ eo_comm(struct eo_lattice *eo, struct Q(State) *state, int real_size)
             if (eo->mh[k] == NULL)
                 return 1;
             eo->mh_count = k + 1;
-            eo->th[k] = QMP_declare_receive_relative(eo->mh[k], d, +1, 0);
+            eo->th[k] = QMP_declare_receive_from(eo->mh[k],        /* [d] +1 */
+                                                 state->neighbor_up[d],
+                                                 0);
             if (eo->th[k] == NULL)
                 return 1;
             eo->th_count = k + 1;
@@ -136,7 +146,9 @@ eo_comm(struct eo_lattice *eo, struct Q(State) *state, int real_size)
             if (eo->mh[k] == NULL)
                 return 1;
             eo->mh_count = k + 1;
-            eo->th[k] = QMP_declare_receive_relative(eo->mh[k], d, -1, 0);
+            eo->th[k] = QMP_declare_receive_from(eo->mh[k],       /* [d] -1 */
+                                                 state->neighbor_down[d],
+                                                 0);
             if (eo->th[k] == NULL)
                 return 1;
             eo->th_count = k + 1;
@@ -154,6 +166,7 @@ eo_comm(struct eo_lattice *eo, struct Q(State) *state, int real_size)
     eo->real_size = real_size;
     return 0;
 }
+
 
 int
 q(setup_comm)(struct Q(State) *state, int real_size)

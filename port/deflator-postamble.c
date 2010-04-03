@@ -69,7 +69,7 @@ q(df_postamble)(
         q(lat_c_scal_d)(1. / sqrt(v_norm2), cur_v);
         q(latmat_c_insert_col)(d->U, d->usize, cur_v);
 
-        /*  XXX requires(?) double precision operator */
+        /*  requires(?) double precision operator */
 //        latvec_cz_copy(cur_v, cur_z_v);
         latvec_c_linop(cur_Av, cur_v, ws);
         latmat_c cur_U = q(latmat_c_submat_col)(d->U, 0, d->usize + 1);

@@ -106,7 +106,9 @@ struct Q(State) {
   int                volume;          /* 4-d volume */
   int                lattice[Q(DIM)]; /* 4-d lattice size */
   struct local       local;           /* 4-d local sublattice */
-  int                node[Q(DIM)];    /* local node address */
+  int                node;            /* local node id */
+  int                neighbor_up[Q(DIM)];   /* up neighbors on the net */
+  int                neighbor_down[Q(DIM)]; /* down neighbors on the net */
   int                network[Q(DIM)]; /* the network geometry */
   int                master_p;        /* are we the master? */
   int               *lx2v;            /* Sublattice 1-d -> 4-d translation */
@@ -143,7 +145,6 @@ extern int QDP_is_initialized(void);
 struct Q(Deflator) {
     struct Q(State) *state;
 
-    /* XXX other pieces of the deflation state */
     int                 dim;     /* size of problem vectors */
 
     int                 vmax;
@@ -638,7 +639,7 @@ unsigned int qx(fv_dot_zm)(
         const double *m, int ldm
         );
 
-/*  XXX this includes global reduction
+/*  This includes global reduction
  *  c[i] = herm(fv[fv_begin+i]) * g 
  *      for all i = (0 .. fv_len-1)
  *  c is complex vector as [re:0/im:1 + 2 * i]
@@ -657,7 +658,7 @@ unsigned int qx(do_fvH_dot_f)(
         const struct vFermion *fv, int fv_size, int fv_begin, int fv_len,
         const struct Fermion *g);
 
-/* XXX this includes global reduction
+/* This includes global reduction
  * c[i,j] = herm(fv[fv_begin + i]) . g[gv_begin+j] 
  *      for all i = (0 .. fv_len-1), 
  *              j = (0 .. gv_len-1),

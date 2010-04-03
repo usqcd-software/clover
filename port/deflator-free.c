@@ -12,7 +12,7 @@ Q(free_deflator)(struct Q(Deflator) **deflator_ptr)
 
     struct Q(Deflator) *d = *deflator_ptr;
     
-    /* XXX free other components of the deflator */
+    /* free other components of the deflator */
 #define guarded_free(v, cmd) { if (NULL == v) cmd; }
     int vmax    = d->vmax;
     int umax    = d->umax;
