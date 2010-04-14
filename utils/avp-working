@@ -1,5 +1,5 @@
 ./configure \
-   --prefix=/Users/avp/Sandbox/USQCD/clover/install-x \
+   --prefix=/Users/avp/Sandbox/USQCD/clover/install-new-1 \
    --target=cee-32 \
    --with-qdp=/Users/avp/Local/packages/qdp-1.8.1.memleak \
    --with-qmp=/Users/avp/Local/packages/qmp-2.3.1 \

@@ -106,6 +106,8 @@ q(mixed_cg)(struct Q(State)             *state,
         END_TIMING(state, flops, sent, received); \
         cg_error = msg; goto end; } while (0)
 
+    gauge_F.size = 0;
+
     /* clear bits we do not understand */
     options = options & MAX_OPTIONS;
 
@@ -155,7 +157,7 @@ q(mixed_cg)(struct Q(State)             *state,
 
     /* setup communication */
     if (q(setup_comm)(state, sizeof (double)))
-        CG_ERROR_T("DDW_CG(): communication setup failed");
+        CG_ERROR_T("mixed_D_CG(): communication setup failed");
         
     /* precondition */
     qd(cg_precondition)(chi_e, state,
@@ -186,7 +188,7 @@ q(mixed_cg)(struct Q(State)             *state,
             ff_eps = scaled_eps;
         /* run the solver for a while */
         if (q(setup_comm)(state, sizeof (float))) {
-            CG_ERROR_T("DDW_CG(): communication setup failed");
+            CG_ERROR_T("mixed_D_CG(): communication setup failed");
         }
         cg_status = qf(cg_solver)(dx_Fe, name, &here_iter, out_epsilon,
                                   state, &gauge_F, delta_Fe, deflator,
@@ -198,7 +200,7 @@ q(mixed_cg)(struct Q(State)             *state,
         Q(deflator_stop)(deflator);
 
         if (q(setup_comm)(state, sizeof (double))) {
-            CG_ERROR_T("DDW_CG(): communication setup failed");
+            CG_ERROR_T("mixed_D_CG(): communication setup failed");
         }
         flops += q(f_d_eq_dpf)(psi->even, state->even.full_size,
                                psi->even, dx_Fe);
@@ -242,13 +244,13 @@ q(mixed_cg)(struct Q(State)             *state,
                   status, *out_iterations);
     }
     if (options & (Q(FINAL_CG_RESIDUAL) | Q(LOG_CG_RESIDUAL))) {
-        double norm = rhs_norm == 0? 1: rhs_norm;
+        double norm = rhs_norm == 0? -1: rhs_norm;
 
         qx(zprint)(state, name, "solver residual %e normalized %e",
                    *out_epsilon, *out_epsilon / norm);
     }
     if (options & Q(FINAL_DIRAC_RESIDUAL)) {
-        double norm = rhs_norm == 0? 1: rhs_norm;
+        double norm = rhs_norm == 0? -1: rhs_norm;
 
         qx(zprint)(state, name, "Dirac residual %e normalized %e",
                    dirac_residual, dirac_residual / norm);
