@@ -134,14 +134,16 @@ library: $(objects)
 
 $(x.objects): $(LIMPDIR)/%.o: %.c
 	$E CC $<
-	$C$(CC) $(CFLAGS) -I. -c -o $@ $<
+	$C$(CC) $(COPTS) $(CFLAGS) -I. -c -o $@ $<
 
 $(p.sources:%.c=$(LIMPDIR)/%f.o): $(LIMPDIR)/%f.o: %.c
 	$E CC-f $<
-	$C$(CC) $(CFLAGS) -I. -DQOP_CLOVER_DEFAULT_PRECISION=\'F\' -c -o $@ $<
+	$C$(CC) $(COPTS) $(CFLAGS) -I. \
+             -DQOP_CLOVER_DEFAULT_PRECISION=\'F\' -c -o $@ $<
 
 $(p.sources:%.c=$(LIMPDIR)/%d.o): $(LIMPDIR)/%d.o: %.c
 	$E CC-d $<
-	$C$(CC) $(CFLAGS) -I. -DQOP_CLOVER_DEFAULT_PRECISION=\'D\' -c -o $@ $<
+	$C$(CC) $(COPTS) $(CFLAGS) -I. \
+             -DQOP_CLOVER_DEFAULT_PRECISION=\'D\' -c -o $@ $<
 
 $(objects): $(headers)
