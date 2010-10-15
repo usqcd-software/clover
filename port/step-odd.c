@@ -8,7 +8,7 @@ qx(step_odd)(struct Q(State) *state, void *aligned_ptr)
 
     if (state == 0 || aligned_ptr == 0)
         return NULL;
-    res = ALIGN(aligned_ptr + state->odd.full_size * size);
+    res = ALIGN((char *)(aligned_ptr) + state->odd.full_size * size);
 
     return res;
 }
