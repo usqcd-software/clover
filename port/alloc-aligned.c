@@ -6,7 +6,7 @@ q(allocate_aligned)(struct Q(State) *state,
                     size_t hdr_size, size_t bulk_size)
 {
   size_t total_size = hdr_size + bulk_size + CACHE_LINE_SIZE - 1;
-  void *ptr;
+  char *ptr;
 
   if (state == NULL || size == NULL || aligned_ptr == NULL)
     return NULL;
