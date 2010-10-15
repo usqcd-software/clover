@@ -217,7 +217,7 @@ q(mixed_cg)(struct Q(State)             *state,
         default:
             CG_ERROR_T(NULL);
         }
-        if (*out_epsilon < min_epsilon)
+        if (*out_epsilon < scaled_eps)
             break;
     }
     if ((df_stopped == 0) && deflator != 0)
