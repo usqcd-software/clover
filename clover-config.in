@@ -10,7 +10,7 @@ ldflags="-L@libdir@ @qmp_ldflags@ @ldflags@"
 libs="-lqop-clover @qmp_libs@ @libs@"
 qdp="@qdp@"
 qmp="@qmp@"
-gsl="@gsl"
+gsl="@gsl@"
 target="@target@"
 
 # usage status
