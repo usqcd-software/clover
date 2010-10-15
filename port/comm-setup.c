@@ -57,7 +57,7 @@ eo_comm(struct eo_lattice *eo, struct Q(State) *state, int real_size)
                 return 1;
             eo->mem_count = k + 1;
             eo->receive_buf[d + Q(DIM)] = QMP_get_memory_pointer(eo->mem[k]);
-            eo->receive_buf[d] = eo->receive_buf[d + Q(DIM)] + down_size;
+            eo->receive_buf[d] = (char*)(eo->receive_buf[d + Q(DIM)]) + down_size;
             eo->mh[k] = QMP_declare_msgmem(eo->receive_buf[d + Q(DIM)], size);
             if (eo->mh[k] == NULL)
                 return 1;
