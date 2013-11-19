@@ -6,6 +6,7 @@ c99-64    -- any conforming C99 compiler on a 64-bit platform
 cee       -- any conforming K&R compiler on a 32-bit platform
 cee-64    -- any conforming K&R compiler on a 64-bit platform
 bgl-xlc   -- IBM XLC 8.0 or higher on BG/L or BG/P
+bgq-xlc   -- IBM XLC on BG/Q
 
 For details on building the package see INSTALL in this directory.
 
@@ -14,4 +15,4 @@ For hints about integration into higher level LQCD codes, see the tests/ tree.
 If you are interested in porting to other backends, read the sources and talk
 to me once you understand the structure of the code.
 
---andrew, <avp@mit.edu>
+--andrew   avp at mit dot edu
