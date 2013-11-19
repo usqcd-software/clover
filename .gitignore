@@ -1,0 +1,8 @@
+port/*.o
+cee-32/*.c
+cee-64/*.c
+c99-32/*.c
+c99-64/*.c
+bgl-xlc/*.c
+bgq-xlc/*.c
+dry/*.c
