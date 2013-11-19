@@ -164,7 +164,6 @@ speciate_target() {
        ;;
     bgq/xlc)
        limpdir=bgq-xlc
-       # XXX
        default_cc="bgc99"
        default_cflags=""
        default_copts="-O3 -qstrict -qmaxmem=-1"
@@ -173,7 +172,6 @@ speciate_target() {
        default_libs=""
        default_ar="powerpc64-bgq-linux-ar"
        default_ranlib="powerpc64-bgq-linux-ranlib"
-       # XXX
        ;;
     *) show_error "Unsupported target $target" ;;
   esac
