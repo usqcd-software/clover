@@ -438,7 +438,7 @@ The equation
 \]
 can be solve by the conjugate gradient method if the condition number of
  $M^\dagger M$ is small enough.
-\incmargin{20pt}
+\IncMargin{20pt}
 \begin{algorithm}
 \SetKwData{Input}{input}
 \KwIn{$M$, the matrix}
@@ -450,7 +450,7 @@ can be solve by the conjugate gradient method if the condition number of
 \KwOut{$r$, final residue}
 \KwOut{$k$, number of iterations used}
 \SetKw{Break}{break}
-\dontprintsemicolon
+\DontPrintSemicolon
 \Begin{
   $\psi\leftarrow \psi_0$\;
   $\rho\leftarrow \chi - M^{\dagger}M\psi$\;
@@ -477,7 +477,7 @@ can be solve by the conjugate gradient method if the condition number of
 }
 \caption{\label{real}Conjugate Gradient Solver.}
 \end{algorithm}
-\decmargin{20pt}
+\DecMargin{20pt}
 
 
 \chapter{INTERFACE}

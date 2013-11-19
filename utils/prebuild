@@ -2,6 +2,7 @@
 
 targets="bgl/xlc bgq/xlc c99-32 c99-64 cee-32 cee-64"
 
+[ -d doc ] || mkdir doc
 set -e
 make -C noweb
 make -C noweb clean
