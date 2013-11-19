@@ -7,4 +7,10 @@ bgl-xlc/*.c
 bgq-xlc/*.c
 dry/*.c
 doc/*
+*/*.o
+*/lib*.a
 */qop-clover.h
+config.log
+clover-config
+target
+Makefile

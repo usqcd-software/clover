@@ -17,13 +17,16 @@ endif
 
 docs=AUTHORS COPYRIGHT README config.log doc/clover.pdf
 
-.PHONY: all clean install
+.PHONY: all clean realclean install
 
 all:
 	$(MAKE) V=$V -C $(LIMPDIR) CONFIG=../target all
 
 clean:
 	$(MAKE) V=$V -C $(LIMPDIR) CONFIG=../target clean
+
+realclean: clean
+	$(RM) */lib*.a
 
 install: all clover-config
 	$E INSTALLING to $(DESTDIR)`dirname $(LIBDIR)`
