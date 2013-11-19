@@ -9,5 +9,5 @@
 const char *
 Q(version)(void)
 {
-  return "CLOVER version 1.3 XXX";
+  return "CLOVER version 1.3.0 XXX";
 }

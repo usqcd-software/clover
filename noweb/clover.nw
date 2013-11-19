@@ -19,10 +19,7 @@
 
 \title{Clover Fermions Implementation}
 \author{Andrew Pochinsky\\Sergey Syritsyn}
-\catcode`\$=11
-\date{$Id$\\
-Release 1.3 XXX}
-\catcode`\$=3
+\date{Release 1.3.0 XXX}
 
 \begin{document}
 \maketitle
