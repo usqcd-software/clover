@@ -1,6 +1,7 @@
 #!/bin/sh
 
 USQCDDIST=$HOME/Local/packages/macosx-20130110
+utils/setup-nc 2
 ./configure \
    --prefix=$HOME/Local/packages/clover-working \
    --target=cee-64 \

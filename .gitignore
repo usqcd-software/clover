@@ -14,3 +14,7 @@ config.log
 clover-config
 target
 Makefile
+clover-config.in
+Makefile.in
+port/version.c
+noweb/clover.nw

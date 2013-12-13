@@ -1,5 +1,8 @@
 #!/bin/sh -f
 
+VERSION="|:Version:|"
+NC="|:Nc:|"
+
 # show_help exit_code
 show_help() {
   cat << EOF
@@ -224,6 +227,9 @@ normalize() {
 # show_config
 show_config() {
    echo "CLOVER configuration summary:"
+   echo "====================================="
+   echo "Version                 $VERSION"
+   echo "Nc                      $NC"
    echo "====================================="
    echo "prefix                  $prefix"
    echo "binaries directory      $bindir"

@@ -1,0 +1,24 @@
+#!/bin/sh -f
+
+Ver="X.XX.XXX"
+
+if [ $# -ne 1 ] ; then
+   echo "Usage: setup-nc Nc" 1>&2
+   exit 1
+fi
+
+Nc="$1"
+
+setup_nc () {
+  in="$1"
+  out="$2"
+  sed < nc/$in > $out \
+   -e "s/|:Nc:|/$Nc/g;s/|:Version:|/$Ver/g"
+}
+
+setup_nc version.c port/version.c
+setup_nc clover-config.in clover-config.in
+setup_nc Makefile.in Makefile.in
+setup_nc clover.nw noweb/clover.nw
+setup_nc configure configure
+chmod +x ./configure
