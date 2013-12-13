@@ -11,9 +11,9 @@
 ;;
 (procedure get-fermion ([stem "get_fermion"]
                         prec&color)
-           ([data      pointer "r"         "double *"               ]
-            [F         pointer "F"         "const struct Fermion *" ]
-            [index     int     "p"         "int"                    ])
+           ([data      pointer "r"         "double *"                ]
+            [F         pointer "F"         "const struct FermionX *" ]
+            [index     int     "p"         "int"                     ])
 
    (op int-mul () (x) ([reg index] [const (size-of Fermion)]))
    (op pointer-add () (ptr) ([reg F] [reg x]))

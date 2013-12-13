@@ -9,7 +9,7 @@ dry/*.c
 doc/*
 */*.o
 */lib*.a
-*/qop-clover.h
+*/qop-clover*.h
 config.log
 clover-config
 target
@@ -17,4 +17,6 @@ Makefile
 clover-config.in
 Makefile.in
 port/version.c
+port/clover.h
 noweb/clover.nw
+configure

@@ -15,7 +15,7 @@
 ;;
 (procedure put-clover-hi ([stem "put_clover_hi"]
                       prec&color)
-           ([C         pointer "C"         "struct Clover *"   ]
+           ([C         pointer "C"         "struct CloverX *"  ]
             [index     int     "p"         "int"               ]
             [data      pointer "r"         "const double *"    ])
 

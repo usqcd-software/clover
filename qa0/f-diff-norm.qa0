@@ -5,10 +5,10 @@
 (procedure f-diff-norm  ([stem "f_diff_norm"]
                     prec&color
                     count-flops)
-           ([ptr-re    pointer "r_re"      "double *"               ]
-            [size      int     "size"      "int"                    ]
-            [A         pointer "a"         "const struct Fermion *" ]
-            [B         pointer "b"         "const struct Fermion *" ])
+           ([ptr-re    pointer "r_re"      "double *"                ]
+            [size      int     "size"      "int"                     ]
+            [A         pointer "a"         "const struct FermionX *" ]
+            [B         pointer "b"         "const struct FermionX *" ])
    (op qcd-fnorm-init () (res) ())
    (loop () (i [const 0] [reg size])
      (load qcd-fermion () vA ([reg A]))

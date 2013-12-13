@@ -14,11 +14,11 @@
 (procedure put-vfermion ([stem "fv_put"]
                          prec&color
                          count-flops)
-           ([size      int     "size"      "int"                    ]
-            [F         pointer "F"         "struct vFermion *"      ]
-            [fv-size   int     "fv_size"   "int"                    ]
-            [fv-idx    int     "fv_idx"    "int"                    ]
-            [X         pointer "X"         "const struct Fermion *" ])
+           ([size      int     "size"      "int"                     ]
+            [F         pointer "F"         "struct vFermion *"       ]
+            [fv-size   int     "fv_size"   "int"                     ]
+            [fv-idx    int     "fv_idx"    "int"                     ]
+            [X         pointer "X"         "const struct FermionX *" ])
    (op int-mul () (fv-step) ([reg fv-size] [const (size-of Fermion)]))
    (op int-mul () (fv-start) ([reg fv-idx] [const (size-of Fermion)]))
    (op pointer-add () (F-i) ([reg F] [reg fv-start]))

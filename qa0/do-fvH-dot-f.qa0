@@ -11,7 +11,7 @@
             [fv-size   int     "fv_size"   "int"                      ]
             [fv-begin  int     "fv_begin"  "int"                      ]
             [fv-len    int     "fv_len"    "int"                      ]
-            [G         pointer "G"         "const struct Fermion *"   ])
+            [G         pointer "G"         "const struct FermionX *"  ])
    (op int-mul () (fv-start) ([reg fv-begin] [const (size-of Fermion)]))
    (op int-mul () (fv-stride) ([reg fv-size] [const (size-of Fermion)]))
    (op pointer-add () (F) ([reg F] [reg fv-start]))

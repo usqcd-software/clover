@@ -6,13 +6,13 @@
 (procedure do-CmB ([stem "do_CmB"]
                    prec&color
                    count-flops)
-       ([res-x     pointer   "res_x"    "struct Fermion *"         ]
+       ([res-x     pointer   "res_x"    "struct FermionX *"        ]
         [start     int       "start"    "int"                      ]
         [size      int       "size"     "int"                      ]
         [nb        pointer   "neighbor" "const struct neighbor *"  ]
         [U         pointer   "U"        "const struct SUn *"       ]
-        [src-x     pointer   "src_x"    "const struct Fermion *"   ]
-        [src-y     pointer   "src_y"    "const struct Fermion *"   ]
+        [src-x     pointer   "src_x"    "const struct FermionX *"  ]
+        [src-y     pointer   "src_y"    "const struct FermionX *"  ]
         [buf*      pointer   "rb"       "void **"                  ])
   (op int-mul () (x-start) ([reg start] [const (size-of Fermion)]))
   (op pointer-add () (res-x) ([reg res-x] [reg x-start]))

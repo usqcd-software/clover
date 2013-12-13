@@ -71,7 +71,7 @@ q(df_update1)(
            d->hevals, d->zwork, &(d->lwork), 
            d->rwork, &info, 1, 1);
     assert(0 == info);
-    if (options & QOP_CLOVER_LOG_EIG_UPDATE1) {
+    if (options & Q(LOG_EIG_UPDATE1)) {
         int i;
         for (i = 0; i < vmax; i++)
             qf(zprint)(s, "update1", "T0 %4d %17.9e", i, d->hevals[i]);
@@ -155,7 +155,7 @@ q(df_update1)(
     CHECK_GSL_STATUS(gsl_sort_smallest_index(d->hevals_select1, d->nev, 
             gsl_vector_const_ptr(d->gsl_hevals1, 0), 1, vmax));
 
-    if (options & QOP_CLOVER_LOG_EIG_UPDATE1) {
+    if (options & Q(LOG_EIG_UPDATE1)) {
         int i, j;
         
         for (i = 0; i < d->nev; i++) {

@@ -5,11 +5,11 @@
 (procedure f-cadd2 ([stem "f_cadd2"]
                    prec&color
                    count-flops)
-           ([result    pointer "r"         "struct Fermion *"       ]
-            [size      int     "size"      "int"                    ]
-            [s-r       double  "sr"        "double"                 ]
-            [s-i       double  "si"        "double"                 ]
-            [B         pointer "b"         "const struct Fermion *" ])
+           ([result    pointer "r"         "struct FermionX *"       ]
+            [size      int     "size"      "int"                     ]
+            [s-r       double  "sr"        "double"                  ]
+            [s-i       double  "si"        "double"                  ]
+            [B         pointer "b"         "const struct FermionX *" ])
    (op complex () (z) ([reg s-r] [reg s-i]))
    (loop () (i [const 0] [reg size])
      (load qcd-fermion () vA ([reg result]))

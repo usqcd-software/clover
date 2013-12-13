@@ -12,7 +12,7 @@
 ;;
 (procedure put-fermion ([stem "put_fermion"]
                         prec&color)
-           ([F         pointer "F"         "struct Fermion *"  ]
+           ([F         pointer "F"         "struct FermionX *" ]
             [index     int     "p"         "int"               ]
             [data      pointer "r"         "const double *"    ])
 

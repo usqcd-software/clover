@@ -89,7 +89,7 @@ q(df_postamble)(
     assert(usize_old + unew == d->usize);
 
 
-    if (options & QOP_CLOVER_LOG_EIG_POSTAMBLE) {
+    if (options & Q(LOG_EIG_POSTAMBLE)) {
         memcpy(d->C, d->H, d->usize * d->umax * sizeof(d->C[0]));
 #if HAVE_LAPACK
         {

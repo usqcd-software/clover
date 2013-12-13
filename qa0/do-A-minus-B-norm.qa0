@@ -7,15 +7,15 @@
 (procedure do-AmBn ([stem "do_AmB_norm"]
                     prec&color
                     count-flops)
-       ([res-x     pointer   "res_x"    "struct Fermion *"         ]
+       ([res-x     pointer   "res_x"    "struct FermionX *"        ]
         [ptr-re    pointer   "l_norm"   "double *"                 ]
         [start     int       "start"    "int"                      ]
         [size      int       "size"     "int"                      ]
         [nb        pointer   "neighbor" "const struct neighbor *"  ]
         [U         pointer   "U"        "const struct SUn *"       ]
-        [C         pointer   "C"        "const struct Clover *"    ]
-        [src-x     pointer   "src_x"    "const struct Fermion *"   ]
-        [src-y     pointer   "src_y"    "const struct Fermion *"   ]
+        [C         pointer   "C"        "const struct CloverX *"   ]
+        [src-x     pointer   "src_x"    "const struct FermionX *"  ]
+        [src-y     pointer   "src_y"    "const struct FermionX *"  ]
         [buf*      pointer   "rb"       "void **"                  ])
   (op qcd-fnorm-init () (l-norm) ())
   (op int-mul () (x-start) ([reg start] [const (size-of Fermion)]))

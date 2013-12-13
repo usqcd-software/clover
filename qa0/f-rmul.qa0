@@ -5,7 +5,7 @@
 (procedure mul-fermion ([stem "f_rmul1"]
                           prec&color
                           count-flops)
-           ([R         pointer "r"         "struct Fermion *"       ]
+           ([R         pointer "r"         "struct FermionX *"      ]
             [size      int     "size"      "int"                    ]
             [v         double  "v"         "double"                 ])
    (op qcd-zerof () (z) ())

@@ -5,11 +5,11 @@
 (procedure f-add3 ([stem "f_add3"]
                    prec&color
                    count-flops)
-           ([result    pointer "r"         "struct Fermion *"       ]
-            [size      int     "size"      "int"                    ]
-            [A         pointer "a"         "const struct Fermion *" ]
-            [scale     double  "s"         "double"                 ]
-            [B         pointer "b"         "const struct Fermion *" ])
+           ([result    pointer "r"         "struct FermionX *"       ]
+            [size      int     "size"      "int"                     ]
+            [A         pointer "a"         "const struct FermionX *" ]
+            [scale     double  "s"         "double"                  ]
+            [B         pointer "b"         "const struct FermionX *" ])
    (loop () (i [const 0] [reg size])
      (load qcd-fermion () vA ([reg A]))
      (load qcd-fermion () vB ([reg B]))

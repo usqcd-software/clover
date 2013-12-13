@@ -1,12 +1,12 @@
 #include <clover.h>
 
 void
-qx(op_AxpBx)(struct Fermion *r_x,
+qx(op_AxpBx)(struct FermionX *r_x,
              struct eo_lattice *xy,
              const struct SUn *U,
-             const struct Clover *C,
-             const struct Fermion *s_x,
-             const struct Fermion *s_y,
+             const struct CloverX *C,
+             const struct FermionX *s_x,
+             const struct FermionX *s_y,
              long long *flops,
              long long *sent,
              long long *received)

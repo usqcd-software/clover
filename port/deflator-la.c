@@ -181,7 +181,7 @@ q(lat_z_nrm2)(latvec_z x)
     double res = 0.;
     
     /* TODO LATER check that all is correct */NOT_IMPLEMENTED;
-    qop_d3_clover_f_norm(&res, x.dim, x.f);
+    qd(clover_f_norm)(&res, x.dim, x.f);
     res = res * res;
     
     return res;

@@ -16,7 +16,7 @@ sources = ../port/qop-clover.h
 
 f.tex = $(noweb:%.nw=%.tex)
 f.dvi = $(noweb:%.nw=%.dvi)
-f.pdf = $(noweb:%.nw=../doc/%.pdf)
+f.pdf = $(noweb:%.nw=../doc/%$(NC).pdf)
 
 .PHONY: all clean realclean 
 
@@ -35,7 +35,7 @@ sources: $(sources)
 pdf: $(f.pdf)
 
 ###
-$(f.pdf): ../doc/%.pdf: %.dvi
+$(f.pdf): ../doc/%$(NC).pdf: %.dvi
 	$(DVIPDFM) -o $@ $<
 
 $(f.dvi): %.dvi: %.tex

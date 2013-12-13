@@ -33,14 +33,14 @@ QX(D_CG)(struct QX(Fermion)          *psi,
     CG_STATUS cg_status;
     int status;
     int e_size;
-    struct Fermion *chi_e = 0;
-    struct Fermion *rho_e = 0;
-    struct Fermion *pi_e = 0;
-    struct Fermion *zeta_e = 0;
-    struct Fermion *t0_e = 0;
-    struct Fermion *t1_e = 0;
-    struct Fermion *t0_o = 0;
-    struct Fermion *t1_o = 0;
+    struct FermionX *chi_e = 0;
+    struct FermionX *rho_e = 0;
+    struct FermionX *pi_e = 0;
+    struct FermionX *zeta_e = 0;
+    struct FermionX *t0_e = 0;
+    struct FermionX *t1_e = 0;
+    struct FermionX *t0_o = 0;
+    struct FermionX *t1_o = 0;
     double dirac_residual = 0;
     double rhs_norm = 0;
 

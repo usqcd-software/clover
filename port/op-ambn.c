@@ -1,13 +1,13 @@
 #include <clover.h>
 
 void
-qx(op_AmB_norm)(struct Fermion *r_x,
+qx(op_AmB_norm)(struct FermionX *r_x,
                 double *local_norm,
                 struct eo_lattice *xy,
                 const struct SUn *U,
-                const struct Clover *C,
-                const struct Fermion *a_x,
-                const struct Fermion *a_y,
+                const struct CloverX *C,
+                const struct FermionX *a_x,
+                const struct FermionX *a_y,
                 long long *flops,
                 long long *sent,
                 long long *received)

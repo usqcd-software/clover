@@ -17,9 +17,9 @@
 \setcounter{tocdepth}{3}
 \newcommand{\Cee}{\texttt{C}}
 
-\title{Clover Fermions Implementation}
+\title{Clover Fermions Implementation $N_c=|:Nc:|$}
 \author{Andrew Pochinsky\\Sergey Syritsyn}
-\date{Release 1.3.0}
+\date{Version |:Version:|}
 
 \begin{document}
 \maketitle
@@ -485,8 +485,8 @@ The Clover interface is fully functional to isolate users of the code from
 implementation details. Several types defined in the interface provide help
 with typechecking.
 <<File [[../port/qop-clover.h]]>>=
-#ifndef QOP_CLOVER_1a978487255540d18dde15681e99166a
-# define `QOP_CLOVER_1a978487255540d18dde15681e99166a
+#ifndef QOP_|:Nc:|_CLOVER_1a978487255540d18dde15681e99166a
+# define `QOP_|:Nc:|_CLOVER_1a978487255540d18dde15681e99166a
   <<Interface macros>>
   <<Interface types>>
   <<Interface functions>>
@@ -496,7 +496,7 @@ with typechecking.
 # if defined(QOP_CLOVER_DEFAULT_PRECISION) && (QOP_CLOVER_DEFAULT_PRECISION == 'D')
     <<Double precision defaults>>
 # endif
-#endif
+#endif /* !defined(QOP_|:Nc:|_CLOVER_1a978487255540d18dde15681e99166a) */
 @
 
 
@@ -506,18 +506,18 @@ not be safely changed.
 
 First, the dimension is always four:
 <<Interface macros>>=
-#define `QOP_CLOVER_DIM 4
+#define `QOP_|:Nc:|_CLOVER_DIM 4
 @
 
 Next, the number of components in the Dirac fermion and the projected fermion
 <<Interface macros>>=
-#define `QOP_CLOVER_FERMION_DIM 4
-#define `QOP_CLOVER_PROJECTED_FERMION_DIM 2
+#define `QOP_|:Nc:|_CLOVER_FERMION_DIM 4
+#define `QOP_|:Nc:|_CLOVER_PROJECTED_FERMION_DIM 2
 @
 
-We work only with $SU(3)$
+We work only with $SU(|:Nc:|)$
 <<Interface macros>>=
-#define `QOP_CLOVER_COLORS 3
+#define `QOP_|:Nc:|_CLOVER_COLORS |:Nc:|
 @
 
 \section{Library version}
@@ -526,7 +526,7 @@ provide enough information to uniquely identify library's version. Since
 there are many features packed into the library, a human-readable string is
 returned.
 <<Interface functions>>=
-const char *`QOP_CLOVER_version(void);
+const char *`QOP_|:Nc:|_CLOVER_version(void);
 @
 
 \section{Performance monitoring}
@@ -535,24 +535,24 @@ operations in the [[State]] structure. These numbers are accessed via the
 following function. Only data on the current node is recorded. The function
 returns [[0]] if performance counters are updated.
 <<Interface functions>>=
-int `QOP_CLOVER_performance(double *time_sec,
-                            long long *flops,
-                            long long *sent,
-                            long long *receive,
-                            struct QOP_CLOVER_State *state);
+int `QOP_|:Nc:|_CLOVER_performance(double *time_sec,
+                              long long *flops,
+                              long long *sent,
+                              long long *receive,
+                              struct QOP_|:Nc:|_CLOVER_State *state);
 @
 
 \section{Initialization}
 All library state is incapsulated into an opaque structure. We do not need
 to expose any components of the structure to the user.
 <<Interface types>>=
-struct `QOP_CLOVER_State;
+struct `QOP_|:Nc:|_CLOVER_State;
 @
 
 Initialization needs to know lattice configuration and its layout on the machine.
 It expects to find the information in the following structure
 <<Interface types>>=
-struct `QOP_CLOVER_Config {
+struct `QOP_|:Nc:|_CLOVER_Config {
   int    self;                      /* this node QMP id */
   int    master_p;                  /* if != 0, do I/O from this node */
   int    rank;                      /* lattice rank, must be 4 */
@@ -567,7 +567,7 @@ struct `QOP_CLOVER_Config {
   void  *env;                       /* lexical variables for sublattice */
 };
 @
-This structure is used by [[QOP_CLOVER_init()]] only. Once the initialization is done,
+This structure is used by [[QOP_|:Nc:|_CLOVER_init()]] only. Once the initialization is done,
 the elements of the structure (and data they point to) will never be referenced again.
 
 The library initialization routine creates the state structure and fills it
@@ -575,8 +575,8 @@ with necessary information. It returns [[0]] if successful and a non-zero value
 otherwise. In any case [[state_ptr]] is set to some value suitable for other
 library functions.
 <<Interface functions>>=
-int `QOP_CLOVER_init(struct QOP_CLOVER_State **state_ptr,
-                    struct QOP_CLOVER_Config *config);
+int `QOP_|:Nc:|_CLOVER_init(struct QOP_|:Nc:|_CLOVER_State **state_ptr,
+                      struct QOP_|:Nc:|_CLOVER_Config *config);
 @
 Arguments of [[init()]] are
 \begin{itemize}
@@ -584,18 +584,18 @@ Arguments of [[init()]] are
 \item[\texttt{config}] 4--d lattice layout information
 \end{itemize}
 
-When [[QOP_CLOVER_init()]] returns, [[*state_ptr]] will point to a valid
+When [[QOP_|:Nc:|_CLOVER_init()]] returns, [[*state_ptr]] will point to a valid
 state of the library (if any error occurs during initialization, the
 error will be stored in [[*stat_ptr]].
 
-It is possible to call [[QOP_CLOVER_init()]] multiple times with different
+It is possible to call [[QOP_|:Nc:|_CLOVER_init()]] multiple times with different
 arguments. The library does not require that the lattice size and layout agree
 in different calls.
 
 \section{Cleanup}
 When the state is no longer needed it should be closed by the following function
 <<Interface functions>>=
-void `QOP_CLOVER_fini(struct QOP_CLOVER_State **state_ptr);
+void `QOP_|:Nc:|_CLOVER_fini(struct QOP_|:Nc:|_CLOVER_State **state_ptr);
 @
 It is an error to use [[*state_ptr]] after it was closed. To help in error
 detection this function sets [[*state_ptr]] to [[NULL]]. All library functions
@@ -606,26 +606,26 @@ When something goes wrong in the library, a library function will return some
 non-zero value and store the error code in the library state. The error codes
 are accessible as human-readable strings via the following function:
 <<Interface functions>>=
-const char *`QOP_CLOVER_error(struct QOP_CLOVER_State *state);
+const char *`QOP_|:Nc:|_CLOVER_error(struct QOP_|:Nc:|_CLOVER_State *state);
 @
-Note that the first error will be latched until [[QOP_CLOVER_error()]] is
+Note that the first error will be latched until [[QOP_|:Nc:|_CLOVER_error()]] is
 called.
 This is a design choice made to help in pinpointing the origin of the problem
 when something goes wrong intead of reporting spiritious errors if multiple
 calls to the library are made before an error is checked for. If there is no
-error, [[QOP_CLOVER_error()]] returns [[NULL]]. The function could be called
+error, [[QOP_|:Nc:|_CLOVER_error()]] returns [[NULL]]. The function could be called
 multiple times, it does not reset the error code, instead it marks in the state
 that the error was reported thus allowing latching another error.
 
 \section{Gauge}\label{import-gauge}
 Any gauge field should be imported into the library format before it could
 be used. To keep the interface as general as possible, we use a query function
-approach for inport. There are two versions of [[QOP_CLOVER_import_gauge]], one
+approach for inport. There are two versions of [[QOP_|:Nc:|_CLOVER_import_gauge]], one
 for double precision, another for single precision. Note that the clover
 action parameters are specified in the gauge import routines. 
 <<Interface functions>>=
-int `QOP_F3_CLOVER_import_gauge(struct QOP_F3_CLOVER_Gauge **gauge_ptr,
-                                struct QOP_CLOVER_State *state,
+int `QOP_F|:Nc:|_CLOVER_import_gauge(struct QOP_F|:Nc:|_CLOVER_Gauge **gauge_ptr,
+                                struct QOP_|:Nc:|_CLOVER_State *state,
                                 double kappa,
                                 double c_sw,
                                 double (*U_reader)(int dir,
@@ -642,8 +642,8 @@ int `QOP_F3_CLOVER_import_gauge(struct QOP_F3_CLOVER_Gauge **gauge_ptr,
                                                    int re_im,
                                                    void *env),
                                 void *env);
-int `QOP_D3_CLOVER_import_gauge(struct QOP_D3_CLOVER_Gauge **gauge_ptr,
-                                struct QOP_CLOVER_State *state,
+int `QOP_D|:Nc:|_CLOVER_import_gauge(struct QOP_D|:Nc:|_CLOVER_Gauge **gauge_ptr,
+                                struct QOP_|:Nc:|_CLOVER_State *state,
                                 double kappa,
                                 double c_sw,
                                 double (*U_reader)(int dir,
@@ -687,43 +687,43 @@ that may be passed to other library functions. If something goes wrong,
 
 Here are corresponding opaque types:
 <<Interface types>>=
-struct `QOP_F3_CLOVER_Gauge;
-struct `QOP_D3_CLOVER_Gauge;
+struct `QOP_F|:Nc:|_CLOVER_Gauge;
+struct `QOP_D|:Nc:|_CLOVER_Gauge;
 @
 
 We also need a couple of destructors for gauge fields. For convenience, they
 will accept [[NULL]] intead of a valid gauge field.
 <<Interface functions>>=
-void `QOP_F3_CLOVER_free_gauge(struct QOP_F3_CLOVER_Gauge **gauge_ptr);
-void `QOP_D3_CLOVER_free_gauge(struct QOP_D3_CLOVER_Gauge **gauge_ptr);
+void `QOP_F|:Nc:|_CLOVER_free_gauge(struct QOP_F|:Nc:|_CLOVER_Gauge **gauge_ptr);
+void `QOP_D|:Nc:|_CLOVER_free_gauge(struct QOP_D|:Nc:|_CLOVER_Gauge **gauge_ptr);
 @
 
 Here are macros defining default values for gauge field types and functions:
 <<Single precision defaults>>=
-#define `QOP_CLOVER_import_gauge QOP_F3_CLOVER_import_gauge
-#define `QOP_CLOVER_free_gauge QOP_F3_CLOVER_free_gauge
-#define `QOP_CLOVER_Gauge QOP_F3_CLOVER_Gauge
+#define `QOP_|:Nc:|_CLOVER_import_gauge QOP_|:Nc:|_CLOVER_import_gauge
+#define `QOP_|:Nc:|_CLOVER_free_gauge QOP_F|:Nc:|_CLOVER_free_gauge
+#define `QOP_|:Nc:|_CLOVER_Gauge QOP_F|:Nc:|_CLOVER_Gauge
 @
 <<Double precision defaults>>=
-#define `QOP_CLOVER_import_gauge QOP_D3_CLOVER_import_gauge
-#define `QOP_CLOVER_free_gauge QOP_D3_CLOVER_free_gauge
-#define `QOP_CLOVER_Gauge QOP_D3_CLOVER_Gauge
+#define `QOP_|:Nc:|_CLOVER_import_gauge QOP_D|:Nc:|_CLOVER_import_gauge
+#define `QOP_|:Nc:|_CLOVER_free_gauge QOP_D|:Nc:|_CLOVER_free_gauge
+#define `QOP_|:Nc:|_CLOVER_Gauge QOP_D|:Nc:|_CLOVER_Gauge
 @
 
 \section{Fermions}
 Unlike the gauge field, fermions are provided with a richer set of functions.
 In addition to import and destruction, they could be created empty and exported.
 <<Interface functions>>=
-int `QOP_F3_CLOVER_import_fermion(struct QOP_F3_CLOVER_Fermion **fermion_ptr,
-                                  struct QOP_CLOVER_State *state,
+int `QOP_F|:Nc:|_CLOVER_import_fermion(struct QOP_F|:Nc:|_CLOVER_Fermion **fermion_ptr,
+                                  struct QOP_|:Nc:|_CLOVER_State *state,
                                   double (*reader)(const int pos[4],
                                                    int color,
                                                    int dirac,
                                                    int re_im,
                                                    void *env),
                                   void *env);
-int `QOP_D3_CLOVER_import_fermion(struct QOP_D3_CLOVER_Fermion **fermion_ptr,
-                                  struct QOP_CLOVER_State *state,
+int `QOP_D|:Nc:|_CLOVER_import_fermion(struct QOP_D|:Nc:|_CLOVER_Fermion **fermion_ptr,
+                                  struct QOP_|:Nc:|_CLOVER_State *state,
                                   double (*reader)(const int pos[4],
                                                    int color,
                                                    int dirac,
@@ -747,61 +747,61 @@ value that may be passed to other library functions. If something goes wrong,
 
 Here are corresponding opaque types:
 <<Interface types>>=
-struct `QOP_F3_CLOVER_Fermion;
-struct `QOP_D3_CLOVER_Fermion;
+struct `QOP_F|:Nc:|_CLOVER_Fermion;
+struct `QOP_D|:Nc:|_CLOVER_Fermion;
 @
 
 One may also need to create a fermion field without any useful initial value.
 For convenience, we provide functions to do that
 <<Interface functions>>=
-int `QOP_F3_CLOVER_allocate_fermion(struct QOP_F3_CLOVER_Fermion **fermion_ptr,
-                                 struct QOP_CLOVER_State *state);
-int `QOP_D3_CLOVER_allocate_fermion(struct QOP_D3_CLOVER_Fermion **fermion_ptr,
-                                 struct QOP_CLOVER_State *state);
+int `QOP_F|:Nc:|_CLOVER_allocate_fermion(struct QOP_F|:Nc:|_CLOVER_Fermion **fermion_ptr,
+                                 struct QOP_|:Nc:|_CLOVER_State *state);
+int `QOP_D|:Nc:|_CLOVER_allocate_fermion(struct QOP_D|:Nc:|_CLOVER_Fermion **fermion_ptr,
+                                 struct QOP_|:Nc:|_CLOVER_State *state);
 @
 
 Unlike the gauge fields, fermions need a way to be exported back to the user.
 We also use a functional interface to provide indexing.
 <<Interface functions>>=
-int `QOP_F3_CLOVER_export_fermion(void (*writer)(const int pos[4],
+int `QOP_F|:Nc:|_CLOVER_export_fermion(void (*writer)(const int pos[4],
                                                  int color,
                                                  int dirac,
                                                  int re_im,
                                                  double value,
                                                  void *env),
                                   void *env,
-                                  const struct QOP_F3_CLOVER_Fermion *fermion);
-int `QOP_D3_CLOVER_export_fermion(void (*writer)(const int pos[4],
+                                  const struct QOP_F|:Nc:|_CLOVER_Fermion *fermion);
+int `QOP_D|:Nc:|_CLOVER_export_fermion(void (*writer)(const int pos[4],
                                                  int color,
                                                  int dirac,
                                                  int re_im,
                                                  double value,
                                                  void *env),
                                   void *env,
-                                  const struct QOP_D3_CLOVER_Fermion *fermion);
+                                  const struct QOP_D|:Nc:|_CLOVER_Fermion *fermion);
 @
 
 We also need a couple of destructors for fermion fields. For convenience, they
 will accept [[NULL]] intead of a valid fermion field.
 <<Interface functions>>=
-void `QOP_F3_CLOVER_free_fermion(struct QOP_F3_CLOVER_Fermion **fermion_ptr);
-void `QOP_D3_CLOVER_free_fermion(struct QOP_D3_CLOVER_Fermion **fermion_ptr);
+void `QOP_F|:Nc:|_CLOVER_free_fermion(struct QOP_F|:Nc:|_CLOVER_Fermion **fermion_ptr);
+void `QOP_D|:Nc:|_CLOVER_free_fermion(struct QOP_D|:Nc:|_CLOVER_Fermion **fermion_ptr);
 @
 
 Finally, macros for prefered precision
 <<Single precision defaults>>=
-#define `QOP_CLOVER_import_fermion QOP_F3_CLOVER_import_fermion
-#define `QOP_CLOVER_export_fermion QOP_F3_CLOVER_export_fermion
-#define `QOP_CLOVER_allocate_fermion QOP_F3_CLOVER_allocate_fermion
-#define `QOP_CLOVER_free_fermion QOP_F3_CLOVER_free_fermion
-#define `QOP_CLOVER_Fermion QOP_F3_CLOVER_Fermion
+#define `QOP_|:Nc:|_CLOVER_import_fermion QOP_F|:Nc:|_CLOVER_import_fermion
+#define `QOP_|:Nc:|_CLOVER_export_fermion QOP_F|:Nc:|_CLOVER_export_fermion
+#define `QOP_|:Nc:|_CLOVER_allocate_fermion QOP_F|:Nc:|_CLOVER_allocate_fermion
+#define `QOP_|:Nc:|_CLOVER_free_fermion QOP_F|:Nc:|_CLOVER_free_fermion
+#define `QOP_|:Nc:|_CLOVER_Fermion QOP_F|:Nc:|_CLOVER_Fermion
 @
 <<Double precision defaults>>=
-#define `QOP_CLOVER_import_fermion QOP_D3_CLOVER_import_fermion
-#define `QOP_CLOVER_export_fermion QOP_D3_CLOVER_export_fermion
-#define `QOP_CLOVER_allocate_fermion QOP_D3_CLOVER_allocate_fermion
-#define `QOP_CLOVER_free_fermion QOP_D3_CLOVER_free_fermion
-#define `QOP_CLOVER_Fermion QOP_D3_CLOVER_Fermion
+#define `QOP_|:Nc:|_CLOVER_import_fermion QOP_D|:Nc:|_CLOVER_import_fermion
+#define `QOP_|:Nc:|_CLOVER_export_fermion QOP_D|:Nc:|_CLOVER_export_fermion
+#define `QOP_|:Nc:|_CLOVER_allocate_fermion QOP_D|:Nc:|_CLOVER_allocate_fermion
+#define `QOP_|:Nc:|_CLOVER_free_fermion QOP_D|:Nc:|_CLOVER_free_fermion
+#define `QOP_|:Nc:|_CLOVER_Fermion QOP_D|:Nc:|_CLOVER_Fermion
 @
 
 \section{Preconditioned fermions}
@@ -810,16 +810,16 @@ but the exact relation is not specified.
 Unlike the gauge field, fermions are provided with a richer set of functions.
 In addition to import and destruction, they could be created empty and exported.
 <<Interface functions>>=
-int `QOP_F3_CLOVER_import_half_fermion(struct QOP_F3_CLOVER_HalfFermion **hfermion_ptr,
-                                       struct QOP_CLOVER_State *state,
+int `QOP_F|:Nc:|_CLOVER_import_half_fermion(struct QOP_F|:Nc:|_CLOVER_HalfFermion **hfermion_ptr,
+                                       struct QOP_|:Nc:|_CLOVER_State *state,
                                        double (*reader)(const int pos[4],
                                                         int color,
                                                         int dirac,
                                                         int re_im,
                                                         void *env),
                                        void *env);
-int `QOP_D3_CLOVER_import_half_fermion(struct QOP_D3_CLOVER_HalfFermion **hfermion_ptr,
-                                       struct QOP_CLOVER_State *state,
+int `QOP_D|:Nc:|_CLOVER_import_half_fermion(struct QOP_D|:Nc:|_CLOVER_HalfFermion **hfermion_ptr,
+                                       struct QOP_|:Nc:|_CLOVER_State *state,
                                        double (*reader)(const int pos[4],
                                                         int color,
                                                         int dirac,
@@ -843,61 +843,61 @@ value that may be passed to other library functions. If something goes wrong,
 
 Here are corresponding opaque types:
 <<Interface types>>=
-struct `QOP_F3_CLOVER_HalfFermion;
-struct `QOP_D3_CLOVER_HalfFermion;
+struct `QOP_F|:Nc:|_CLOVER_HalfFermion;
+struct `QOP_D|:Nc:|_CLOVER_HalfFermion;
 @
 
 One may also need to create a fermion field without any useful initial value.
 For convenience, we provide functions to do that
 <<Interface functions>>=
-int `QOP_F3_CLOVER_allocate_half_fermion(struct QOP_F3_CLOVER_HalfFermion **hfermion_ptr,
-                                         struct QOP_CLOVER_State *state);
-int `QOP_D3_CLOVER_allocate_half_fermion(struct QOP_D3_CLOVER_HalfFermion **hfermion_ptr,
-                                         struct QOP_CLOVER_State *state);
+int `QOP_F|:Nc:|_CLOVER_allocate_half_fermion(struct QOP_F|:Nc:|_CLOVER_HalfFermion **hfermion_ptr,
+                                         struct QOP_|:Nc:|_CLOVER_State *state);
+int `QOP_D|:Nc:|_CLOVER_allocate_half_fermion(struct QOP_D|:Nc:|_CLOVER_HalfFermion **hfermion_ptr,
+                                         struct QOP_|:Nc:|_CLOVER_State *state);
 @
 
 Preconditioned fermions may be exported back to the user.
 We also use a functional interface to provide indexing.
 <<Interface functions>>=
-int `QOP_F3_CLOVER_export_half_fermion(void (*writer)(const int pos[4],
+int `QOP_F|:Nc:|_CLOVER_export_half_fermion(void (*writer)(const int pos[4],
                                                       int color,
                                                       int dirac,
                                                       int re_im,
                                                       double value,
                                                       void *env),
                                       void *env,
-                                      const struct QOP_F3_CLOVER_HalfFermion *hfermion);
-int `QOP_D3_CLOVER_export_half_fermion(void (*writer)(const int pos[4],
+                                      const struct QOP_F|:Nc:|_CLOVER_HalfFermion *hfermion);
+int `QOP_D|:Nc:|_CLOVER_export_half_fermion(void (*writer)(const int pos[4],
                                                       int color,
                                                       int dirac,
                                                       int re_im,
                                                       double value,
                                                       void *env),
                                       void *env,
-                                      const struct QOP_D3_CLOVER_HalfFermion *hfermion);
+                                      const struct QOP_D|:Nc:|_CLOVER_HalfFermion *hfermion);
 @
 
 We also need a couple of destructors for fermion fields. For convenience, they
 will accept [[NULL]] intead of a valid fermion field.
 <<Interface functions>>=
-void `QOP_F3_CLOVER_free_half_fermion(struct QOP_F3_CLOVER_HalfFermion **hfermion_ptr);
-void `QOP_D3_CLOVER_free_half_fermion(struct QOP_D3_CLOVER_HalfFermion **hfermion_ptr);
+void `QOP_F|:Nc:|_CLOVER_free_half_fermion(struct QOP_F|:Nc:|_CLOVER_HalfFermion **hfermion_ptr);
+void `QOP_D|:Nc:|_CLOVER_free_half_fermion(struct QOP_D|:Nc:|_CLOVER_HalfFermion **hfermion_ptr);
 @
 
 Finally, macros for prefered precision
 <<Single precision defaults>>=
-#define `QOP_CLOVER_import_half_fermion QOP_F3_CLOVER_import_half_fermion
-#define `QOP_CLOVER_export_half_fermion QOP_F3_CLOVER_export_half_fermion
-#define `QOP_CLOVER_allocate_half_fermion QOP_F3_CLOVER_allocate_half_fermion
-#define `QOP_CLOVER_free_half_fermion QOP_F3_CLOVER_free_half_fermion
-#define `QOP_CLOVER_HalfFermion QOP_F3_CLOVER_HalfFermion
+#define `QOP_|:Nc:|_CLOVER_import_half_fermion QOP_F|:Nc:|_CLOVER_import_half_fermion
+#define `QOP_|:Nc:|_CLOVER_export_half_fermion QOP_F|:Nc:|_CLOVER_export_half_fermion
+#define `QOP_|:Nc:|_CLOVER_allocate_half_fermion QOP_F|:Nc:|_CLOVER_allocate_half_fermion
+#define `QOP_|:Nc:|_CLOVER_free_half_fermion QOP_F|:Nc:|_CLOVER_free_half_fermion
+#define `QOP_|:Nc:|_CLOVER_HalfFermion QOP_F|:Nc:|_CLOVER_HalfFermion
 @
 <<Double precision defaults>>=
-#define `QOP_CLOVER_import_half_fermion QOP_D3_CLOVER_import_half_fermion
-#define `QOP_CLOVER_export_half_fermion QOP_D3_CLOVER_export_half_fermion
-#define `QOP_CLOVER_allocate_half_fermion QOP_D3_CLOVER_allocate_half_fermion
-#define `QOP_CLOVER_free_half_fermion QOP_D3_CLOVER_free_half_fermion
-#define `QOP_CLOVER_HalfFermion QOP_D3_CLOVER_HalfFermion
+#define `QOP_|:Nc:|_CLOVER_import_half_fermion QOP_D|:Nc:|_CLOVER_import_half_fermion
+#define `QOP_|:Nc:|_CLOVER_export_half_fermion QOP_D|:Nc:|_CLOVER_export_half_fermion
+#define `QOP_|:Nc:|_CLOVER_allocate_half_fermion QOP_D|:Nc:|_CLOVER_allocate_half_fermion
+#define `QOP_|:Nc:|_CLOVER_free_half_fermion QOP_D|:Nc:|_CLOVER_free_half_fermion
+#define `QOP_|:Nc:|_CLOVER_HalfFermion QOP_D|:Nc:|_CLOVER_HalfFermion
 @
 
 \section{Dirac Operator}
@@ -905,30 +905,30 @@ We provide both normal and conjugated Dirac Operator for the full fermion as
 well as the precondition operator and its conjugate both in single and double
 precision.
 <<Interface functions>>=
-int `QOP_F3_CLOVER_D_operator(struct QOP_F3_CLOVER_Fermion *result,
-                              const struct QOP_F3_CLOVER_Gauge *gauge,
-                              const struct QOP_F3_CLOVER_Fermion *fermion);
-int `QOP_D3_CLOVER_D_operator(struct QOP_D3_CLOVER_Fermion *result,
-                              const struct QOP_D3_CLOVER_Gauge *gauge,
-                              const struct QOP_D3_CLOVER_Fermion *fermion);
+int `QOP_F|:Nc:|_CLOVER_D_operator(struct QOP_F|:Nc:|_CLOVER_Fermion *result,
+                              const struct QOP_F|:Nc:|_CLOVER_Gauge *gauge,
+                              const struct QOP_F|:Nc:|_CLOVER_Fermion *fermion);
+int `QOP_D|:Nc:|_CLOVER_D_operator(struct QOP_D|:Nc:|_CLOVER_Fermion *result,
+                              const struct QOP_D|:Nc:|_CLOVER_Gauge *gauge,
+                              const struct QOP_D|:Nc:|_CLOVER_Fermion *fermion);
 @
 <<Interface functions>>=
-int `QOP_F3_CLOVER_D_operator_conjugated(struct QOP_F3_CLOVER_Fermion *result,
-                                         const struct QOP_F3_CLOVER_Gauge *gauge,
-                                         const struct QOP_F3_CLOVER_Fermion *fermion);
-int `QOP_D3_CLOVER_D_operator_conjugated(struct QOP_D3_CLOVER_Fermion *result,
-                                         const struct QOP_D3_CLOVER_Gauge *gauge,
-                                         const struct QOP_D3_CLOVER_Fermion *fermion);
+int `QOP_F|:Nc:|_CLOVER_D_operator_conjugated(struct QOP_F|:Nc:|_CLOVER_Fermion *result,
+                                         const struct QOP_F|:Nc:|_CLOVER_Gauge *gauge,
+                                         const struct QOP_F|:Nc:|_CLOVER_Fermion *fermion);
+int `QOP_D|:Nc:|_CLOVER_D_operator_conjugated(struct QOP_D|:Nc:|_CLOVER_Fermion *result,
+                                         const struct QOP_D|:Nc:|_CLOVER_Gauge *gauge,
+                                         const struct QOP_D|:Nc:|_CLOVER_Fermion *fermion);
 @
 
 Also the default precision macros
 <<Single precision defaults>>=
-#define `QOP_CLOVER_D_operator QOP_F3_CLOVER_D_operator
-#define `QOP_CLOVER_D_operator_conjugated QOP_F3_CLOVER_D_operator_conjugated
+#define `QOP_|:Nc:|_CLOVER_D_operator QOP_F|:Nc:|_CLOVER_D_operator
+#define `QOP_|:Nc:|_CLOVER_D_operator_conjugated QOP_F|:Nc:|_CLOVER_D_operator_conjugated
 @
 <<Double precision defaults>>=
-#define `QOP_CLOVER_D_operator QOP_D3_CLOVER_D_operator
-#define `QOP_CLOVER_D_operator_conjugated QOP_D3_CLOVER_D_operator_conjugated
+#define `QOP_|:Nc:|_CLOVER_D_operator QOP_D|:Nc:|_CLOVER_D_operator
+#define `QOP_|:Nc:|_CLOVER_D_operator_conjugated QOP_D|:Nc:|_CLOVER_D_operator_conjugated
 @
 \section{Deflation}
 For delfation solvers, the following interface is provided. Deflators are used
@@ -936,33 +936,33 @@ by the deflation solvers to collect and store the low eigenmode state.
 
 The state of the deflator is packaged into an opaque structure:
 <<Interface types>>=
-struct `QOP_CLOVER_Deflator;
+struct `QOP_|:Nc:|_CLOVER_Deflator;
 @
 
 The deflators are created with given capacity, size and precision:
 <<Interface functions>>=
-int `QOP_CLOVER_create_deflator(struct QOP_CLOVER_Deflator **defl_ptr,
-                               struct QOP_CLOVER_State *state,
+int `QOP_|:Nc:|_CLOVER_create_deflator(struct QOP_|:Nc:|_CLOVER_Deflator **defl_ptr,
+                               struct QOP_|:Nc:|_CLOVER_State *state,
                                int nev, int vsize, double eps, int umax);
 @
 
 Once done, the deflators must be freed with the following functions:
 <<Interface functions>>=
-void `QOP_CLOVER_free_deflator(struct QOP_CLOVER_Deflator **defl_ptr);
+void `QOP_|:Nc:|_CLOVER_free_deflator(struct QOP_|:Nc:|_CLOVER_Deflator **defl_ptr);
 @
 
 Functions to control the state of the deflator. If one needs to keep the handle
 but purge the accumulated data, there is a [[reset]] operation:
 <<Interface functions>>=
-void `QOP_CLOVER_deflator_reset(struct QOP_CLOVER_Deflator *defl_ptr);
+void `QOP_|:Nc:|_CLOVER_deflator_reset(struct QOP_|:Nc:|_CLOVER_Deflator *defl_ptr);
 @
 
 To control collection of the Krylov space, use [[stop]] and [[resume]]. While
 the deflator is stopped, it can still be used in the deflated solver and
 queried about accumulated eigenvalues.
 <<Interface functions>>=
-void `QOP_CLOVER_deflator_stop(struct QOP_CLOVER_Deflator *defl_ptr);
-void `QOP_CLOVER_deflator_resume(struct QOP_CLOVER_Deflator *defl_ptr);
+void `QOP_|:Nc:|_CLOVER_deflator_stop(struct QOP_|:Nc:|_CLOVER_Deflator *defl_ptr);
+void `QOP_|:Nc:|_CLOVER_deflator_resume(struct QOP_|:Nc:|_CLOVER_Deflator *defl_ptr);
 @
 
 The deflator can return its current estimate of the eigenvalues if it has it.
@@ -970,8 +970,8 @@ There are either [[nev]] eigenmode estimates, or none. If the deflator does
 not have the estimates, [[eigen]] returns [[1]], otherwise it
 returns [[0]].
 <<Interface functions>>=
-int `QOP_CLOVER_deflator_eigen(double *eigen_values,
-                              struct QOP_CLOVER_Deflator *defl_ptr);
+int `QOP_|:Nc:|_CLOVER_deflator_eigen(double *eigen_values,
+                              struct QOP_|:Nc:|_CLOVER_Deflator *defl_ptr);
 @
 
 \section{Solvers}
@@ -980,17 +980,17 @@ compute true CG and Dirac residuals on each iteration. Constants below can be
 bitwise combined to select which residual are computed and printed. The
 behavior of the solvers do not change when residuals are selected. Applications
 should not assume particular values of the constants except that
-[[QOP_CLOVER_LOG_NONE]] is zero.
+[[QOP_|:Nc:|_CLOVER_LOG_NONE]] is zero.
 <<Interface types>>=
 enum {
-   `QOP_CLOVER_LOG_NONE              = 0x00,
-   `QOP_CLOVER_LOG_CG_RESIDUAL       = 0x01,
-   `QOP_CLOVER_LOG_TRUE_RESIDUAL     = 0x02,
-   `QOP_CLOVER_FINAL_CG_RESIDUAL     = 0x04,
-   `QOP_CLOVER_FINAL_DIRAC_RESIDUAL  = 0x08,
-   `QOP_CLOVER_LOG_EIG_UPDATE1       = 0x10,
-   `QOP_CLOVER_LOG_EIG_POSTAMBLE     = 0x20,
-   `QOP_CLOVER_LOG_EVERYTHING        = 0x3f
+   `QOP_|:Nc:|_CLOVER_LOG_NONE              = 0x00,
+   `QOP_|:Nc:|_CLOVER_LOG_CG_RESIDUAL       = 0x01,
+   `QOP_|:Nc:|_CLOVER_LOG_TRUE_RESIDUAL     = 0x02,
+   `QOP_|:Nc:|_CLOVER_FINAL_CG_RESIDUAL     = 0x04,
+   `QOP_|:Nc:|_CLOVER_FINAL_DIRAC_RESIDUAL  = 0x08,
+   `QOP_|:Nc:|_CLOVER_LOG_EIG_UPDATE1       = 0x10,
+   `QOP_|:Nc:|_CLOVER_LOG_EIG_POSTAMBLE     = 0x20,
+   `QOP_|:Nc:|_CLOVER_LOG_EVERYTHING        = 0x3f
 };
 @
 
@@ -1007,21 +1007,21 @@ If conjugate gradient converges, zero is returned. In this case
 contains normalized iterative CG residual.
 
 <<Interface functions>>=
-int `QOP_F3_CLOVER_D_CG(struct QOP_F3_CLOVER_Fermion *result,
+int `QOP_F|:Nc:|_CLOVER_D_CG(struct QOP_F|:Nc:|_CLOVER_Fermion *result,
                         int *out_iterations,
                         double *out_epsilon,
-                        const struct QOP_F3_CLOVER_Fermion *chi_0,
-                        const struct QOP_F3_CLOVER_Gauge *gauge,
-                        const struct QOP_F3_CLOVER_Fermion *rhs,
+                        const struct QOP_F|:Nc:|_CLOVER_Fermion *chi_0,
+                        const struct QOP_F|:Nc:|_CLOVER_Gauge *gauge,
+                        const struct QOP_F|:Nc:|_CLOVER_Fermion *rhs,
                         int max_iteration,
                         double epsilon,
                         unsigned int options);
-int `QOP_D3_CLOVER_D_CG(struct QOP_D3_CLOVER_Fermion *result,
+int `QOP_D|:Nc:|_CLOVER_D_CG(struct QOP_D|:Nc:|_CLOVER_Fermion *result,
                         int *out_iterations,
                         double *out_epsilon,
-                        const struct QOP_D3_CLOVER_Fermion *x_0,
-                        const struct QOP_D3_CLOVER_Gauge *gauge,
-                        const struct QOP_D3_CLOVER_Fermion *rhs,
+                        const struct QOP_D|:Nc:|_CLOVER_Fermion *x_0,
+                        const struct QOP_D|:Nc:|_CLOVER_Gauge *gauge,
+                        const struct QOP_D|:Nc:|_CLOVER_Fermion *rhs,
                         int max_iteration,
                         double epsilon,
                         unsigned int options);
@@ -1033,12 +1033,12 @@ a double precision version and takes two extra parameter [[f_iterations]] and
 [[f_epsilon]] which control the number of float CG iterations between double
 updates.
 <<Interface functions>>=
-int `QOP_CLOVER_mixed_D_CG(struct QOP_D3_CLOVER_Fermion *result,
+int `QOP_|:Nc:|_CLOVER_mixed_D_CG(struct QOP_D|:Nc:|_CLOVER_Fermion *result,
                            int *out_iterations,
                            double *out_epsilon,
-                           const struct QOP_D3_CLOVER_Fermion *x_0,
-                           const struct QOP_D3_CLOVER_Gauge *gauge,
-                           const struct QOP_D3_CLOVER_Fermion *rhs,
+                           const struct QOP_D|:Nc:|_CLOVER_Fermion *x_0,
+                           const struct QOP_D|:Nc:|_CLOVER_Gauge *gauge,
+                           const struct QOP_D|:Nc:|_CLOVER_Fermion *rhs,
                            int f_iterations,
                            double f_epsilon,
                            int max_iteration,
@@ -1051,13 +1051,13 @@ the same as the plain mixed solver above with addition of an extra parameter
 for the deflator state.
 
 <<Interface functions>>=
-int `QOP_CLOVER_deflated_mixed_D_CG(struct QOP_D3_CLOVER_Fermion *result,
+int `QOP_|:Nc:|_CLOVER_deflated_mixed_D_CG(struct QOP_D|:Nc:|_CLOVER_Fermion *result,
                                    int *out_iterations,
                                    double *out_epsilon,
-                                   const struct QOP_D3_CLOVER_Fermion *chi_0,
-                                   const struct QOP_D3_CLOVER_Gauge *gauge,
-                                   const struct QOP_D3_CLOVER_Fermion *rhs,
-                                   struct QOP_CLOVER_Deflator *deflator,
+                                   const struct QOP_D|:Nc:|_CLOVER_Fermion *chi_0,
+                                   const struct QOP_D|:Nc:|_CLOVER_Gauge *gauge,
+                                   const struct QOP_D|:Nc:|_CLOVER_Fermion *rhs,
+                                   struct QOP_|:Nc:|_CLOVER_Deflator *deflator,
                                    int f_iterations,
                                    double f_epsilon,
                                    int max_iteration,
@@ -1067,10 +1067,10 @@ int `QOP_CLOVER_deflated_mixed_D_CG(struct QOP_D3_CLOVER_Fermion *result,
 
 Again, macros
 <<Single precision defaults>>=
-#define `QOP_CLOVER_D_CG QOP_F3_CLOVER_D_CG
+#define `QOP_|:Nc:|_CLOVER_D_CG QOP_F|:Nc:|_CLOVER_D_CG
 @
 <<Double precision defaults>>=
-#define `QOP_CLOVER_D_CG QOP_D3_CLOVER_D_CG
+#define `QOP_|:Nc:|_CLOVER_D_CG QOP_D|:Nc:|_CLOVER_D_CG
 @
 
 \section{Helper routines}
@@ -1080,75 +1080,75 @@ algebra on full and preconditioned fermions.
 r\leftarrow a + \alpha b
 \]
 <<Interface functions>>=
-int `QOP_F3_CLOVER_madd_fermion(struct QOP_F3_CLOVER_Fermion *r,
-                                const struct QOP_F3_CLOVER_Fermion *a,
+int `QOP_F|:Nc:|_CLOVER_madd_fermion(struct QOP_F|:Nc:|_CLOVER_Fermion *r,
+                                const struct QOP_F|:Nc:|_CLOVER_Fermion *a,
                                 double alpha,
-                                const struct QOP_F3_CLOVER_Fermion *b);
-int `QOP_D3_CLOVER_madd_fermion(struct QOP_D3_CLOVER_Fermion *r,
-                                const struct QOP_D3_CLOVER_Fermion *a,
+                                const struct QOP_F|:Nc:|_CLOVER_Fermion *b);
+int `QOP_D|:Nc:|_CLOVER_madd_fermion(struct QOP_D|:Nc:|_CLOVER_Fermion *r,
+                                const struct QOP_D|:Nc:|_CLOVER_Fermion *a,
                                 double alpha,
-                                const struct QOP_D3_CLOVER_Fermion *b);
-int `QOP_F3_CLOVER_madd_half_fermion(struct QOP_F3_CLOVER_HalfFermion *r,
-                                     const struct QOP_F3_CLOVER_HalfFermion *a,
+                                const struct QOP_D|:Nc:|_CLOVER_Fermion *b);
+int `QOP_F|:Nc:|_CLOVER_madd_half_fermion(struct QOP_F|:Nc:|_CLOVER_HalfFermion *r,
+                                     const struct QOP_F|:Nc:|_CLOVER_HalfFermion *a,
                                      double alpha,
-                                     const struct QOP_F3_CLOVER_HalfFermion *b);
-int `QOP_D3_CLOVER_madd_half_fermion(struct QOP_D3_CLOVER_HalfFermion *r,
-                                     const struct QOP_D3_CLOVER_HalfFermion *a,
+                                     const struct QOP_F|:Nc:|_CLOVER_HalfFermion *b);
+int `QOP_D|:Nc:|_CLOVER_madd_half_fermion(struct QOP_D|:Nc:|_CLOVER_HalfFermion *r,
+                                     const struct QOP_D|:Nc:|_CLOVER_HalfFermion *a,
                                      double alpha,
-                                     const struct QOP_D3_CLOVER_HalfFermion *b);
+                                     const struct QOP_D|:Nc:|_CLOVER_HalfFermion *b);
 @
 \[
   \alpha \leftarrow \langle a,b\rangle
 \]
 <<Interface functions>>=
-int `QOP_F3_CLOVER_dot_fermion(double *r_re,
+int `QOP_F|:Nc:|_CLOVER_dot_fermion(double *r_re,
                                double *r_im,
-                               const struct QOP_F3_CLOVER_Fermion *a,
-                               const struct QOP_F3_CLOVER_Fermion *b);
-int `QOP_D3_CLOVER_dot_fermion(double *r_re,
+                               const struct QOP_F|:Nc:|_CLOVER_Fermion *a,
+                               const struct QOP_F|:Nc:|_CLOVER_Fermion *b);
+int `QOP_D|:Nc:|_CLOVER_dot_fermion(double *r_re,
                                double *r_im,
-                               const struct QOP_D3_CLOVER_Fermion *a,
-                               const struct QOP_D3_CLOVER_Fermion *b);
-int `QOP_F3_CLOVER_dot_half_fermion(double *r_re,
+                               const struct QOP_D|:Nc:|_CLOVER_Fermion *a,
+                               const struct QOP_D|:Nc:|_CLOVER_Fermion *b);
+int `QOP_F|:Nc:|_CLOVER_dot_half_fermion(double *r_re,
                                     double *r_im,
-                                    const struct QOP_F3_CLOVER_HalfFermion *a,
-                                    const struct QOP_F3_CLOVER_HalfFermion *b);
-int `QOP_D3_CLOVER_dot_half_fermion(double *r_re,
+                                    const struct QOP_F|:Nc:|_CLOVER_HalfFermion *a,
+                                    const struct QOP_F|:Nc:|_CLOVER_HalfFermion *b);
+int `QOP_D|:Nc:|_CLOVER_dot_half_fermion(double *r_re,
                                     double *r_im,
-                                    const struct QOP_D3_CLOVER_HalfFermion *a,
-                                    const struct QOP_D3_CLOVER_HalfFermion *b);
+                                    const struct QOP_D|:Nc:|_CLOVER_HalfFermion *a,
+                                    const struct QOP_D|:Nc:|_CLOVER_HalfFermion *b);
 @
 
 \[
   \alpha \leftarrow \langle a,a\rangle
 \]
 <<Interface functions>>=
-int `QOP_F3_CLOVER_norm2_fermion(double *r,
-                                 const struct QOP_F3_CLOVER_Fermion *a);
-int `QOP_D3_CLOVER_norm2_fermion(double *r_re,
-                                 const struct QOP_D3_CLOVER_Fermion *a);
-int `QOP_F3_CLOVER_norm2_half_fermion(double *r_re,
-                                      const struct QOP_F3_CLOVER_HalfFermion *a);
-int `QOP_D3_CLOVER_norm2_half_fermion(double *r_re,
-                                      const struct QOP_D3_CLOVER_HalfFermion *a);
+int `QOP_F|:Nc:|_CLOVER_norm2_fermion(double *r,
+                                 const struct QOP_F|:Nc:|_CLOVER_Fermion *a);
+int `QOP_D|:Nc:|_CLOVER_norm2_fermion(double *r_re,
+                                 const struct QOP_D|:Nc:|_CLOVER_Fermion *a);
+int `QOP_F|:Nc:|_CLOVER_norm2_half_fermion(double *r_re,
+                                      const struct QOP_F|:Nc:|_CLOVER_HalfFermion *a);
+int `QOP_D|:Nc:|_CLOVER_norm2_half_fermion(double *r_re,
+                                      const struct QOP_D|:Nc:|_CLOVER_HalfFermion *a);
 @
 
 Also, the macros
 <<Single precision defaults>>=
-#define `QOP_CLOVER_madd_fermion QOP_F3_CLOVER_madd_fermion
-#define `QOP_CLOVER_madd_half_fermion QOP_F3_CLOVER_madd_half_fermion
-#define `QOP_CLOVER_dot_fermion QOP_F3_CLOVER_dot_fermion
-#define `QOP_CLOVER_dot_half_fermion QOP_F3_CLOVER_dot_half_fermion
-#define `QOP_CLOVER_norm2_fermion QOP_F3_CLOVER_norm2_fermion
-#define `QOP_CLOVER_norm2_half_fermion QOP_F3_CLOVER_norm2_half_fermion
+#define `QOP_|:Nc:|_CLOVER_madd_fermion QOP_F|:Nc:|_CLOVER_madd_fermion
+#define `QOP_|:Nc:|_CLOVER_madd_half_fermion QOP_F|:Nc:|_CLOVER_madd_half_fermion
+#define `QOP_|:Nc:|_CLOVER_dot_fermion QOP_F|:Nc:|_CLOVER_dot_fermion
+#define `QOP_|:Nc:|_CLOVER_dot_half_fermion QOP_F|:Nc:|_CLOVER_dot_half_fermion
+#define `QOP_|:Nc:|_CLOVER_norm2_fermion QOP_F|:Nc:|_CLOVER_norm2_fermion
+#define `QOP_|:Nc:|_CLOVER_norm2_half_fermion QOP_F|:Nc:|_CLOVER_norm2_half_fermion
 @
 <<Double precision defaults>>=
-#define `QOP_CLOVER_madd_fermion QOP_D3_CLOVER_madd_fermion
-#define `QOP_CLOVER_madd_half_fermion QOP_D3_CLOVER_madd_half_fermion
-#define `QOP_CLOVER_dot_fermion QOP_D3_CLOVER_dot_fermion
-#define `QOP_CLOVER_dot_half_fermion QOP_D3_CLOVER_dot_half_fermion
-#define `QOP_CLOVER_norm2_fermion QOP_D3_CLOVER_norm2_fermion
-#define `QOP_CLOVER_norm2_half_fermion QOP_D3_CLOVER_norm2_half_fermion
+#define `QOP_|:Nc:|_CLOVER_madd_fermion QOP_D|:Nc:|_CLOVER_madd_fermion
+#define `QOP_|:Nc:|_CLOVER_madd_half_fermion QOP_D|:Nc:|_CLOVER_madd_half_fermion
+#define `QOP_|:Nc:|_CLOVER_dot_fermion QOP_D|:Nc:|_CLOVER_dot_fermion
+#define `QOP_|:Nc:|_CLOVER_dot_half_fermion QOP_D|:Nc:|_CLOVER_dot_half_fermion
+#define `QOP_|:Nc:|_CLOVER_norm2_fermion QOP_D|:Nc:|_CLOVER_norm2_fermion
+#define `QOP_|:Nc:|_CLOVER_norm2_half_fermion QOP_D|:Nc:|_CLOVER_norm2_half_fermion
 @
 
 %XXX

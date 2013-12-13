@@ -4,7 +4,7 @@
 
 (procedure zero-fermion ([stem "f_zero"]
                           prec&color)
-           ([R         pointer "r"         "struct Fermion *"       ]
+           ([R         pointer "r"         "struct FermionX *"      ]
             [size      int     "size"      "int"                    ])
    (op qcd-zerof () (vA) ())
    (loop () (i [const 0] [reg size])

@@ -13,7 +13,7 @@ qx(zprint)(struct Q(State) *state,
         int len;
 
         snprintf(buffer, sizeof (buffer) - 1, "CLOVER: %s(%c): ",
-                 source, Q(DEFAULT_PRECISION));
+                 source, QOP_CLOVER_DEFAULT_PRECISION);
         len = strlen(buffer);
         va_start(va, fmt);
         vsnprintf(buffer + len, sizeof (buffer) - len - 1, fmt, va);

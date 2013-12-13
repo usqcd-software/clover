@@ -5,9 +5,9 @@
 (procedure f-norm  ([stem "f_norm"]
                     prec&color
                     count-flops)
-           ([ptr-re    pointer "r_re"      "double *"               ]
-            [size      int     "size"      "int"                    ]
-            [A         pointer "a"         "const struct Fermion *" ])
+           ([ptr-re    pointer "r_re"      "double *"                ]
+            [size      int     "size"      "int"                     ]
+            [A         pointer "a"         "const struct FermionX *" ])
    (op qcd-fnorm-init () (res) ())
    (loop () (i [const 0] [reg size])
      (load qcd-fermion () vA ([reg A]))

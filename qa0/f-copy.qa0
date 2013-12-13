@@ -4,9 +4,9 @@
 
 (procedure copy-fermion ([stem "f_copy"]
                           prec&color)
-           ([R         pointer "r"         "struct Fermion *"       ]
-            [size      int     "size"      "int"                    ]
-            [A         pointer "a"         "const struct Fermion *" ])
+           ([R         pointer "r"         "struct FermionX *"       ]
+            [size      int     "size"      "int"                     ]
+            [A         pointer "a"         "const struct FermionX *" ])
    (loop () (i [const 0] [reg size])
      (load qcd-fermion () vA ([reg A]))
      (store qcd-fermion () ([reg R]) [reg vA])

@@ -5,7 +5,7 @@ qx(boundary)(struct eo_lattice *xy,
              const qx(Up_project) up_proj[],
              const qx(Down_project) down_proj[],
              const struct SUn *U,
-             const struct Fermion *src_y,
+             const struct FermionX *src_y,
              long long *flops)
 {
     int i;

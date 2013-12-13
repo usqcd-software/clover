@@ -152,15 +152,15 @@ do.realclean:
 
 $(sources:%.qa0=$(DEST)/%.c): $(DEST)/%.c: %.qa0
 	$E QA0 $@
-	$C $(QA0) $(TARGET) double $@ $<
+	$C Nc=$(NC) $(QA0) $(TARGET) double $@ $<
 
 $(x.sources:%.qa0=$(DEST)/%d.c): $(DEST)/%d.c: %.qa0
 	$E QA0-d $@
-	$C $(QA0) $(TARGET) double $@ $<
+	$C Nc=$(NC) $(QA0) $(TARGET) double $@ $<
 
 $(x.sources:%.qa0=$(DEST)/%f.c): $(DEST)/%f.c: %.qa0
 	$E QA0-f $@
-	$C $(QA0) $(TARGET) float $@ $<
+	$C Nc=$(NC) $(QA0) $(TARGET) float $@ $<
 
 $(dst.sources): types.qa0
 $(c.A.sources): defs-A.qa0

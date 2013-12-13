@@ -11,14 +11,15 @@ Nc="$1"
 
 setup_nc () {
   in="$1"
-  out="$2"
-  sed < nc/$in > $out \
+  outd="$2"
+  sed < nc/$in > $outd/$in \
    -e "s/|:Nc:|/$Nc/g;s/|:Version:|/$Ver/g"
 }
 
-setup_nc version.c port/version.c
-setup_nc clover-config.in clover-config.in
-setup_nc Makefile.in Makefile.in
-setup_nc clover.nw noweb/clover.nw
-setup_nc configure configure
+setup_nc version.c port
+setup_nc clover.h port
+setup_nc clover-config.in .
+setup_nc Makefile.in .
+setup_nc clover.nw noweb
+setup_nc configure .
 chmod +x ./configure

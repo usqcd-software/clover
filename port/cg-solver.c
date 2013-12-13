@@ -26,8 +26,8 @@
 #endif
 
 void
-qx(cg_operator)(struct Fermion           *res_e,
-                const struct Fermion     *psi_e,
+qx(cg_operator)(struct FermionX          *res_e,
+                const struct FermionX    *psi_e,
                 struct MxM_workspace     *ws)
 {
     qx(op_even_M)(ws->tmp_e, ws->state, ws->gauge, psi_e,
@@ -39,13 +39,13 @@ qx(cg_operator)(struct Fermion           *res_e,
 }
 
 CG_STATUS
-qx(cg_solver)(struct Fermion            *psi_e,
+qx(cg_solver)(struct FermionX           *psi_e,
               const char                *name,
               int                       *out_iter,
               double                    *out_epsilon,
               struct Q(State)           *state,
               const struct QX(Gauge)    *gauge,
-              const struct Fermion      *chi_e,
+              const struct FermionX     *chi_e,
               struct Q(Deflator)        *deflator,
               int                        max_iter,
               double                     epsilon,
@@ -53,15 +53,17 @@ qx(cg_solver)(struct Fermion            *psi_e,
               long long                 *flops,
               long long                 *sent,
               long long                 *received,
-              struct Fermion            *rho_e,
-              struct Fermion            *pi_e,
-              struct Fermion            *zeta_e,
-              struct Fermion            *t0_e,
-              struct Fermion            *t1_e,
-              struct Fermion            *t0_o,
-              struct Fermion            *t1_o)
+              struct FermionX           *rho_e,
+              struct FermionX           *pi_e,
+              struct FermionX           *zeta_e,
+              struct FermionX           *t0_e,
+              struct FermionX           *t1_e,
+              struct FermionX           *t0_o,
+              struct FermionX           *t1_o)
 {
+#if QOP_CLOVER_DEFAULT_PRECISION == 'F'
     double a0 = 1, b0 = 0;
+#endif /* QOP_CLOVER_DEFAULT_PRECISION == 'F' */
     int df_status;
     int e_size = state->even.full_size;
     double a, b, g, r, norm_omega;
@@ -76,7 +78,7 @@ qx(cg_solver)(struct Fermion            *psi_e,
     ws.sent = sent;
     ws.received = received;
 
-    DF_PREAMBLE(psi_e, rho_e, &r, (struct Fermion *) chi_e);
+    DF_PREAMBLE(psi_e, rho_e, &r, (struct FermionX *) chi_e);
     qx(f_copy)(pi_e, e_size, rho_e);
     if (r < epsilon) {
         i = 0;
@@ -119,8 +121,10 @@ qx(cg_solver)(struct Fermion            *psi_e,
             return CG_EIGCONV;
         }
 
+#if QOP_CLOVER_DEFAULT_PRECISION == 'F'
         a0 = a;
         b0 = b;
+#endif /* QOP_CLOVER_DEFAULT_PRECISION == 'F' */
         if (options)
             qx(cg_log)(r, name,
                        i, psi_e, state, gauge, chi_e,

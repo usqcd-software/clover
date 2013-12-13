@@ -2,7 +2,7 @@
 
 void
 qx(x_import)(struct eo_lattice *eo,
-             struct Fermion *data,
+             struct FermionX *data,
              double (*reader)(const int pos[Q(DIM)],
                               int color,
                               int dirac,

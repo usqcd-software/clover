@@ -15,7 +15,7 @@
                          prec&color
                          count-flops)
            ([size      int     "size"      "int"                    ]
-            [X         pointer "X"         "struct Fermion *"       ]
+            [X         pointer "X"         "struct FermionX *"      ]
             [F         pointer "F"         "const struct vFermion *"]
             [fv-size   int     "fv_size"   "int"                    ]
             [fv-idx    int     "fv_idx"    "int"                    ])

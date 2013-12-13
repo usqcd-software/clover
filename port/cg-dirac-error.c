@@ -1,17 +1,17 @@
 #include <clover.h>
 
 double
-qx(cg_dirac_error)(const struct Fermion *psi_e,
-                   const struct Fermion *psi_o,
+qx(cg_dirac_error)(const struct FermionX *psi_e,
+                   const struct FermionX *psi_o,
                    struct Q(State) *state,
                    const struct QX(Gauge) *gauge,
-                   const struct Fermion *eta_e,
-                   const struct Fermion *eta_o,
+                   const struct FermionX *eta_e,
+                   const struct FermionX *eta_o,
                    long long *flops,
                    long long *sent,
                    long long *received,
-                   struct Fermion *t0_e,
-                   struct Fermion *t0_o)
+                   struct FermionX *t0_e,
+                   struct FermionX *t0_o)
 {
     double e_norm, o_norm, norm;
     

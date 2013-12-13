@@ -2,7 +2,7 @@
 
 void
 qx(x_export)(struct eo_lattice *eo,
-             const struct Fermion *data,
+             const struct FermionX *data,
              void (*writer)(const int pos[Q(DIM)],
                             int color,
                             int dirac,

@@ -9,12 +9,12 @@
 (procedure cg-x&p ([stem "cg_xp"]
                     prec&color
                     count-flops)
-           ([x         pointer "x"         "struct Fermion *"       ]
-            [p         pointer "p"         "struct Fermion *"       ]
-            [size      int     "size"      "int"                    ]
-            [alpha     double  "alpha"     "double"                 ]
-            [beta      double  "beta"      "double"                 ]
-            [r         pointer "r"         "const struct Fermion *" ])
+           ([x         pointer "x"         "struct FermionX *"       ]
+            [p         pointer "p"         "struct FermionX *"       ]
+            [size      int     "size"      "int"                     ]
+            [alpha     double  "alpha"     "double"                  ]
+            [beta      double  "beta"      "double"                  ]
+            [r         pointer "r"         "const struct FermionX *" ])
    (loop () (i [const 0] [reg size])
      (load qcd-fermion () f-x ([reg x]))
      (load qcd-fermion () f-p ([reg p]))

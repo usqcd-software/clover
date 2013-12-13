@@ -5,11 +5,11 @@
 (procedure dot-fermion ([stem "f_dot"]
                         prec&color
                         count-flops)
-           ([ptr-re    pointer "r_re"      "double *"               ]
-            [ptr-im    pointer "r_im"      "double *"               ]
-            [size      int     "size"      "int"                    ]
-            [A         pointer "a"         "const struct Fermion *" ]
-            [B         pointer "b"         "const struct Fermion *" ])
+           ([ptr-re    pointer "r_re"      "double *"                ]
+            [ptr-im    pointer "r_im"      "double *"                ]
+            [size      int     "size"      "int"                     ]
+            [A         pointer "a"         "const struct FermionX *" ]
+            [B         pointer "b"         "const struct FermionX *" ])
    (op qcd-fdot-init () (res) ())
    (loop () (i [const 0] [reg size])
      (load qcd-fermion () vA ([reg A]))

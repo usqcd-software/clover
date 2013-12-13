@@ -1,16 +1,16 @@
 #include <clover.h>
 
 static double
-qx(cg_true_residual)(const struct Fermion *xi_e,
+qx(cg_true_residual)(const struct FermionX *xi_e,
                      struct Q(State) *state,
                      const struct QX(Gauge) *gauge,
-                     const struct Fermion *chi_e,
+                     const struct FermionX *chi_e,
                      long long *flops,
                      long long *sent,
                      long long *received,
-                     struct Fermion *t0_e,
-                     struct Fermion *t1_e,
-                     struct Fermion *t0_o)
+                     struct FermionX *t0_e,
+                     struct FermionX *t1_e,
+                     struct FermionX *t0_o)
 {
     double norm;
 
@@ -26,18 +26,18 @@ qx(cg_true_residual)(const struct Fermion *xi_e,
 
 void
 qx(cg_log)(double cg_res, const char *source, int iter,
-           const struct Fermion *xi_e,
+           const struct FermionX *xi_e,
            struct Q(State) *state,
            const struct QX(Gauge) *gauge,
-           const struct Fermion *chi_e,
+           const struct FermionX *chi_e,
            long long *flops,
            long long *sent,
            long long *received,
            unsigned int options,
-           struct Fermion *t0_e,
-           struct Fermion *t1_e,
-           struct Fermion *t0_o,
-           struct Fermion *t1_o)
+           struct FermionX *t0_e,
+           struct FermionX *t1_e,
+           struct FermionX *t0_o,
+           struct FermionX *t1_o)
 {
     double true_res = 0.0;
 

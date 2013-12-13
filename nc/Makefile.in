@@ -21,10 +21,10 @@ docs=AUTHORS COPYRIGHT README config.log doc/clover.pdf
 .PHONY: all clean realclean install
 
 all:
-	$(MAKE) V=$V -C $(LIMPDIR) CONFIG=../target all
+	$(MAKE) V=$V -C $(LIMPDIR) CONFIG=../target NC=|:Nc:| all
 
 clean:
-	$(MAKE) V=$V -C $(LIMPDIR) CONFIG=../target clean
+	$(MAKE) V=$V -C $(LIMPDIR) CONFIG=../target NC=|:Nc:| clean
 
 realclean: clean
 	$(RM) */lib*.a
