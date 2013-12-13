@@ -16,7 +16,7 @@ else
    C=
 endif
 
-docs=AUTHORS COPYRIGHT README config.log doc/clover.pdf
+docs=AUTHORS COPYRIGHT README config.log doc/clover|:Nc:|.pdf
 
 .PHONY: all clean realclean install
 
