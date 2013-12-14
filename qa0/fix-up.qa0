@@ -1,7 +1,8 @@
 (verbose [(c99-32 cee-32 bgl/xlc) "/* $Id$ */"])
 (include "types.qa0")
 
-(procedure fix-neighbor-up ([stem "fix_neighbor_f_up"])
+(procedure fix-neighbor-up ([stem "fix_neighbor_f_up"]
+                            color)
            ([neighbor  pointer "neighbor"  "struct neighbor *" ]
             [index     int     "p"         "int"               ]
             [up-f      int     "up_f"      "int"               ]

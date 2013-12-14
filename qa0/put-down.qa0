@@ -2,7 +2,8 @@
 
 (include "types.qa0")
 
-(procedure put-down-pack ([stem "put_down_pack"])
+(procedure put-down-pack ([stem "put_down_pack"]
+                          color)
            ([down-pack pointer "down_pack" "struct down_pack *"  ]
             [index     int     "p"         "int"                 ]
             [value     int     "f"         "int"                 ])

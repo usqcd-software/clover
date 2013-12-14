@@ -1,7 +1,8 @@
 (verbose [(c99-32 cee-32 bgl/xlc) "/* $Id$ */"])
 (include "types.qa0")
 
-(procedure get-up-pack ([stem "get_up_pack"])
+(procedure get-up-pack ([stem "get_up_pack"]
+                        color)
            ([f-ptr   pointer "f"       "int *"                    ]
             [u-ptr   pointer "u"       "int *"                    ]
             [up-pack pointer "up_pack" "const struct up_pack *"   ]

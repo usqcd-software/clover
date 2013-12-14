@@ -2,7 +2,8 @@
 
 (include "types.qa0")
 
-(procedure gauge-f=d ([stem "g_f_eq_d"])
+(procedure gauge-f=d ([stem "g_f_eq_d"]
+                      color)
            ([R         pointer "r"         "struct SUnF *"       ]
             [size      int     "size"      "int"                 ]
             [A         pointer "a"         "const struct SUnD *" ])

@@ -3,6 +3,7 @@
 (include "types.qa0")
 
 (procedure fermion-d=d+f ([stem "f_d_eq_dpf"]
+                          color
                           count-flops)
            ([R         pointer "r"         "struct FermionD *"       ]
             [size      int     "size"      "int"                     ]

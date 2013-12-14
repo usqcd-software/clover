@@ -2,7 +2,8 @@
 
 (include "types.qa0")
 
-(procedure clover-f=d ([stem "c_f_eq_d"])
+(procedure clover-f=d ([stem "c_f_eq_d"]
+                       color)
            ([R         pointer "r"         "struct CloverF *"       ]
             [size      int     "size"      "int"                     ]
             [A         pointer "a"         "const struct CloverD *" ])

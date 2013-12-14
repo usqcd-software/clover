@@ -1,7 +1,8 @@
 (verbose [(c99-32 cee-32 bgl/xlc) "/* $Id$ */"])
 (include "types.qa0")
 
-(procedure get-neighbor ([stem "get_neighbor"])
+(procedure get-neighbor ([stem "get_neighbor"]
+                         color)
            ([mask      pointer "mask"      "int *"                   ]
             [up-f      pointer "up_f"      "int *"                   ]
             [up-U      pointer "up_u"      "int *"                   ]

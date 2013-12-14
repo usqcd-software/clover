@@ -1,7 +1,8 @@
 (verbose [(c99-32 cee-32 bgl/xlc) "/* $Id$ */"])
 (include "types.qa0")
 
-(procedure put-neighbor ([stem "put_neighbor"])
+(procedure put-neighbor ([stem "put_neighbor"]
+                         color)
            ([neighbor  pointer "neighbor"  "struct neighbor *" ]
             [index     int     "p"         "int"               ]
             [mask      int     "mask"      "int"               ]
