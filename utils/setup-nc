@@ -1,6 +1,6 @@
 #!/bin/sh -f
 
-Ver="X.XX.XXX"
+Ver="1.4.0"
 
 if [ $# -ne 1 ] ; then
    echo "Usage: setup-nc Nc" 1>&2
